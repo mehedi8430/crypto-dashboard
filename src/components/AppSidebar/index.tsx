@@ -111,7 +111,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                                         <SidebarMenuButton
                                             size="lg"
                                             tooltip={item?.title}
-                                            className={`w-full hover:text-primary  ${isActive ? '!bg-muted !text-primary shadow-sm' : ''
+                                            className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground ${isActive ? 'bg-gradient-to-r from-primary/50 to-primary/10 !text-foreground shadow-sm' : ''
                                                 }`}
                                         >
                                             <span className="!size-7 transition-colors pl-0.5">
