@@ -16,10 +16,11 @@ export default function MainLayout() {
                     }
                     className="flex flex-col"
                 >
-                    <TopBar />
+                    
                     <div className="flex flex-1">
                         <AppSidebar />
                         <SidebarInset>
+                            <TopBar />
                             <div className="flex flex-1 flex-col gap-4 p-4">
                                 <Outlet />
                             </div>
