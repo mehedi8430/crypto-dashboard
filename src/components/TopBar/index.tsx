@@ -9,8 +9,8 @@ export default function TopBar() {
         <SidebarTrigger className="text-muted-foreground p-6 absolute -top-9.5 -left-2.5 md:-left-10 cursor-pointer" />
       </div>
 
-      <div className="flex justify-between items-center w-full px-9">
-        <p>Dashboard</p>
+      <div className="flex justify-between items-center w-full px-9 md:px-6">
+        <p className="text-lg font-semibold">Dashboard</p>
 
         <ModeToggle />
       </div>

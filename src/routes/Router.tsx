@@ -1,21 +1,22 @@
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
+import HomePage from "@/pages/HomePage";
 import { createBrowserRouter } from "react-router";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
-    errorElement: <div>Error occurred</div>
+    element: <App />,
+    errorElement: <div>Error occurred</div>,
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout/>,
+    element: <DashboardLayout />,
     errorElement: <div>Error occurred</div>,
     children: [
       {
         index: true,
-        element: <div>Home</div>,
+        element: <HomePage />,
       },
       {
         path: "about",
@@ -24,5 +25,3 @@ export const routes = createBrowserRouter([
     ],
   },
 ]);
-
-
