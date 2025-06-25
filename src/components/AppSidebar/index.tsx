@@ -1,14 +1,10 @@
 import * as React from "react";
 import {
   LayoutGrid,
-  UsersRound,
-  UserRound,
   Clipboard,
   Contact,
   ShoppingBag,
   ShieldBan,
-  UserRoundPen,
-  FolderKanban,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,33 +53,6 @@ export default function AppSidebar({
           url: "/dashboard/etting",
           icon: <Contact />,
           end: true,
-        },
-      );
-      break;
-      items.push(
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: <LayoutGrid />,
-          end: true,
-        },
-        {
-          title: "Select Profiles",
-          url: "/dashboard/selectProfile",
-          icon: <UserRoundPen />,
-          end: false,
-        },
-        {
-          title: "Mange Profile",
-          url: "/dashboard/mange-profile",
-          icon: <FolderKanban />,
-          end: false,
-        },
-        {
-          title: "My Team",
-          url: "/dashboard/my-team",
-          icon: <Contact />,
-          end: true,
         }
       );
       break;
@@ -98,20 +67,23 @@ export default function AppSidebar({
   }
 
   return (
-    <section>
+    <section className="relative">
+      <div className="absolute top-2 -right-6 z-50">
+        <SidebarTrigger
+          size={"lg"}
+          className="text-muted-foreground !size-10 self-end m-1"
+        />
+      </div>
+
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent>
-          <SidebarMenu className="px-2">
-            <SidebarMenuButton
-              size="lg"
-              className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground`}
-            >
-              <span className="!size-7 transition-colors pl-0.5">H</span>
-              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground">
-                Logoipsum
-              </h1>
-            </SidebarMenuButton>
+          <div className="pb-8 pt-2 flex items-center justify-center">
+            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground">
+              Logoipsum
+            </h1>
+          </div>
 
+          <SidebarMenu className="px-2">
             {items.map((item, i) => (
               <SidebarMenuItem key={i}>
                 <NavLink
