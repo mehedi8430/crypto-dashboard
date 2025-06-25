@@ -5,6 +5,7 @@ import {
   Contact,
   ShoppingBag,
   ShieldBan,
+  Bitcoin,
 } from "lucide-react";
 import {
   Sidebar,
@@ -14,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router";
 import NavUser from "./navUser";
@@ -21,6 +23,7 @@ import NavUser from "./navUser";
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
   const currentUser = {
     role: "Admin",
   };
@@ -70,9 +73,15 @@ export default function AppSidebar({
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent>
           <div className="pb-8 pt-2 flex items-center justify-center">
-            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground">
-              Logoipsum
-            </h1>
+            {state === "collapsed" ? (
+              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground mr-3 mt-1">
+                L
+              </h1>
+            ) : (
+              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground">
+                Logoipsum
+              </h1>
+            )}
           </div>
 
           <SidebarMenu className="px-2">

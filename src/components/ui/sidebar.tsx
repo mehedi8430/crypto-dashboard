@@ -264,7 +264,6 @@ function SidebarTrigger({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar, isMobile, state } = useSidebar();
-  console.log({ state });
 
   if (isMobile) {
     return (
@@ -288,7 +287,7 @@ function SidebarTrigger({
         data-slot="sidebar-trigger"
         variant="ghost"
         size="icon"
-        className={cn("size-0 bg-amber-600", className)}
+        className={cn("size-10", className)}
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
@@ -298,9 +297,12 @@ function SidebarTrigger({
         {/* <MySidebarTogglerSVG /> */}
         <ReactSVG
           src={MySidebarTogglerSVG}
-          className={cn("w-10 h-10 duration-500", {
-            "rotate-180": state === "collapsed",
-          })}
+          className={cn(
+            "size-7 transition-transform duration-500 bg-background rounded-full",
+            {
+              "rotate-180": state === "collapsed",
+            }
+          )}
         />
       </button>
     );
