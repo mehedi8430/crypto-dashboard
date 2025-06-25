@@ -3,7 +3,9 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 // import { PanelLeftIcon } from "lucide-react";
-import MySidebarTogglerSVG from "@/assets/icons/arrow-left-circle.svg?react";
+import { ReactSVG } from "react-svg";
+import MySidebarTogglerSVG from "@/assets/icons/arrow-left-circle.svg";
+// import MySidebarTogglerSVG from "@/assets/icons/arrow-left-circle.svg?react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -24,6 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { PanelLeftIcon } from "lucide-react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -260,26 +263,48 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile, state } = useSidebar();
+  console.log({ state });
 
-  return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("size-7", className)}
-      onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
-      }}
-      {...props}
-    >
-      {/* <PanelLeftIcon /> */}
-      <MySidebarTogglerSVG />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  );
+  if (isMobile) {
+    return (
+      <button
+        data-sidebar="trigger"
+        data-slot="sidebar-trigger"
+        className={cn("size-0 duration-500", className)}
+        onClick={(event) => {
+          onClick?.(event);
+          toggleSidebar();
+        }}
+        {...props}
+      >
+        <PanelLeftIcon />
+      </button>
+    );
+  } else {
+    return (
+      <button
+        data-sidebar="trigger"
+        data-slot="sidebar-trigger"
+        variant="ghost"
+        size="icon"
+        className={cn("size-0 bg-amber-600", className)}
+        onClick={(event) => {
+          onClick?.(event);
+          toggleSidebar();
+        }}
+        {...props}
+      >
+        {/* <MySidebarTogglerSVG /> */}
+        <ReactSVG
+          src={MySidebarTogglerSVG}
+          className={cn("w-10 h-10 duration-500", {
+            "rotate-180": state === "collapsed",
+          })}
+        />
+      </button>
+    );
+  }
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {

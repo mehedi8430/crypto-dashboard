@@ -1,20 +1,15 @@
 // import { ArrowBigLeft } from "lucide-react";
 import { ModeToggle } from "../ThemeToggle";
-import { SidebarTrigger, useSidebar } from "../ui/sidebar";
+import { SidebarTrigger } from "../ui/sidebar";
 
 export default function TopBar() {
-  const { isMobile } = useSidebar();
-
   return (
-    <section className="w-full h-[60px] border border-border flex items-center sticky top-0 z-40 bg-sidebar">
-      {/* Sidebar trigger for mobile view */}
-      <SidebarTrigger
-        className={`text-muted-foreground ml-auto mt-2.5 mr-2.5 ${
-          isMobile ? "block" : "hidden"
-        }`}
-      />
+    <section className="w-full h-[60px] border border-border flex items-center gap-2 z-40 bg-sidebar">
+      <div className="relative">
+        <SidebarTrigger className="text-muted-foreground p-6 absolute -top-9.5 -left-2.5 md:-left-10 cursor-pointer" />
+      </div>
 
-      <div className="flex justify-between items-center w-full px-6">
+      <div className="flex justify-between items-center w-full px-9">
         <p>Dashboard</p>
 
         <ModeToggle />

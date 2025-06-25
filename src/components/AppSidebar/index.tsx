@@ -14,7 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router";
 import NavUser from "./navUser";
@@ -67,14 +66,7 @@ export default function AppSidebar({
   }
 
   return (
-    <section className="relative">
-      <div className="absolute top-2 -right-6 z-50">
-        <SidebarTrigger
-          size={"lg"}
-          className="text-muted-foreground !size-10 self-end m-1"
-        />
-      </div>
-
+    <section>
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent>
           <div className="pb-8 pt-2 flex items-center justify-center">
