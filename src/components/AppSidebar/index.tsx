@@ -5,14 +5,12 @@ import {
   Contact,
   ShoppingBag,
   ShieldBan,
-  CrossIcon,
-  Cross,
   X,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router";
-import NavUser from "./navUser";
+// import NavUser from "./navUser";
 
 export default function AppSidebar({
   ...props
@@ -94,7 +92,7 @@ export default function AppSidebar({
             <X />
           </button>
 
-          <SidebarMenu className="px-2">
+          <SidebarMenu className="">
             {items.map((item, i) => (
               <SidebarMenuItem key={i}>
                 <NavLink
@@ -110,7 +108,7 @@ export default function AppSidebar({
                     <SidebarMenuButton
                       size="lg"
                       tooltip={item?.title}
-                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground ${
+                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground rounded-none ${
                         isActive
                           ? "bg-gradient-to-r from-primary/50 to-primary/10 !text-foreground shadow-sm"
                           : ""
@@ -130,9 +128,9 @@ export default function AppSidebar({
           </SidebarMenu>
         </SidebarContent>
 
-        <SidebarFooter>
+        {/* <SidebarFooter>
           <NavUser />
-        </SidebarFooter>
+        </SidebarFooter> */}
         <SidebarRail />
       </Sidebar>
     </section>

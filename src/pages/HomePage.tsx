@@ -1,8 +1,22 @@
+import SearchInput from "@/components/SearchInput";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [value, setValue] = useState<string>("");
+
   return (
     <section className="px-0 lg:px-4">
+      <div className="md:hidden mb-4 flex items-center justify-center">
+        <SearchInput
+          value={value}
+          onChange={(value) => {
+            console.log({ value });
+            setValue(value);
+          }}
+        />
+      </div>
+
       <div className="grid grid-cols-4 gap-4">
         {/* Total NAV Panel */}
         <div className="col-span-4 lg:col-span-2">
