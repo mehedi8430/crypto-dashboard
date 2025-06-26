@@ -9,7 +9,7 @@ export default function TopBar() {
   const [value, setValue] = useState<string>("");
 
   return (
-    <section className="w-full h-[60px] border border-border flex items-center gap-2 z-40 bg-sidebar">
+    <section className="w-full h-[3.75rem] border border-border flex items-center gap-2 z-40 bg-sidebar">
       <div className="relative">
         <SidebarTrigger className="text-muted-foreground p-6 absolute -top-9.5 -left-2.5 md:-left-10 cursor-pointer" />
       </div>
@@ -18,13 +18,15 @@ export default function TopBar() {
         <p className="text-lg font-semibold">Dashboard</p>
 
         <div className="flex items-center gap-8">
-          <SearchInput
-            value={value}
-            onChange={(value) => {
-              console.log({ value });
-              setValue(value);
-            }}
-          />
+          <div className="max-md:hidden">
+            <SearchInput
+              value={value}
+              onChange={(value) => {
+                console.log({ value });
+                setValue(value);
+              }}
+            />
+          </div>
           <div className="flex items-center gap-4">
             <ReactSVG src={MyNotificationSVG} className="" />
             <ModeToggle />

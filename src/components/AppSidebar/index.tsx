@@ -5,7 +5,9 @@ import {
   Contact,
   ShoppingBag,
   ShieldBan,
-  Bitcoin,
+  CrossIcon,
+  Cross,
+  X,
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,7 +25,8 @@ import NavUser from "./navUser";
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
+
   const currentUser = {
     role: "Admin",
   };
@@ -83,6 +86,13 @@ export default function AppSidebar({
               </h1>
             )}
           </div>
+
+          <button
+            onClick={toggleSidebar}
+            className="md:hidden flex items-center justify-end absolute top-2 right-2 "
+          >
+            <X />
+          </button>
 
           <SidebarMenu className="px-2">
             {items.map((item, i) => (

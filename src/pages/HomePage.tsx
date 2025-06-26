@@ -6,31 +6,31 @@ export default function HomePage() {
       <div className="grid grid-cols-4 gap-4">
         {/* Total NAV Panel */}
         <div className="col-span-4 lg:col-span-2">
-          <Card>
+          <Card className="h-full">
             <CardContent>Total NAV Panel</CardContent>
           </Card>
         </div>
 
         {/* Allocation Breakdown */}
         <div className="col-span-4 lg:col-span-2">
-          <Card>
+          <Card className="h-full">
             <CardContent>Allocation Breakdown</CardContent>
           </Card>
         </div>
 
         {/* Allocation (A), (B), (C) */}
         <div className="col-span-4 lg:col-span-1">
-          <Card>
+          <Card className="h-full">
             <CardContent>Allocation A</CardContent>
           </Card>
         </div>
         <div className="col-span-4 lg:col-span-1">
-          <Card>
+          <Card className="h-full">
             <CardContent>Allocation B</CardContent>
           </Card>
         </div>
         <div className="col-span-4 lg:col-span-1">
-          <Card>
+          <Card className="h-full">
             <CardContent>Allocation C</CardContent>
           </Card>
         </div>
@@ -44,21 +44,21 @@ export default function HomePage() {
 
         {/* Asset Performance Panel */}
         <div className="col-span-4 lg:col-span-3">
-          <Card>
+          <Card className="h-full">
             <CardContent>Asset Performance Panel</CardContent>
           </Card>
         </div>
 
         {/* System Status */}
         <div className="col-span-4 lg:col-span-3">
-          <Card>
+          <Card className="h-full">
             <CardContent>System Status</CardContent>
           </Card>
         </div>
 
         {/* From the news */}
         <div className="col-span-4 lg:col-span-1">
-          <Card>
+          <Card className="h-full">
             <CardContent>From the news</CardContent>
           </Card>
         </div>
