@@ -1,8 +1,8 @@
-import AllocationBreakdown from "@/components/home/AllocationBreakdown";
-import TotalNavPanel from "@/components/home/TotalNavPanel";
 import SearchInput from "@/components/SearchInput";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
+import TotalNavPanel from "./components/TotalNavPanel";
+import AllocationBreakdown from "./components/AllocationBreakdown";
 
 export default function HomePage() {
   const [value, setValue] = useState<string>("");

@@ -26,6 +26,7 @@ export default function NavUser() {
   const navigate = useNavigate();
 
   return (
+    // <SidebarMenu className="mb-12">
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -36,7 +37,7 @@ export default function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-full">
                 {/* <AvatarImage src={currentUser?.avatar} alt={currentUser?.firstName} /> */}
-                <AvatarFallback className="rounded-lg">J</AvatarFallback>
+                <AvatarFallback className="rounded-lg">JD</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">Jhon Doe</span>

@@ -10,6 +10,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   // SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
@@ -18,7 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router";
-// import NavUser from "./navUser";
+import NavUser from "./navUser";
 
 export default function AppSidebar({
   ...props
@@ -73,13 +74,13 @@ export default function AppSidebar({
     <section>
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent>
-          <div className="pb-8 pt-2 flex items-center justify-center">
+          <div className="pb-8 pt-3 flex items-center justify-center">
             {state === "collapsed" ? (
-              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground mr-3 mt-1">
+              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-foreground mr-3 mt-1 rounded-full bg-primary ">
                 L
               </h1>
             ) : (
-              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary dark:text-foreground">
+              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary">
                 Logoipsum
               </h1>
             )}
@@ -92,15 +93,14 @@ export default function AppSidebar({
             <X />
           </button>
 
-          <SidebarMenu className="">
+          <SidebarMenu className="-mt-2.5">
             {items.map((item, i) => (
               <SidebarMenuItem key={i}>
                 <NavLink
                   to={item?.url as string}
                   end={item?.end}
                   className={({ isActive }) =>
-                    `w-full ${
-                      isActive ? "bg-white text-primary" : "text-[#797979]"
+                    `w-full ${isActive ? "bg-white text-primary" : "text-[#797979]"
                     }`
                   }
                 >
@@ -108,11 +108,10 @@ export default function AppSidebar({
                     <SidebarMenuButton
                       size="lg"
                       tooltip={item?.title}
-                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground rounded-none ${
-                        isActive
-                          ? "bg-gradient-to-r from-primary/50 to-primary/10 !text-foreground shadow-sm"
-                          : ""
-                      }`}
+                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground rounded-none ${isActive
+                        ? "bg-gradient-to-r from-primary/50 to-primary/10 !text-foreground shadow-sm"
+                        : ""
+                        }`}
                     >
                       <span className="!size-7 transition-colors pl-0.5">
                         {item.icon}
@@ -128,9 +127,9 @@ export default function AppSidebar({
           </SidebarMenu>
         </SidebarContent>
 
-        {/* <SidebarFooter>
+        <SidebarFooter>
           <NavUser />
-        </SidebarFooter> */}
+        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
     </section>

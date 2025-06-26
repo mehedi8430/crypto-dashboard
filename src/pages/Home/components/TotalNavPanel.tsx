@@ -1,10 +1,10 @@
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function TotalNavPanel() {
   return (
     <Card className="h-full">
       <CardContent>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <h3 className="text-foreground/80 text-xs">
             Total NAV
             <span className="text-foreground text-[16px] font-bold ml-1">
@@ -27,12 +27,12 @@ export default function TotalNavPanel() {
               </p>
             </div>
 
-            <div>1</div>
+            <div>Input Field</div>
           </div>
         </div>
 
         {/* Chart */}
-        <div className="mt-6">Chart here</div>
+        <div className="mt-6">{/* <TotalNavChart /> */}</div>
       </CardContent>
     </Card>
   );
