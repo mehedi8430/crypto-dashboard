@@ -3,9 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* @theme {
-  --color-primary: #243c5a; 
-} */
+@theme {
+  --font-inter: "Inter", sans-serif;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

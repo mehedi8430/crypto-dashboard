@@ -1,3 +1,5 @@
+import AllocationBreakdown from "@/components/home/AllocationBreakdown";
+import TotalNavPanel from "@/components/home/TotalNavPanel";
 import SearchInput from "@/components/SearchInput";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
@@ -18,18 +20,14 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-4 gap-4">
-        {/* Total NAV Panel */}
+        {/* Total NAV Panel Section */}
         <div className="col-span-4 lg:col-span-2">
-          <Card className="h-full">
-            <CardContent>Total NAV Panel</CardContent>
-          </Card>
+          <TotalNavPanel />
         </div>
 
         {/* Allocation Breakdown */}
         <div className="col-span-4 lg:col-span-2">
-          <Card className="h-full">
-            <CardContent>Allocation Breakdown</CardContent>
-          </Card>
+          <AllocationBreakdown />
         </div>
 
         {/* Allocation (A), (B), (C) */}

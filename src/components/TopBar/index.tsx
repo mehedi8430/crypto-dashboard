@@ -15,7 +15,7 @@ export default function TopBar() {
       </div>
 
       <div className="flex justify-between items-center w-full px-9 md:px-6">
-        <p className="text-lg font-semibold">Dashboard</p>
+        <p className="text-xl text-foreground font-semibold">Dashboard</p>
 
         <div className="flex items-center gap-8">
           <div className="max-md:hidden">
