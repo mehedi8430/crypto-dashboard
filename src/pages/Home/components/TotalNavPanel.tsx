@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import TotalNavChart from "./TotalNavChart";
 
 export default function TotalNavPanel() {
   return (
@@ -15,16 +16,12 @@ export default function TotalNavPanel() {
           <div className="flex items-center gap-5">
             <div className="flex flex-col items-center gap-1">
               <p className="text-primary text-xs">+0.68%</p>
-              <p className="text-foreground/70 text-[10px] font-noraml">
-                Total growth
-              </p>
+              <p className="text-foreground/70 text-[10px]">Total growth</p>
             </div>
 
             <div className="flex flex-col items-center gap-1">
               <p className="text-primary text-xs">+0.68%</p>
-              <p className="text-foreground/70 text-[10px] font-noraml">
-                Total growth
-              </p>
+              <p className="text-foreground/70 text-[10px]">Total growth</p>
             </div>
 
             <div>Input Field</div>
@@ -32,7 +29,9 @@ export default function TotalNavPanel() {
         </div>
 
         {/* Chart */}
-        <div className="mt-6">{/* <TotalNavChart /> */}</div>
+        <div className="mt-6">
+          <TotalNavChart />
+        </div>
       </CardContent>
     </Card>
   );
