@@ -1,8 +1,13 @@
-// import { ArrowBigLeft } from "lucide-react";
 import { ModeToggle } from "../ThemeToggle";
 import { SidebarTrigger } from "../ui/sidebar";
+import { ReactSVG } from "react-svg";
+import MyNotificationSVG from "@/assets/icons/notification 01.svg";
+import SearchInput from "../SearchInput";
+import { useState } from "react";
 
 export default function TopBar() {
+  const [value, setValue] = useState<string>("");
+
   return (
     <section className="w-full h-[60px] border border-border flex items-center gap-2 z-40 bg-sidebar">
       <div className="relative">
@@ -12,7 +17,19 @@ export default function TopBar() {
       <div className="flex justify-between items-center w-full px-9 md:px-6">
         <p className="text-lg font-semibold">Dashboard</p>
 
-        <ModeToggle />
+        <div className="flex items-center gap-8">
+          <SearchInput
+            value={value}
+            onChange={(value) => {
+              console.log({ value });
+              setValue(value);
+            }}
+          />
+          <div className="flex items-center gap-4">
+            <ReactSVG src={MyNotificationSVG} className="" />
+            <ModeToggle />
+          </div>
+        </div>
       </div>
     </section>
   );

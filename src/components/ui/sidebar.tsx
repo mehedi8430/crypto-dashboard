@@ -2,10 +2,8 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-// import { PanelLeftIcon } from "lucide-react";
 import { ReactSVG } from "react-svg";
 import MySidebarTogglerSVG from "@/assets/icons/arrow-left-circle.svg";
-// import MySidebarTogglerSVG from "@/assets/icons/arrow-left-circle.svg?react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -294,7 +292,6 @@ function SidebarTrigger({
         }}
         {...props}
       >
-        {/* <MySidebarTogglerSVG /> */}
         <ReactSVG
           src={MySidebarTogglerSVG}
           className={cn(
