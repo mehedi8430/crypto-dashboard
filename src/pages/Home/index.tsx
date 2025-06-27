@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import TotalNavPanel from "./components/TotalNavPanel";
 import AllocationBreakdown from "./components/AllocationBreakdown";
+import AssetPerformancePanel from "./components/AssetPerformancePanel";
 
 export default function HomePage() {
   const [value, setValue] = useState<string>("");
@@ -56,9 +57,10 @@ export default function HomePage() {
 
         {/* Asset Performance Panel */}
         <div className="col-span-4 lg:col-span-3">
-          <Card className="h-full">
+          {/* <Card className="h-full">
             <CardContent>Asset Performance Panel</CardContent>
-          </Card>
+          </Card> */}
+          <AssetPerformancePanel />
         </div>
 
         {/* System Status */}
