@@ -1,7 +1,26 @@
-import SelectInput from "@/components/SelectInput";
+import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 
+const monthOptions: SelectOption[] = [
+  { value: "january", label: "January" },
+  { value: "february", label: "February" },
+  { value: "march", label: "March" },
+  { value: "april", label: "April" },
+  { value: "may", label: "May" },
+  { value: "june", label: "June" },
+  { value: "july", label: "July" },
+  { value: "august", label: "August" },
+  { value: "september", label: "September" },
+  { value: "october", label: "October" },
+  { value: "november", label: "November" },
+  { value: "december", label: "December" },
+];
+
 export default function TotalNavPanel() {
+  const handleMonthChange = (value: string) => {
+    console.log("Selected month:", value);
+  };
+
   return (
     <section className="section-container">
       <div className="flex flex-col md:flex-row justify-between items-center">
@@ -23,7 +42,13 @@ export default function TotalNavPanel() {
             <p className="text-foreground/70 text-[10px]">Total growth</p>
           </div>
 
-          <SelectInput />
+          <SelectInput
+            options={monthOptions}
+            placeholder="Select a month"
+            label="Month"
+            defaultValue="january"
+            onValueChange={handleMonthChange}
+          />
         </div>
       </div>
 

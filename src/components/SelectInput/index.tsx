@@ -8,20 +8,64 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function SelectInput() {
+export interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface SelectInputProps {
+  options: SelectOption[];
+  placeholder?: string;
+  label?: string;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
+  className?: string;
+  triggerClassName?: string;
+  contentClassName?: string;
+  name?: string;
+  required?: boolean;
+}
+
+export default function SelectInput({
+  options,
+  placeholder = "Select an option",
+  label,
+  value,
+  defaultValue,
+  onValueChange,
+  disabled = false,
+  triggerClassName = "w-[180px]",
+  contentClassName,
+  name,
+  required = false,
+}: SelectInputProps) {
   return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Last Month" />
+    <Select
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      disabled={disabled}
+      name={name}
+      required={required}
+    >
+      <SelectTrigger className={triggerClassName}>
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className={contentClassName}>
         <SelectGroup>
-          <SelectLabel>Month</SelectLabel>
-          <SelectItem value="apple">January</SelectItem>
-          <SelectItem value="banana">Feb</SelectItem>
-          <SelectItem value="blueberry">March</SelectItem>
-          <SelectItem value="grapes">April</SelectItem>
-          <SelectItem value="pineapple">May</SelectItem>
+          {label && <SelectLabel>{label}</SelectLabel>}
+          {options.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

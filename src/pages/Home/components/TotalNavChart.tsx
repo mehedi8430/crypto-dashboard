@@ -6,14 +6,14 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { date: "Mon", total_nav: 810 },
+  { date: "Mon", total_nav: 822 },
   { date: "Tue", total_nav: 820 },
   { date: "Wed", total_nav: 835 },
   { date: "Thu", total_nav: 825 },
   { date: "Fri", total_nav: 825 },
   { date: "Sat", total_nav: 820 },
-  { date: "Sun", total_nav: 810 },
-  { date: "Mon", total_nav: 840 },
+  { date: "Sun", total_nav: 814 },
+  { date: "Mon", total_nav: 830 },
 ];
 
 const chartConfig = {
