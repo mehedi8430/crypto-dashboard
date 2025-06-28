@@ -3,7 +3,6 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 
 const chartData = [
@@ -42,7 +41,6 @@ export default function TotalNavChart() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipCursor = (props: any) => {
-    console.log("props", props);
     const { points, height, payload } = props;
 
     if (points && points.length > 0) {
@@ -50,30 +48,61 @@ export default function TotalNavChart() {
       const value = payload[0]?.value;
 
       // Calculate the y position based on the actual chart scaling
-      // The chart maps values from minValue to maxValue onto the height
       const normalizedValue = (value - minValue) / (maxValue - minValue);
       const yPosition = height - normalizedValue * height;
 
-      console.log({
-        value,
-        normalizedValue,
-        yPosition,
-        height,
-        minValue,
-        maxValue,
-      });
-
       return (
-        <line
-          x1={x}
-          y1={yPosition} // Start from the active data point
-          x2={x}
-          y2={height} // Go to bottom of chart
-          stroke="var(--color-chart-1)"
-          strokeWidth={3}
-          strokeDasharray="5 3"
-          opacity={1}
-        />
+        <g>
+          {/* Vertical cursor line */}
+          <line
+            x1={x}
+            y1={yPosition}
+            x2={x}
+            y2={height}
+            stroke="var(--color-chart-1)"
+            strokeWidth={3}
+            strokeDasharray="5 3"
+            opacity={0.7}
+          />
+
+          {/* Active point circle with glow effect */}
+          <circle
+            cx={x}
+            cy={yPosition}
+            r={8}
+            fill="var(--color-chart-1)"
+            stroke="var(--color-chart-1)"
+            strokeWidth={3}
+            opacity={1}
+            filter="drop-shadow(0 0 6px var(--color-chart-1))"
+          />
+
+          {/* Inner circle for contrast */}
+          <circle cx={x} cy={yPosition} r={4} fill="white" opacity={1} />
+        </g>
+      );
+    }
+    return null;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const CustomTooltipContent = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-border px-4 py-2 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span className="text-sm font-bold text-foreground">
+              ${payload[0].value}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="w-2 h-2 rounded-full bg-foreground" />
+            <span className="text-[10px] text-foreground/70">
+              {label} {new Date().getFullYear()}
+            </span>
+          </div>
+        </div>
       );
     }
     return null;
@@ -128,7 +157,8 @@ export default function TotalNavChart() {
           tickFormatter={(value) => `$${value.toFixed(1)}`}
         />
         <ChartTooltip
-          content={<ChartTooltipContent indicator="dot" />}
+          // content={<ChartTooltipContent indicator="dot" />}
+          content={<CustomTooltipContent />}
           cursor={<CustomTooltipCursor />}
         />
         <Area
