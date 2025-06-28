@@ -1,5 +1,6 @@
 import AppSidebar from "@/components/AppSidebar";
 import TopBar from "@/components/TopBar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/provider/theme/theme-provider";
 import { Outlet } from "react-router";
@@ -20,9 +21,11 @@ export default function MainLayout() {
             <AppSidebar />
             <SidebarInset className="">
               <TopBar />
-              <div className="flex flex-1 flex-col gap-4 p-4">
-                <Outlet />
-              </div>
+              <ScrollArea className="h-[93.5vh]">
+                <div className="flex flex-1 flex-col gap-4 p-4">
+                  <Outlet />
+                </div>
+              </ScrollArea>
             </SidebarInset>
           </div>
         </SidebarProvider>

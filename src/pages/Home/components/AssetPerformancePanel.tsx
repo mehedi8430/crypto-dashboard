@@ -2,10 +2,10 @@ import { DataTable } from "@/components/DataTable/dataTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { TCoinData } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, EllipsisVertical } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 
-export default function AssetPerformancePanel() {
+export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
 
@@ -112,7 +112,7 @@ export default function AssetPerformancePanel() {
       enableHiding: true,
       cell: ({ row }) => (
         <div className={`
-          flex items-center
+          flex items-center justify-center
           ${row.original.volumeTrend === 'up' ? 'text-green-500' : 'text-red-500'}
         `}>
           <p>{row.original.volume}</p>
@@ -123,17 +123,12 @@ export default function AssetPerformancePanel() {
           </div>
         </div>
       )
-    },
-    // {
-    //   accessorKey: 'volumeTrend',
-    //   header: 'Volume Trend',
-    //   enableHiding: true,
-    // }
+    }
   ];
 
   return (
     <section className="section-container">
-      <h3>Asset Performance Panel</h3>
+      <h3 className="font-bold">Asset Performance Panel</h3>
 
       <div>
         <DataTable<TCoinData>
@@ -145,11 +140,12 @@ export default function AssetPerformancePanel() {
           total={35}
           onPageChange={setPage}
           onLimitChange={setLimit}
-          actions={() => (
-            <div>
-              <EllipsisVertical />
-            </div>
-          )}
+          isPagination={false}
+        // actions={() => (
+        //   <div>
+        //     <EllipsisVertical />
+        //   </div>
+        // )}
         />
       </div>
     </section>

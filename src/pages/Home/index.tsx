@@ -4,6 +4,11 @@ import { useState } from "react";
 import TotalNavPanel from "./components/TotalNavPanel";
 import AllocationBreakdown from "./components/AllocationBreakdown";
 import AssetPerformancePanel from "./components/AssetPerformancePanel";
+import FromTheNews from "./components/FromTheNews";
+import DailyReport from "./components/DailyReport";
+import { AllocationA } from "./components/AllocationA";
+import { AllocationB } from "./components/AllocationB";
+import { AllocationC } from "./components/AllocationC";
 
 export default function HomePage() {
   const [value, setValue] = useState<string>("");
@@ -33,33 +38,25 @@ export default function HomePage() {
 
         {/* Allocation (A), (B), (C) */}
         <div className="col-span-4 lg:col-span-1">
-          <Card className="h-full">
+          {/* <Card className="h-full">
             <CardContent>Allocation A</CardContent>
-          </Card>
+          </Card> */}
+          <AllocationA />
         </div>
         <div className="col-span-4 lg:col-span-1">
-          <Card className="h-full">
-            <CardContent>Allocation B</CardContent>
-          </Card>
+          <AllocationB />
         </div>
         <div className="col-span-4 lg:col-span-1">
-          <Card className="h-full">
-            <CardContent>Allocation C</CardContent>
-          </Card>
+          <AllocationC />
         </div>
 
         {/* Daily Report - spans 2 rows */}
         <div className="col-span-4 lg:col-span-1 row-span-2">
-          <Card className="h-full">
-            <CardContent>Daily Report</CardContent>
-          </Card>
+          <DailyReport />
         </div>
 
         {/* Asset Performance Panel */}
         <div className="col-span-4 lg:col-span-3">
-          {/* <Card className="h-full">
-            <CardContent>Asset Performance Panel</CardContent>
-          </Card> */}
           <AssetPerformancePanel />
         </div>
 
@@ -72,9 +69,7 @@ export default function HomePage() {
 
         {/* From the news */}
         <div className="col-span-4 lg:col-span-1">
-          <Card className="h-full">
-            <CardContent>From the news</CardContent>
-          </Card>
+          <FromTheNews />
         </div>
       </div>
     </section>
