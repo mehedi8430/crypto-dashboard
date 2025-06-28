@@ -25,8 +25,31 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function TotalNavChart() {
+  const CustomTooltipCursor = (props) => {
+    const { points } = props;
+    if (points && points.length > 0) {
+      const { x, y } = points[0]; // Get coordinates of the active point
+      return (
+        <line
+          x1={x}
+          y1={0} // Start from top of chart
+          x2={x}
+          y2={props.height} // Go to bottom of chart (or just to y if you want it dynamic)
+          stroke="var(--color-chart-1)" // Your green color
+          strokeWidth={3}
+          strokeDasharray="5 3" // Dashed line
+          opacity={1}
+        />
+      );
+    }
+    return null;
+  };
+
   return (
-    <ChartContainer config={chartConfig} className="h-[230px] w-full mt-6">
+    <ChartContainer
+      config={chartConfig}
+      className="aspect-auto h-[230px] w-full mt-6"
+    >
       <AreaChart
         accessibilityLayer
         data={chartData}
@@ -70,8 +93,14 @@ export default function TotalNavChart() {
           tickFormatter={(value) => `$${value.toFixed(1)}`}
         />
         <ChartTooltip
-          cursor={false}
           content={<ChartTooltipContent indicator="dot" />}
+          // cursor={{
+          //   stroke: "var(--color-chart-1)",
+          //   strokeWidth: 3,
+          //   strokeDasharray: "5 3",
+          //   opacity: 1,
+          // }}
+          cursor={<CustomTooltipCursor />}
         />
         <Area
           dataKey="total_nav"
