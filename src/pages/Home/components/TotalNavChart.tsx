@@ -26,11 +26,7 @@ const chartConfig = {
 
 export default function TotalNavChart() {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="min-h-[200px] w-full"
-      style={{ height: 300 }}
-    >
+    <ChartContainer config={chartConfig} className="min-h-[200px] w-full mt-6">
       <AreaChart
         accessibilityLayer
         data={chartData}
@@ -39,12 +35,6 @@ export default function TotalNavChart() {
           right: 12,
         }}
       >
-        {/* <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#2D9C74" stopOpacity={1.2} />
-            <stop offset="95%" stopColor="#9DCCBC" stopOpacity={0.2} />
-          </linearGradient>
-        </defs> */}
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
