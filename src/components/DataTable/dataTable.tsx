@@ -46,6 +46,7 @@ export interface DataTableProps<TData, TValue> {
     onPageChange: (page: number) => void
     onLimitChange: (limit: number) => void
     actions?: (row: TData) => React.ReactNode
+    isPagination?: boolean
 }
 
 function DataTableInner<TData, TValue>(
@@ -58,6 +59,7 @@ function DataTableInner<TData, TValue>(
         total,
         onPageChange,
         actions,
+        isPagination = true
     }: DataTableProps<TData, TValue>,
     ref: ForwardedRef<DataTableHandle<TData>>
 ) {
@@ -102,16 +104,25 @@ function DataTableInner<TData, TValue>(
 
     return (
         <ScrollArea>
-            <div className="flex flex-col">
+            <div className="flex flex-col overflow-x-scroll md:overflow-hidden">
                 <div className="rounded-md">
                     <Table className="border-separate border-spacing-y-2">
-                        <TableHeader className="[&_tr]:border-b-0">
+                        <TableHeader
+                            className="[&_tr]:border-b-0 w-auto"
+                        >
                             {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                                    {headerGroup.headers.map((header) => (
+                                <TableRow
+                                    key={headerGroup.id}
+                                    className="hover:bg-transparent"
+                                >
+                                    {headerGroup.headers.map((header, i) => (
                                         <TableHead
-                                            key={header.id}
-                                            className={`text-muted-foreground`}
+                                            key={i}
+                                            className={`
+                                                text-muted-foreground
+                                                ${!actions && headerGroup.headers.length - 1 === i ? 'text-center' : ''}
+                                            `}
+                                            style={{ width: header.column.getSize() }}
                                         >
                                             {header.isPlaceholder
                                                 ? null
@@ -137,9 +148,11 @@ function DataTableInner<TData, TValue>(
                                             {row.getVisibleCells().map((cell, i) => (
                                                 <TableCell
                                                     key={i}
+                                                    style={{ width: cell.column.getSize() }}
                                                     className={`
                                                         ${i === 0 ? 'rounded-l-2xl' : ''}
-                                                        ${row.getVisibleCells().length - 1 === i && !actions ? 'rounded-r-2xl' : ''}
+                                                        ${row.getVisibleCells().length - 1 === i && !actions ?
+                                                            'rounded-r-2xl' : ''}
                                                     `}
                                                 >
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -165,19 +178,21 @@ function DataTableInner<TData, TValue>(
                     </Table>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between space-x-2 py-4">
-                    <div className="text-[#54607A]">
-                        Showing {limit <= total ? limit : total} Result from {total} Total Data
-                    </div>
-                    <div>
-                        <AppPagination
-                            total={total}
-                            limit={limit}
-                            page={page}
-                            onPageChange={onPageChange}
-                        />
-                    </div>
-                </div>
+                {
+                    isPagination ? <div className="mt-auto flex items-center justify-between space-x-2 py-4">
+                        <div className="text-[#54607A]">
+                            Showing {limit <= total ? limit : total} Result from {total} Total Data
+                        </div>
+                        <div>
+                            <AppPagination
+                                total={total}
+                                limit={limit}
+                                page={page}
+                                onPageChange={onPageChange}
+                            />
+                        </div>
+                    </div> : <></>
+                }
             </div>
         </ScrollArea>
     )

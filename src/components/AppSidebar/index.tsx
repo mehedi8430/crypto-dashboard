@@ -76,7 +76,7 @@ export default function AppSidebar({
         <SidebarContent>
           <div className="pb-8 pt-3 flex items-center justify-center">
             {state === "collapsed" ? (
-              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-foreground mr-3 mt-1 rounded-full bg-primary ">
+              <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center mr-3 mt-1 rounded-full bg-primary text-white">
                 L
               </h1>
             ) : (
@@ -106,14 +106,13 @@ export default function AppSidebar({
                 >
                   {({ isActive }) => (
                     <SidebarMenuButton
-                      size="lg"
                       tooltip={item?.title}
-                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground rounded-none ${isActive
-                        ? "bg-gradient-to-r from-primary/50 to-primary/10 !text-foreground shadow-sm"
+                      className={`w-full hover:bg-gradient-to-r from-primary/50 to-primary/10 text-foreground rounded-none py-6 ${isActive
+                        ? "bg-gradient-to-r from-primary/50 to-primary/0 text-foreground shadow-sm"
                         : ""
                         }`}
                     >
-                      <span className="!size-7 transition-colors pl-0.5">
+                      <span className="!size-7 transition-colors">
                         {item.icon}
                       </span>
                       <h4 className="text-lg text-nowrap duration-300">
