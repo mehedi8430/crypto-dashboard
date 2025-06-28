@@ -8,10 +8,9 @@ import SelectInput from "@/components/SelectInput";
 import type { Allocation } from "@/types/allocation.type";
 import AllocationChart from "./AllocationChart";
 
-// Colors and data remain here, to be passed to the children components
-const aColor = "#FFC107";
-const bColor = "#007BFF";
-const cColor = "#28A745";
+const aColor = "var(--color-piechart-a)";
+const bColor = "var(--color-piechart-b)";
+const cColor = "var(--color-piechart-c)";
 
 const chartData: Allocation[] = [
   { name: "A", value: 41.5, fill: aColor },
@@ -40,8 +39,6 @@ export default function AllocationBreakdown() {
             </div>
           ))}
         </div>
-
-        {/* The new, separate chart component */}
         <AllocationChart data={chartData} />
       </CardContent>
     </Card>

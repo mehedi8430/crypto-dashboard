@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
 
-// This component is now self-contained and only responsible for the chart.
-// Note that we don't need to import 'Allocation' type here anymore as chartData is passed via props.
 interface AllocationChartProps {
   data: {
     name: string;
