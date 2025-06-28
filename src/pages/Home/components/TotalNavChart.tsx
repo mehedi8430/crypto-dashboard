@@ -14,7 +14,7 @@ const chartData = [
   { date: "Fri", total_nav: 825 },
   { date: "Sat", total_nav: 820 },
   { date: "Sun", total_nav: 810 },
-  { date: "Mon", total_nav: 830 },
+  { date: "Mon", total_nav: 840 },
 ];
 
 const chartConfig = {
@@ -25,19 +25,53 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function TotalNavChart() {
-  const CustomTooltipCursor = (props) => {
-    const { points } = props;
+  const values = chartData.map((d) => d.total_nav);
+  const dataMin = Math.min(...values);
+  const dataMax = Math.max(...values);
+
+  const padding = (dataMax - dataMin) * 0.1; // 10% padding
+  const minValue = Math.floor(dataMin - padding);
+  const maxValue = Math.ceil(dataMax + padding);
+
+  // Generate dynamic ticks
+  const tickCount = 5;
+  const tickStep = (maxValue - minValue) / (tickCount - 1);
+  const dynamicTicks = Array.from({ length: tickCount }, (_, i) =>
+    Math.round(minValue + tickStep * i)
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const CustomTooltipCursor = (props: any) => {
+    console.log("props", props);
+    const { points, height, payload } = props;
+
     if (points && points.length > 0) {
-      const { x, y } = points[0]; // Get coordinates of the active point
+      const { x } = points[0];
+      const value = payload[0]?.value;
+
+      // Calculate the y position based on the actual chart scaling
+      // The chart maps values from minValue to maxValue onto the height
+      const normalizedValue = (value - minValue) / (maxValue - minValue);
+      const yPosition = height - normalizedValue * height;
+
+      console.log({
+        value,
+        normalizedValue,
+        yPosition,
+        height,
+        minValue,
+        maxValue,
+      });
+
       return (
         <line
           x1={x}
-          y1={0} // Start from top of chart
+          y1={yPosition} // Start from the active data point
           x2={x}
-          y2={props.height} // Go to bottom of chart (or just to y if you want it dynamic)
-          stroke="var(--color-chart-1)" // Your green color
+          y2={height} // Go to bottom of chart
+          stroke="var(--color-chart-1)"
           strokeWidth={3}
-          strokeDasharray="5 3" // Dashed line
+          strokeDasharray="5 3"
           opacity={1}
         />
       );
@@ -49,6 +83,7 @@ export default function TotalNavChart() {
     <ChartContainer
       config={chartConfig}
       className="aspect-auto h-[230px] w-full mt-6"
+      style={{ pointerEvents: "all" }}
     >
       <AreaChart
         accessibilityLayer
@@ -84,8 +119,8 @@ export default function TotalNavChart() {
           axisLine={false}
         />
         <YAxis
-          ticks={[800, 810, 820, 830, 840]}
-          domain={[800, 840]}
+          ticks={dynamicTicks}
+          domain={[minValue, maxValue]}
           axisLine={false}
           tickLine={false}
           tick={{ fill: "var(--color-chart-1-foreground)" }}
@@ -94,12 +129,6 @@ export default function TotalNavChart() {
         />
         <ChartTooltip
           content={<ChartTooltipContent indicator="dot" />}
-          // cursor={{
-          //   stroke: "var(--color-chart-1)",
-          //   strokeWidth: 3,
-          //   strokeDasharray: "5 3",
-          //   opacity: 1,
-          // }}
           cursor={<CustomTooltipCursor />}
         />
         <Area
