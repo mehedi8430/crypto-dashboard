@@ -7,14 +7,14 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { date: "2025-03-17", total_nav: 800 },
-  { date: "2025-03-18", total_nav: 810 },
-  { date: "2025-03-19", total_nav: 820 },
-  { date: "2025-03-20", total_nav: 830 },
-  { date: "2025-03-21", total_nav: 840 },
-  { date: "2025-03-22", total_nav: 850 },
-  { date: "2025-03-23", total_nav: 860 },
-  { date: "2025-03-24", total_nav: 870 },
+  { date: "Mon", total_nav: 810 },
+  { date: "Tue", total_nav: 820 },
+  { date: "Wed", total_nav: 835 },
+  { date: "Thu", total_nav: 825 },
+  { date: "Fri", total_nav: 825 },
+  { date: "Sat", total_nav: 820 },
+  { date: "Sun", total_nav: 810 },
+  { date: "Mon", total_nav: 830 },
 ];
 
 const chartConfig = {
@@ -26,7 +26,7 @@ const chartConfig = {
 
 export default function TotalNavChart() {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full mt-6">
+    <ChartContainer config={chartConfig} className="h-[230px] w-full mt-6">
       <AreaChart
         accessibilityLayer
         data={chartData}
@@ -35,23 +35,38 @@ export default function TotalNavChart() {
           right: 12,
         }}
       >
+        <defs>
+          <linearGradient id="fillTotalNav" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor="var(--color-chart-1)"
+              stopOpacity={0.5}
+            />
+            <stop
+              offset="95%"
+              stopColor="var(--color-chart-1)"
+              stopOpacity={0}
+            />
+          </linearGradient>
+        </defs>
+
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
           tickLine={false}
+          interval={0}
+          tickMargin={15}
+          height={40}
+          tickFormatter={(value) => value.slice(0, 3)}
           axisLine={false}
-          tickMargin={8}
-          tickFormatter={(value) => {
-            const date = new Date(value);
-            return date.toLocaleDateString("en-US", { weekday: "short" });
-          }}
         />
         <YAxis
-          ticks={[800, 810, 820, 830, 840, 850, 860, 870]}
-          domain={[800, 870]}
+          ticks={[800, 810, 820, 830, 840]}
+          domain={[800, 840]}
           axisLine={false}
           tickLine={false}
           tick={{ fill: "var(--color-chart-1-foreground)" }}
+          tickMargin={15}
           tickFormatter={(value) => `$${value.toFixed(1)}`}
         />
         <ChartTooltip
@@ -61,7 +76,7 @@ export default function TotalNavChart() {
         <Area
           dataKey="total_nav"
           type="monotone"
-          fill="var(--color-chart-1)"
+          fill="url(#fillTotalNav)"
           fillOpacity={0.4}
           stroke="var(--color-chart-1)"
         />
