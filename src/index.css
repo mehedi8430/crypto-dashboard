@@ -43,9 +43,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-piechart-a:var(--piechart-a);
-  --color-piechart-b:var(--piechart-b);
-  --color-piechart-c:var(--piechart-c);
+  --color-piechart-a: var(--piechart-a);
+  --color-piechart-b: var(--piechart-b);
+  --color-piechart-c: var(--piechart-c);
 }
 
 :root {
@@ -82,9 +82,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --piechart-a:#FFC107;
-  --piechart-b:#007BFF;
-  --piechart-c:#28A745;
+  --piechart-a: #ffc107;
+  --piechart-b: #007bff;
+  --piechart-c: #28a745;
 }
 
 .dark {
@@ -120,9 +120,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --piechart-a:#FFC107; 
-  --piechart-b:#007BFF; 
-  --piechart-c:#28A745; 
+  --piechart-a: #ffc107;
+  --piechart-b: #007bff;
+  --piechart-c: #28a745;
 }
 
 @layer base {
