@@ -34,7 +34,7 @@ export default function DailyReport() {
                         className="border-b-0 mb-5"
                     >
                         <div className="rounded-lg border shadow-sm ">
-                            <div className="bg-card text-card-foreground flex items-center justify-between rounded-lg px-5 py-[18px] shadow-sm w-full">
+                            <div className="bg-card text-card-foreground flex items-center justify-between rounded-lg px-5 py-[18px] shadow-sm w-full flex-wrap">
 
 
                                 {/* Left Section */}
@@ -85,7 +85,7 @@ export default function DailyReport() {
                                     </div>
                                 </div>
                             </div>
-                            <AccordionContent className="bg-card text-card-foreground border-t rounded-b-lg p-4">
+                            <AccordionContent className="bg-card text-card-foreground border-t rounded-b-lg py-4 px-10">
                                 <p>{report.deception}</p>
                             </AccordionContent>
                         </div>
