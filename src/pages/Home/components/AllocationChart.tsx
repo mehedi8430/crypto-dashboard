@@ -1,5 +1,3 @@
-"use client";
-
 import { Pie, PieChart, Cell } from "recharts";
 import {
   ChartContainer,
@@ -24,7 +22,7 @@ const chartConfig = {
 
 export default function AllocationChart({ data }: AllocationChartProps) {
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-square h-[200px]"
@@ -51,10 +49,6 @@ export default function AllocationChart({ data }: AllocationChartProps) {
           </Pie>
         </PieChart>
       </ChartContainer>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <p className="text-lg font-medium">Audit 90%</p>
-        <p className="text-lg font-medium">PAC</p>
-      </div>
     </div>
   );
 }
