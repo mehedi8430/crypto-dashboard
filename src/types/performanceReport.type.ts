@@ -10,3 +10,11 @@ export type TPerformanceReportCard = {
     formatted: string;
   };
 };
+
+export type TPerformanceRecord = {
+  date: string;
+  balance: string;
+  dailyChange: string;
+  percentChange: string;
+  notes: string;
+}
