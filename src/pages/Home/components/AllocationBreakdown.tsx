@@ -55,8 +55,8 @@ export default function AllocationBreakdown() {
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: item.fill }}
               />
-              <div className="text-xl font-medium">{item.name}</div>
-              <div className="text-xl font-medium">{item.value}%</div>
+              <div className="font-bold">{item.name}</div>
+              <div className="font-bold">{item.value}%</div>
             </div>
           ))}
         </div>

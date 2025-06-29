@@ -1,5 +1,6 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
+import { useState } from "react";
 
 const monthOptions: SelectOption[] = [
   { value: "january", label: "January" },
@@ -17,8 +18,11 @@ const monthOptions: SelectOption[] = [
 ];
 
 export default function TotalNavPanel() {
+  const [selected, setSelected] = useState<string>("");
+
   const handleMonthChange = (value: string) => {
     console.log("Selected month:", value);
+    setSelected(value);
   };
 
   return (
@@ -53,7 +57,7 @@ export default function TotalNavPanel() {
       </div>
 
       {/* Chart */}
-      <TotalNavChart />
+      <TotalNavChart selected={selected} />
     </section>
   );
 }
