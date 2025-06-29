@@ -1,7 +1,9 @@
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
+import Allocations from "@/pages/allocations";
 import HomePage from "@/pages/Home";
 import { createBrowserRouter } from "react-router";
+import DailyReport from "@/pages/DailyReport/index";
 
 export const routes = createBrowserRouter([
   {
@@ -19,9 +21,26 @@ export const routes = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "about",
-        element: <div>About</div>,
+        path: "report",
+        element: <DailyReport/>,
       },
+      {
+        path: 'allocations',
+        children: [
+          {
+            path: 'a',
+            element: <Allocations />
+          },
+          {
+            path: 'b',
+            element: <Allocations />
+          },
+          {
+            path: 'c',
+            element: <Allocations />
+          },
+        ]
+      }
     ],
   },
 ]);

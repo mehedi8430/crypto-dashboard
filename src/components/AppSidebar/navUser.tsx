@@ -15,14 +15,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-// import useCurrentUser from "@/hooks/useCurrentUser"
 import { useNavigate } from "react-router";
-// import { useAppDispatch } from "@/redux/hooks"
-// import { removeUserInfo } from "@/redux/slices/authSlice"
 
 export default function NavUser() {
-  // const dispatch = useAppDispatch();
-  // const currentUser = useCurrentUser();
   const navigate = useNavigate();
 
   return (
@@ -49,7 +44,7 @@ export default function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-[180px] rounded-lg"
             side="bottom"
             align="end"
             sideOffset={4}

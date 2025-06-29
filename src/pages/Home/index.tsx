@@ -14,7 +14,7 @@ export default function HomePage() {
   const [value, setValue] = useState<string>("");
 
   return (
-    <section className="px-0 lg:px-4">
+    <section>
       <div className="md:hidden mb-4 flex items-center justify-center">
         <SearchInput
           value={value}
