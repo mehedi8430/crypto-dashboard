@@ -20,7 +20,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function AllocationChart({ data }: AllocationChartProps) {
+export default function AllocationPieChart({ data }: AllocationChartProps) {
   return (
     <div className="flex items-center justify-center">
       <ChartContainer

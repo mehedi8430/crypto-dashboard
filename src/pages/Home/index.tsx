@@ -38,9 +38,6 @@ export default function HomePage() {
 
         {/* Allocation (A), (B), (C) */}
         <div className="col-span-4 lg:col-span-1">
-          {/* <Card className="h-full">
-            <CardContent>Allocation A</CardContent>
-          </Card> */}
           <AllocationA />
         </div>
         <div className="col-span-4 lg:col-span-1">
