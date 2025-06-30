@@ -1,92 +1,78 @@
-import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { type ChartConfig } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
+import AllocationAreaChart from "./AllocationAreaChart";
 
 export const description = "A linear area chart";
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { day: "Mon", value: 234000 },
+  { day: "Tue", value: 335500 },
+  { day: "Wed", value: 736200 },
+  { day: "Thu", value: 238800 },
+  { day: "Fri", value: 237000 },
+  { day: "Sat", value: 637400 },
+  { day: "Sun", value: 297827.95 },
 ];
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "value",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
+const startingBalance = 236903.03;
+const endingBalance = 237827.95;
+const gainPercent = 0.39;
+
 export function AllocationA() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Allocation A</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+    <section className="section-container">
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="font-bold">
+          Allocation (<span className="text-[#1C54FF]">A</span>)
+        </h3>
+        <div className="text-right">
+          <p className="font-semibold">
+            $
+            {endingBalance.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}
+            M
+          </p>
+          <div
+            className={cn(
+              "text-[10px]",
+              gainPercent >= 0 ? "text-[#12BE73]" : "text-[#FF3F31]"
+            )}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" hideLabel />}
-            />
-            <Area
-              dataKey="desktop"
-              type="linear"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              January - June 2024
-            </div>
+            ▲ {gainPercent.toFixed(2)}%
           </div>
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+
+      <div className="flex justify-between mb-4">
+        <div>
+          <p className="text-foreground/70 text-xs">Starting</p>
+          <p className="font-semibold text-sm">
+            $
+            {startingBalance.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}
+          </p>
+        </div>
+        <div>
+          <p className="text-foreground/70 text-xs">Ending</p>
+          <p className="font-semibold text-sm">
+            $
+            {endingBalance.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}
+          </p>
+        </div>
+      </div>
+
+      <AllocationAreaChart chartData={chartData} chartConfig={chartConfig} />
+    </section>
   );
 }

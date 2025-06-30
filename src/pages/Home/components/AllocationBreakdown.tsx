@@ -1,6 +1,6 @@
 import type { Allocation } from "@/types/allocation.type";
-import AllocationChart from "./AllocationChart";
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
+import AllocationPieChart from "./AllocationPieChart";
 
 // Colors and data remain here, to be passed to the children components
 const aColor = "#FFC107";
@@ -60,12 +60,8 @@ export default function AllocationBreakdown() {
             </div>
           ))}
         </div>
-
-        <div className="flex items-center gap-8">
-          <AllocationChart data={chartData} />
-
-          <p className="font-bold md:max-w-[80px] text-start">Audit 90% PAC</p>
-        </div>
+        <AllocationPieChart data={chartData} />
+        <p className="font-bold md:max-w-[80px] max-md:mt-4 ">Audit 90% PAC</p>
       </div>
     </section>
   );
