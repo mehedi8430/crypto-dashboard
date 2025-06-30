@@ -85,6 +85,7 @@
   --piechart-a: #ffc107;
   --piechart-b: #007bff;
   --piechart-c: #28a745;
+  --chart-blue: #3b82f6; /* Added this line */
 }
 
 .dark {
@@ -123,6 +124,7 @@
   --piechart-a: #ffc107;
   --piechart-b: #007bff;
   --piechart-c: #28a745;
+  --chart-blue: #3b82f6; /* Added this line */
 }
 
 @layer base {
