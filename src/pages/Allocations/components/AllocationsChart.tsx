@@ -14,36 +14,83 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const chartData = [
-  { date: "Jan 01", performance: 1400004 },
-  { date: "Jan 02", performance: 1400006 },
-  { date: "Jan 03", performance: 1400005 },
-  { date: "Jan 04", performance: 1400007 },
-  { date: "Jan 05", performance: 1400005 },
-  { date: "Jan 06", performance: 1400006 },
-  { date: "Jan 07", performance: 1400009 },
-  { date: "Jan 08", performance: 1400006 },
-  { date: "Jan 09", performance: 1400008 },
-  { date: "Jan 10", performance: 1400006 },
-  { date: "Jan 11", performance: 1400007 },
-  { date: "Jan 12", performance: 1400005 },
-  { date: "Jan 13", performance: 1400004 },
-  { date: "Jan 14", performance: 1400005 },
-  { date: "Jan 15", performance: 1400006 },
-];
+// Data for each allocation, based on the provided images
+const allocationData = {
+  a: {
+    color: "#0867ED", // Blue
+    data: [
+      { date: "Jan 01", performance: 1400500 },
+      { date: "Jan 02", performance: 1401000 },
+      { date: "Jan 03", performance: 1400000 },
+      { date: "Jan 04", performance: 1401200 },
+      { date: "Jan 05", performance: 1400800 },
+      { date: "Jan 06", performance: 1401500 },
+      { date: "Jan 07", performance: 1402000 },
+      { date: "Jan 08", performance: 1401000 },
+      { date: "Jan 09", performance: 1401800 },
+      { date: "Jan 10", performance: 1401500 },
+      { date: "Jan 11", performance: 1401700 },
+      { date: "Jan 12", performance: 1400500 },
+      { date: "Jan 13", performance: 1400000 },
+      { date: "Jan 14", performance: 1400200 },
+      { date: "Jan 15", performance: 1400800 },
+    ],
+  },
+  b: {
+    color: "#00CA72", // Green
+    data: [
+      { date: "Jan 01", performance: 1398000 },
+      { date: "Jan 02", performance: 1400000 },
+      { date: "Jan 03", performance: 1399000 },
+      { date: "Jan 04", performance: 1401000 },
+      { date: "Jan 05", performance: 1402500 },
+      { date: "Jan 06", performance: 1402800 },
+      { date: "Jan 07", performance: 1401000 },
+      { date: "Jan 08", performance: 1400000 },
+      { date: "Jan 09", performance: 1400500 },
+      { date: "Jan 10", performance: 1400200 },
+      { date: "Jan 11", performance: 1400000 },
+      { date: "Jan 12", performance: 1399000 },
+      { date: "Jan 13", performance: 1401500 },
+      { date: "Jan 14", performance: 1402000 },
+      { date: "Jan 15", performance: 1403000 },
+    ],
+  },
+  c: {
+    color: "#F2C916", // Yellow
+    data: [
+      { date: "Jan 01", performance: 1400200 },
+      { date: "Jan 02", performance: 1401000 },
+      { date: "Jan 03", performance: 1398000 },
+      { date: "Jan 04", performance: 1399000 },
+      { date: "Jan 05", performance: 1401000 },
+      { date: "Jan 06", performance: 1402000 },
+      { date: "Jan 07", performance: 1401500 },
+      { date: "Jan 08", performance: 1399500 },
+      { date: "Jan 09", performance: 1401200 },
+      { date: "Jan 10", performance: 1399800 },
+      { date: "Jan 11", performance: 1398500 },
+      { date: "Jan 12", performance: 1400000 },
+      { date: "Jan 13", performance: 1401800 },
+      { date: "Jan 14", performance: 1402500 },
+      { date: "Jan 15", performance: 1401000 },
+    ],
+  },
+};
 
 interface CustomTooltipProps {
   active?: boolean;
   payload?: Array<{ value: number; payload: { date: string } }>;
   label?: string;
+  color?: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background/80 backdrop-blur-sm p-3 border border-border rounded-lg shadow-xl">
         <p className="text-sm font-bold text-foreground">{label}</p>
-        <p className="text-sm" style={{ color: "var(--chart-blue)" }}>
+        <p className="text-sm" style={{ color: color || "var(--chart-blue)" }}>
           Performance:{" "}
           {new Intl.NumberFormat("en-US", {
             style: "currency",
@@ -58,13 +105,19 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-export default function AllocationsChart() {
+export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | null }) {
+  if (!allocation) {
+    return null; // Or a fallback UI
+  }
+
+  const { data: chartData, color: chartColor } = allocationData[allocation];
+
   const values = chartData.map((d) => d.performance);
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
   const padding = (maxValue - minValue) * 0.1;
 
-  const chartColor = "var(--chart-blue)";
+  const gradientId = `fillPerformance-${allocation}`;
 
   return (
     <Card className="w-full">
@@ -79,7 +132,7 @@ export default function AllocationsChart() {
               margin={{ top: 10, right: 30, left: 30, bottom: 0 }}
             >
               <defs>
-                <linearGradient id="fillPerformance" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={chartColor} stopOpacity={0.4} />
                   <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
                 </linearGradient>
@@ -122,7 +175,7 @@ export default function AllocationsChart() {
                   strokeOpacity: 0.5,
                   strokeDasharray: "5 3",
                 }}
-                content={<CustomTooltip />}
+                content={<CustomTooltip color={chartColor} />}
               />
 
               <Area
@@ -130,7 +183,7 @@ export default function AllocationsChart() {
                 dataKey="performance"
                 stroke={chartColor}
                 strokeWidth={2}
-                fill="url(#fillPerformance)"
+                fill={`url(#${gradientId})`}
                 activeDot={{
                   r: 6,
                   fill: chartColor,

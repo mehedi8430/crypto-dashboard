@@ -146,6 +146,10 @@ export default function Allocations() {
             ))
           }
         </div>
+      <div className="">
+        Here you have to make the changes.
+      </div>
+
       </div>
 
       <div className="section-container">
@@ -161,6 +165,7 @@ export default function Allocations() {
           onLimitChange={() => { }}
         />
       </div>
+      
     </section>
   );
 };
