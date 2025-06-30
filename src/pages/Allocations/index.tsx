@@ -5,6 +5,7 @@ import AllocationsChart from "./components/AllocationsChart";
 import type { TPerformanceRecord } from "@/types";
 import { DataTable } from "@/components/DataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
+import { AllocationMetricsPanel } from "./components/AllocationMetricsPanel";
 
 export default function Allocations() {
   const { pathname } = useLocation();
@@ -64,6 +65,12 @@ export default function Allocations() {
     );
     return () => setTitle('Dashboard');
   }, [pathname, setTitle]);
+
+  const allocation =
+    pathname.endsWith('/a') ? "a" :
+      pathname.endsWith('/b') ? "b" :
+        pathname.endsWith('/c') ? "c" :
+          null;
 
   const columns: ColumnDef<TPerformanceRecord>[] = [
     {
@@ -147,7 +154,7 @@ export default function Allocations() {
           }
         </div>
       <div className="">
-        Here you have to make the changes.
+        {allocation && <AllocationMetricsPanel allocation={allocation} />}
       </div>
 
       </div>
