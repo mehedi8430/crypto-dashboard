@@ -4,12 +4,14 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 export default function AllocationAreaChart({
   chartData,
   chartConfig,
-  chartColor = "var(--color-chart-1)",
+  idSuffix,
 }: {
   chartData: { day: string; value: number }[];
   chartConfig: ChartConfig;
-  chartColor?: string;
+  idSuffix: string;
 }) {
+  const gradientId = `fillAllocation${idSuffix}`;
+
   return (
     <ChartContainer config={chartConfig}>
       <AreaChart
@@ -18,9 +20,17 @@ export default function AllocationAreaChart({
         margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
       >
         <defs>
-          <linearGradient id="fillAllocationA" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={chartColor} stopOpacity={0.4} />
-            <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor={chartConfig.desktop.color}
+              stopOpacity={0.4}
+            />
+            <stop
+              offset="95%"
+              stopColor={chartConfig.desktop.color}
+              stopOpacity={0.1}
+            />
           </linearGradient>
         </defs>
         <XAxis dataKey="day" hide />
@@ -28,8 +38,8 @@ export default function AllocationAreaChart({
         <Area
           type="monotone"
           dataKey="value"
-          stroke={chartColor}
-          fill="url(#fillAllocationA)"
+          stroke={chartConfig.desktop.color}
+          fill={`url(#${gradientId})`}
           fillOpacity={0.4}
           activeDot={false}
         />

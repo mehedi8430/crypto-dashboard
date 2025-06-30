@@ -1,36 +1,36 @@
-import { type ChartConfig } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 import AllocationAreaChart from "./AllocationAreaChart";
+import { type ChartConfig } from "@/components/ui/chart";
 
-export const description = "A linear area chart";
+type AllocationProps = {
+  label: string;
+  startingBalance: number;
+  endingBalance: number;
+  gainPercent: number;
+  chartData: { day: string; value: number }[];
+  chartConfig: ChartConfig;
+};
 
-const chartData = [
-  { day: "Mon", value: 234000 },
-  { day: "Tue", value: 335500 },
-  { day: "Wed", value: 736200 },
-  { day: "Thu", value: 238800 },
-  { day: "Fri", value: 237000 },
-  { day: "Sat", value: 637400 },
-  { day: "Sun", value: 297827.95 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: "value",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
-
-const startingBalance = 236903.03;
-const endingBalance = 237827.95;
-const gainPercent = 0.39;
-
-export function AllocationA() {
+export default function Allocation({
+  label,
+  startingBalance,
+  endingBalance,
+  gainPercent,
+  chartData,
+  chartConfig,
+}: AllocationProps) {
   return (
-    <section className="section-container">
-      <div className="flex items-start justify-between mb-2">
+    <section className="section-container-no-padding border rounded-md hover:border hover:border-primary">
+      <div className="flex items-start justify-between px-6 pt-6">
         <h3 className="font-bold">
-          Allocation (<span className="text-[#1C54FF]">A</span>)
+          Allocation (
+          <span
+            className="font-bold"
+            style={{ color: chartConfig.desktop.color }}
+          >
+            {label}
+          </span>
+          )
         </h3>
         <div className="text-right">
           <p className="font-semibold">
@@ -46,12 +46,12 @@ export function AllocationA() {
               gainPercent >= 0 ? "text-[#12BE73]" : "text-[#FF3F31]"
             )}
           >
-            ▲ {gainPercent.toFixed(2)}%
+            {gainPercent >= 0 ? "▲" : "▼"} {gainPercent.toFixed(2)}%
           </div>
         </div>
       </div>
 
-      <div className="flex justify-between mb-4">
+      <div className="flex items-center gap-8 px-6 py-2">
         <div>
           <p className="text-foreground/70 text-xs">Starting</p>
           <p className="font-semibold text-sm">
@@ -72,7 +72,11 @@ export function AllocationA() {
         </div>
       </div>
 
-      <AllocationAreaChart chartData={chartData} chartConfig={chartConfig} />
+      <AllocationAreaChart
+        chartData={chartData}
+        chartConfig={chartConfig}
+        idSuffix={label}
+      />
     </section>
   );
 }
