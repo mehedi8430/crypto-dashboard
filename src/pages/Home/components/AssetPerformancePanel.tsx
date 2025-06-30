@@ -5,12 +5,21 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 
+// coins images
+import ETH from "@/assets/icons/coins/Ethereum ETH.png"
+import BTC from "@/assets/icons/coins/Group (1).png"
+import T from "@/assets/icons/coins/Group (2).png"
+import D from "@/assets/icons/coins/Group (3).png"
+import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png"
+import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png"
+
 export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
 
   const coins: TCoinData[] = [
     {
+      image:ETH,
       name: "Ethereum",
       symbol: "ETH",
       open: "+4.68",
@@ -20,6 +29,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
+      image:BTC,
       name: "Bitcoin",
       symbol: "BTC",
       open: "+4.68",
@@ -29,6 +39,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "down",
     },
     {
+      image:TrueUSD,
       name: "TrueUSD",
       symbol: "USDT",
       open: "+4.68",
@@ -38,6 +49,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
+      image:T,
       name: "Tether",
       symbol: "TUSD",
       open: "+4.68",
@@ -47,6 +59,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
+      image:D,
       name: "DAI",
       symbol: "DUSD",
       open: "+4.68",
@@ -56,6 +69,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "down",
     },
     {
+      image:Synthetix,
       name: "Synthetix",
       symbol: "SUSD",
       open: "+4.68",
@@ -75,8 +89,8 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div className="flex items-center gap-2">
           <Avatar>
             {/* <AvatarImage src={row?.original?.avatar} alt="avatar" /> */}
-            <AvatarFallback className="bg-primary text-white font-semibold">
-              CA
+            <AvatarFallback className="text-white font-semibold">
+              <img src={row.original.image} alt="" />
             </AvatarFallback>
           </Avatar>
           <p>{row.original.name}</p>
