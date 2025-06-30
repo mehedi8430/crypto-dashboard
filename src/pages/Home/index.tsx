@@ -9,6 +9,7 @@ import DailyReport from "./components/DailyReport";
 import { AllocationA } from "./components/AllocationA";
 import { AllocationB } from "./components/AllocationB";
 import { AllocationC } from "./components/AllocationC";
+import SystemStatus from "./components/SystemStatus";
 
 export default function HomePage() {
   const [value, setValue] = useState<string>("");
@@ -62,8 +63,8 @@ export default function HomePage() {
 
         {/* System Status */}
         <div className="col-span-4 lg:col-span-3">
-          <Card className="h-full">
-            <CardContent>System Status</CardContent>
+          <Card className="h-max">
+            <CardContent><SystemStatus/></CardContent>
           </Card>
         </div>
 
