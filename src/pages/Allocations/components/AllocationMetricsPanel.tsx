@@ -10,12 +10,12 @@ const panelData = {
   a: {
     bandAssignment: { text: "Expansion", colorKey: "blue" },
     routingStrategy: { text: "Dynamic", colorKey: "blue" },
-    overrideStatus: { text: "Inactive", colorKey: "green" },
+    overrideStatus: { text: "Inactive", colorKey: "blue" },
     overrideBadge: null,
   },
   b: {
-    bandAssignment: { text: "Expansion", colorKey: "emerald" },
-    routingStrategy: { text: "Dynamic", colorKey: "blue" },
+    bandAssignment: { text: "Expansion", colorKey: "green" },
+    routingStrategy: { text: "Dynamic", colorKey: "green" },
     overrideStatus: { text: "Inactive", colorKey: "green" },
     overrideBadge: null,
   },
@@ -31,7 +31,6 @@ const panelData = {
 const colorStyles: { [key: string]: string } = {
   blue: "bg-blue-600/10 text-blue-600 outline-blue-600",
   green: "bg-green-600/10 text-green-600 outline-green-600",
-  emerald: "bg-emerald-500/10 text-emerald-500 outline-emerald-500",
   yellow: "bg-yellow-400/10 text-yellow-400 outline-yellow-400",
 };
 
@@ -40,7 +39,7 @@ const MetricCard: React.FC<{ title: string; value: string; colorKey: string }> =
   return (
     <div className="flex-1 space-y-1.5">
       <p className="text-sm text-foreground">{title}</p>
-      <div className={cn("w-full p-2.5 rounded-lg outline outline-1 outline-offset-[-1px]", colorStyles[colorKey])}>
+      <div className={cn("w-full p-2.5 rounded-lg outline outline-offset-[-1px]", colorStyles[colorKey])}>
         <p className="text-base font-medium">{value}</p>
       </div>
     </div>
@@ -51,7 +50,7 @@ const MetricCard: React.FC<{ title: string; value: string; colorKey: string }> =
 const DateCard: React.FC<{ title: string; date: string }> = ({ title, date }) => (
   <div className="flex-1 space-y-1.5">
     <p className="text-sm text-foreground">{title}</p>
-    <div className="w-full p-2.5  bg-(--input) rounded-lg outline outline-1 outline-offset-[-1px] outline-neutral-700">
+    <div className="w-full p-2.5  bg-(--input) rounded-lg outline outline-offset-[-1px] outline-neutral-700">
       <p className="text-base font-normal text-foreground">{date}</p>
     </div>
   </div>
@@ -84,13 +83,13 @@ export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ 
       {/* Panel Body */}
       <div className="space-y-5">
         <div className="flex flex-col md:flex-row gap-5">
-            <MetricCard title="Band Assignment" value={data.bandAssignment.text} colorKey={data.bandAssignment.colorKey} />
-            <MetricCard title="Routing Strategy" value={data.routingStrategy.text} colorKey={data.routingStrategy.colorKey} />
-            <MetricCard title="Override status" value={data.overrideStatus.text} colorKey={data.overrideStatus.colorKey} />
+          <MetricCard title="Band Assignment" value={data.bandAssignment.text} colorKey={data.bandAssignment.colorKey} />
+          <MetricCard title="Routing Strategy" value={data.routingStrategy.text} colorKey={data.routingStrategy.colorKey} />
+          <MetricCard title="Override status" value={data.overrideStatus.text} colorKey={data.overrideStatus.colorKey} />
         </div>
         <div className="flex flex-col md:flex-row gap-5">
-            <DateCard title="$ Last payout Event" date="06/17/2025, 09:15 AM" />
-            <DateCard title="$ Next Unlock Epoch" date="07/20/2025, 04:00 PM" />
+          <DateCard title="$ Last payout Event" date="06/17/2025, 09:15 AM" />
+          <DateCard title="$ Next Unlock Epoch" date="07/20/2025, 04:00 PM" />
         </div>
       </div>
     </div>

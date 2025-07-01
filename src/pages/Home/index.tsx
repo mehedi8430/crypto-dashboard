@@ -50,7 +50,7 @@ export default function HomePage() {
 
         {/* System Status */}
         <div className="col-span-4 lg:col-span-3">
-          <Card className="h-max">
+          <Card className="h-full">
             <CardContent>
               <SystemStatus />
             </CardContent>
