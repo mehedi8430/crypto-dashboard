@@ -1,6 +1,14 @@
+import { useTitleStore } from "@/stores/titleStore";
 import DailyReport from "./components/DailyReport";
+import { useEffect } from "react";
 
 export default function DailyReportPage() {
+    const { setTitle } = useTitleStore();
+
+    useEffect(() => {
+        setTitle('Daily Report');
+        return () => setTitle('Dashboard');
+    }, [setTitle]);
 
     return (
         // asd
