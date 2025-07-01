@@ -82,8 +82,8 @@ export default function AssetPerformancePanel(): React.ReactNode {
 
   const columns: ColumnDef<TCoinData>[] = [
     {
-      accessorKey: 'name',
-      header: 'Name',
+      accessorKey: "name",
+      header: "Name",
       enableHiding: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
@@ -98,46 +98,50 @@ export default function AssetPerformancePanel(): React.ReactNode {
       ),
     },
     {
-      accessorKey: 'symbol',
-      header: '',
+      accessorKey: "symbol",
+      header: "",
       enableHiding: true,
       cell: ({ row }) => (
         <p className="text-muted-foreground">{row.original.symbol}</p>
-      )
+      ),
     },
     {
-      accessorKey: 'open',
-      header: 'Open',
+      accessorKey: "open",
+      header: "Open",
       enableHiding: true,
     },
     {
-      accessorKey: 'close',
-      header: 'Close',
+      accessorKey: "close",
+      header: "Close",
       enableHiding: true,
     },
     {
-      accessorKey: 'change',
-      header: 'Change',
+      accessorKey: "change",
+      header: "Change",
       enableHiding: true,
     },
     {
-      accessorKey: 'volume',
-      header: 'Volume',
+      accessorKey: "volume",
+      header: "Volume",
       enableHiding: true,
       cell: ({ row }) => (
-        <div className={`
+        <div
+          className={`
           flex items-center justify-center
-          ${row.original.volumeTrend === 'up' ? 'text-green-500' : 'text-red-500'}
-        `}>
+          ${
+            row.original.volumeTrend === "up"
+              ? "text-green-500"
+              : "text-red-500"
+          }
+        `}
+        >
           <p>{row.original.volume}</p>
           <div>
-            {
-              row.original.volumeTrend === 'up' ? <ArrowUp /> : <ArrowDown />
-            }
+            {row.original.volumeTrend === "up" ? <ArrowUp /> : <ArrowDown />}
           </div>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -155,13 +159,13 @@ export default function AssetPerformancePanel(): React.ReactNode {
           onPageChange={setPage}
           onLimitChange={setLimit}
           isPagination={false}
-        // actions={() => (
-        //   <div>
-        //     <EllipsisVertical />
-        //   </div>
-        // )}
+          // actions={() => (
+          //   <div>
+          //     <EllipsisVertical />
+          //   </div>
+          // )}
         />
       </div>
     </section>
   );
-};
+}

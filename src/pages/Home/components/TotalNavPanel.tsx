@@ -18,7 +18,8 @@ const monthOptions: SelectOption[] = [
 ];
 
 export default function TotalNavPanel() {
-  const [selected, setSelected] = useState<string>("");
+  const currentMonth = new Date().toLocaleString("default", { month: "long" });
+  const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
 
   const handleMonthChange = (value: string) => {
     console.log("Selected month:", value);
@@ -50,7 +51,7 @@ export default function TotalNavPanel() {
             options={monthOptions}
             placeholder="Select a month"
             label="Month"
-            defaultValue="january"
+            value={selected}
             onValueChange={handleMonthChange}
           />
         </div>
