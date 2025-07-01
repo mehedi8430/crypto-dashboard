@@ -1,6 +1,6 @@
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
-import Allocations from "@/pages/allocations";
+import Allocations from "@/pages/Allocations";
 import HomePage from "@/pages/Home";
 import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
@@ -26,25 +26,26 @@ export const routes = createBrowserRouter([
         element: <DailyReport />,
       },
       {
-        path: 'allocations',
+        path: "allocations",
         children: [
           {
-            path: 'a',
-            element: <Allocations />
+            path: "a",
+            element: <Allocations />,
           },
           {
-            path: 'b',
-            element: <Allocations />
+            path: "b",
+            element: <Allocations />,
           },
           {
-            path: 'c',
-            element: <Allocations />
+            path: "c",
+            element: <Allocations />,
           },
         ]
       },
       {
         path: 'create-data-forms',
         element: <DataForms />
+        ],
       },
     ],
   },

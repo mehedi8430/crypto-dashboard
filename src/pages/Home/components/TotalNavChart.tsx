@@ -36,6 +36,7 @@ const monthlyData = {
     { date: "Sun 12PM", total_nav: 814, time: "12:00" },
     { date: "Sun 3PM", total_nav: 820, time: "15:00" },
     { date: "Sun 6PM", total_nav: 816, time: "18:00" },
+    { date: "Sun 6PM", total_nav: 816, time: "18:00" },
   ],
   february: [
     { date: "Mon 9AM", total_nav: 840, time: "09:00" },
@@ -66,6 +67,8 @@ const monthlyData = {
     { date: "Sun 12PM", total_nav: 860, time: "12:00" },
     { date: "Sun 3PM", total_nav: 868, time: "15:00" },
     { date: "Sun 6PM", total_nav: 863, time: "18:00" },
+    { date: "Sun 6PM", total_nav: 863, time: "18:00" },
+    { date: "Sun 6PM", total_nav: 863, time: "18:00" },
   ],
   march: [
     { date: "Mon 9AM", total_nav: 775, time: "09:00" },
@@ -95,6 +98,8 @@ const monthlyData = {
     { date: "Sun 9AM", total_nav: 790, time: "09:00" },
     { date: "Sun 12PM", total_nav: 795, time: "12:00" },
     { date: "Sun 3PM", total_nav: 802, time: "15:00" },
+    { date: "Sun 6PM", total_nav: 798, time: "18:00" },
+    { date: "Sun 6PM", total_nav: 798, time: "18:00" },
     { date: "Sun 6PM", total_nav: 798, time: "18:00" },
   ],
   april: [
@@ -387,7 +392,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
   const uniqueWeekdays = Array.from(
     new Map(
       chartData.map((item) => {
-        const day = item.date.split(" ")[0]; // Extract day (e.g., "Mon" from "Mon 9AM")
+        const day = item.date.split(" ")[0];
         return [day, item];
       })
     ).values()
@@ -464,7 +469,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-2 h-2 rounded-full bg-foreground" />
             <span className="text-[10px] text-foreground/70">
-              {label.split(" ")[0]} {payload[0].payload.time} -{" "}
+              {label.split(" ")[0]} {payload[0].payload.time},{" "}
               {new Date().getFullYear()}
             </span>
           </div>
@@ -498,7 +503,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
             <stop
               offset="95%"
               stopColor="var(--color-chart-1)"
-              stopOpacity={0}
+              stopOpacity={0.1}
             />
           </linearGradient>
         </defs>
@@ -508,11 +513,10 @@ export default function TotalNavChart({ selected }: { selected: string }) {
           dataKey="date"
           tickLine={false}
           interval={0}
-          tickMargin={15}
+          tickMargin={8}
           height={40}
           ticks={uniqueWeekdays.map((item) => item.date)}
           tickFormatter={(value) => {
-            // Extract day from the label (e.g., "Mon 9AM" -> "Mon")
             const parts = value.split(" ");
             return parts[0];
           }}
@@ -524,11 +528,10 @@ export default function TotalNavChart({ selected }: { selected: string }) {
           axisLine={false}
           tickLine={false}
           tick={{ fill: "var(--color-chart-1-foreground)" }}
-          tickMargin={15}
+          tickMargin={10}
           tickFormatter={(value) => `$${value.toFixed(1)}`}
         />
         <ChartTooltip
-          // content={<ChartTooltipContent indicator="dot" />}
           content={<CustomTooltipContent />}
           cursor={<CustomTooltipCursor />}
         />

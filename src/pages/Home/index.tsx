@@ -6,9 +6,8 @@ import AllocationBreakdown from "./components/AllocationBreakdown";
 import AssetPerformancePanel from "./components/AssetPerformancePanel";
 import FromTheNews from "./components/FromTheNews";
 import DailyReport from "./components/DailyReport";
-import { AllocationA } from "./components/AllocationA";
-import { AllocationB } from "./components/AllocationB";
-import { AllocationC } from "./components/AllocationC";
+import SystemStatus from "./components/SystemStatus";
+import AllAllocationCard from "./components/AllAllocationCard";
 
 export default function HomePage() {
   const [value, setValue] = useState<string>("");
@@ -37,18 +36,7 @@ export default function HomePage() {
         </div>
 
         {/* Allocation (A), (B), (C) */}
-        <div className="col-span-4 lg:col-span-1">
-          {/* <Card className="h-full">
-            <CardContent>Allocation A</CardContent>
-          </Card> */}
-          <AllocationA />
-        </div>
-        <div className="col-span-4 lg:col-span-1">
-          <AllocationB />
-        </div>
-        <div className="col-span-4 lg:col-span-1">
-          <AllocationC />
-        </div>
+        <AllAllocationCard />
 
         {/* Daily Report - spans 2 rows */}
         <div className="col-span-4 lg:col-span-1 row-span-2">
@@ -62,8 +50,10 @@ export default function HomePage() {
 
         {/* System Status */}
         <div className="col-span-4 lg:col-span-3">
-          <Card className="h-full">
-            <CardContent>System Status</CardContent>
+          <Card className="h-max">
+            <CardContent>
+              <SystemStatus />
+            </CardContent>
           </Card>
         </div>
 
