@@ -45,8 +45,7 @@ export const routes = createBrowserRouter([
       {
         path: 'create-data-forms',
         element: <DataForms />
-        ],
-      },
-    ],
+  },
+],
   },
 ]);
