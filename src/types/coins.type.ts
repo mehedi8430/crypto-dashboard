@@ -1,4 +1,5 @@
 export type TCoinData = {
+  image: string;
   name: string;
   symbol: string;
   open: string;
