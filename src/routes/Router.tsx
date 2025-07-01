@@ -4,6 +4,7 @@ import Allocations from "@/pages/allocations";
 import HomePage from "@/pages/Home";
 import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
+import DataForms from "@/pages/DataForms";
 
 export const routes = createBrowserRouter([
   {
@@ -22,7 +23,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: "report",
-        element: <DailyReport/>,
+        element: <DailyReport />,
       },
       {
         path: 'allocations',
@@ -40,7 +41,11 @@ export const routes = createBrowserRouter([
             element: <Allocations />
           },
         ]
-      }
+      },
+      {
+        path: 'create-data-forms',
+        element: <DataForms />
+      },
     ],
   },
 ]);
