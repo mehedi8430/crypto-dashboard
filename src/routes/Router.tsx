@@ -1,11 +1,11 @@
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
-import Allocations from "@/pages/Allocations";
 import HomePage from "@/pages/Home";
 import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
-
+import Allocations from "@/pages/allocations";
+ 
 export const routes = createBrowserRouter([
   {
     path: "/",
@@ -46,7 +46,6 @@ export const routes = createBrowserRouter([
         path: 'create-data-forms',
         element: <DataForms />
       },
-  },
-],
+    ],
   },
 ]);
