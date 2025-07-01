@@ -4,7 +4,7 @@ import HomePage from "@/pages/Home";
 import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
-import Allocations from "@/pages/allocations";
+import Allocations from "@/pages/Allocations";
  
 export const routes = createBrowserRouter([
   {

@@ -9,11 +9,11 @@ import { getDatabase } from "firebase/database"; // Import Realtime Database
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-apiKey: "AIzaSyCy0AiWmo0LWAqarM8yLGUv2plivDz5bIo",
+  apiKey: "AIzaSyCy0AiWmo0LWAqarM8yLGUv2plivDz5bIo",
   authDomain: "crypto-dashboard-537a2.firebaseapp.com",
   databaseURL: "https://crypto-dashboard-537a2-default-rtdb.firebaseio.com",
   projectId: "crypto-dashboard-537a2",
-  storageBucket: "crypto-dashboard-537a2.firebasestorage.app",
+  storageBucket: "crypto-dashboard-537a2.appspot.com",
   messagingSenderId: "101307178983",
   appId: "1:101307178983:web:8055b6a3749d0bd3eea742",
   measurementId: "G-ZZ8WSKTY53"
@@ -23,6 +23,6 @@ apiKey: "AIzaSyCy0AiWmo0LWAqarM8yLGUv2plivDz5bIo",
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app); // Initialize Firestore
-const database = getDatabase(app); // Initialize Realtime Database
-
+const database = getDatabase(app); 
 export { app, analytics, db, database }; // Export db and database
+export default firebaseConfig;

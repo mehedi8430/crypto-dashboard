@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,28 +6,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useTitleStore } from '@/stores/titleStore';
-import { useEffect } from 'react';
-import { db, database } from '@/Firebase/Firebase'; // Import Firestore and Realtime Database instances
-import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
-import { ref, set } from 'firebase/database'; // Import Realtime Database functions
-import { v4 as uuidv4 } from 'uuid'; // Import uuid to generate unique IDs
+import { database } from '@/Firebase/Firebase';
+import { ref, push, set } from 'firebase/database';
 
-// Define your form schema
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
-  email: z.string().email().min(2),
-  note: z.string().min(2)
+  username: z.string().min(2, { message: 'Username must be at least 2 characters' }).max(50),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  note: z.string().min(2, { message: 'Note must be at least 2 characters' })
 });
 
 export default function DataForms() {
   const { setTitle } = useTitleStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     setTitle('Create Data');
     return () => setTitle('Dashboard');
   }, [setTitle]);
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,77 +35,116 @@ export default function DataForms() {
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
     try {
-      // Firestore
-      const docRef = await addDoc(collection(db, 'records'), values);
-      console.log('Document written with ID: ', docRef.id);
+      const newRecordRef = push(ref(database, 'records'));
+      
+      await set(newRecordRef, {
+        ...values,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        id: newRecordRef.key
+      });
 
-      // Realtime Database
-      const recordId = uuidv4();
-      await set(ref(database, 'records/' + recordId), values);
-      console.log('Data saved to Realtime Database with ID: ', recordId);
-
-      alert('Record successfully created!');
-
+      setSubmitSuccess(true);
+      form.reset();
+      setTimeout(() => setSubmitSuccess(false), 3000);
     } catch (error) {
-      console.error('Error creating record:', error);
-      alert('Failed to create record. Please try again.');
+      setSubmitError(error instanceof Error ? error.message : 'Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <>
-      <section>
-        <div className='section-container w-1/2'>
-          <h2 className='text-xl font-bold'>Form Data</h2>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-              <FormField
-                control={form.control}
-                name='username'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter your Username' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter your Email' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='note'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Note</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter note' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type='submit'>Submit</Button>
-            </form>
-          </Form>
-        </div>
-      </section>
-    </>
+    <section>
+      <div className='section-container w-1/2'>
+        <h2 className='text-xl font-bold mb-6'>Create New Record</h2>
+        
+        {submitSuccess && (
+          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            Record created successfully!
+          </div>
+        )}
+
+        {submitError && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {submitError}
+          </div>
+        )}
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {/* Form fields remain the same as your original */}
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder='Enter your username' 
+                      {...field} 
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder='Enter your email' 
+                      type='email'
+                      {...field} 
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='note'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Note</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder='Enter your note' 
+                      {...field} 
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button 
+              type='submit' 
+              disabled={isSubmitting}
+              className='w-full'
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </section>
   );
-};
+}
