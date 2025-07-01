@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useTitleStore } from '@/stores/titleStore';
 import { useEffect } from 'react';
-import axios from 'axios';
+import { db, database } from '@/Firebase/Firebase'; // Import Firestore and Realtime Database instances
+import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
+import { ref, set } from 'firebase/database'; // Import Realtime Database functions
+import { v4 as uuidv4 } from 'uuid'; // Import uuid to generate unique IDs
 
 // Define your form schema
 const formSchema = z.object({
@@ -17,7 +20,6 @@ const formSchema = z.object({
 
 export default function DataForms() {
   const { setTitle } = useTitleStore();
-  // Initialize Airtable service (you might want to move this to a config file)
 
   useEffect(() => {
     setTitle('Create Data');
@@ -37,9 +39,15 @@ export default function DataForms() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
-      const res = await axios.post('http://localhost:4000/api/records', values);
-      console.log({ res });
+      // Firestore
+      const docRef = await addDoc(collection(db, 'records'), values);
+      console.log('Document written with ID: ', docRef.id);
+
+      // Realtime Database
+      const recordId = uuidv4();
+      await set(ref(database, 'records/' + recordId), values);
+      console.log('Data saved to Realtime Database with ID: ', recordId);
+
       alert('Record successfully created!');
 
     } catch (error) {
@@ -86,7 +94,7 @@ export default function DataForms() {
                 name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Note</FormLabel> {/* Fixed label from 'Username' to 'Note' */}
+                    <FormLabel>Note</FormLabel>
                     <FormControl>
                       <Input placeholder='Enter note' {...field} />
                     </FormControl>
@@ -94,7 +102,6 @@ export default function DataForms() {
                   </FormItem>
                 )}
               />
-
               <Button type='submit'>Submit</Button>
             </form>
           </Form>
