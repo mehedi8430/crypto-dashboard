@@ -392,7 +392,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
   const uniqueWeekdays = Array.from(
     new Map(
       chartData.map((item) => {
-        const day = item.date.split(" ")[0]; // Extract day (e.g., "Mon" from "Mon 9AM")
+        const day = item.date.split(" ")[0];
         return [day, item];
       })
     ).values()
@@ -469,7 +469,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-2 h-2 rounded-full bg-foreground" />
             <span className="text-[10px] text-foreground/70">
-              {label.split(" ")[0]} {payload[0].payload.time} -{" "}
+              {label.split(" ")[0]} {payload[0].payload.time},{" "}
               {new Date().getFullYear()}
             </span>
           </div>
@@ -503,7 +503,7 @@ export default function TotalNavChart({ selected }: { selected: string }) {
             <stop
               offset="95%"
               stopColor="var(--color-chart-1)"
-              stopOpacity={0}
+              stopOpacity={0.1}
             />
           </linearGradient>
         </defs>
