@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Area,
   AreaChart,
@@ -13,69 +14,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { database } from "@/Firebase/Firebase";
 
-// Data for each allocation, based on the provided images
-const allocationData = {
-  a: {
-    color: "#0867ED", // Blue
-    data: [
-      { date: "Jan 01", performance: 1400500 },
-      { date: "Jan 02", performance: 1401000 },
-      { date: "Jan 03", performance: 1400000 },
-      { date: "Jan 04", performance: 1401200 },
-      { date: "Jan 05", performance: 1400800 },
-      { date: "Jan 06", performance: 1401500 },
-      { date: "Jan 07", performance: 1402000 },
-      { date: "Jan 08", performance: 1401000 },
-      { date: "Jan 09", performance: 1401800 },
-      { date: "Jan 10", performance: 1401500 },
-      { date: "Jan 11", performance: 1401700 },
-      { date: "Jan 12", performance: 1400500 },
-      { date: "Jan 13", performance: 1400000 },
-      { date: "Jan 14", performance: 1400200 },
-      { date: "Jan 15", performance: 1400800 },
-    ],
-  },
-  b: {
-    color: "#00CA72", // Green
-    data: [
-      { date: "Jan 01", performance: 1398000 },
-      { date: "Jan 02", performance: 1400000 },
-      { date: "Jan 03", performance: 1399000 },
-      { date: "Jan 04", performance: 1401000 },
-      { date: "Jan 05", performance: 1402500 },
-      { date: "Jan 06", performance: 1402800 },
-      { date: "Jan 07", performance: 1401000 },
-      { date: "Jan 08", performance: 1400000 },
-      { date: "Jan 09", performance: 1400500 },
-      { date: "Jan 10", performance: 1400200 },
-      { date: "Jan 11", performance: 1400000 },
-      { date: "Jan 12", performance: 1399000 },
-      { date: "Jan 13", performance: 1401500 },
-      { date: "Jan 14", performance: 1402000 },
-      { date: "Jan 15", performance: 1403000 },
-    ],
-  },
-  c: {
-    color: "#F2C916", // Yellow
-    data: [
-      { date: "Jan 01", performance: 1400200 },
-      { date: "Jan 02", performance: 1401000 },
-      { date: "Jan 03", performance: 1398000 },
-      { date: "Jan 04", performance: 1399000 },
-      { date: "Jan 05", performance: 1401000 },
-      { date: "Jan 06", performance: 1402000 },
-      { date: "Jan 07", performance: 1401500 },
-      { date: "Jan 08", performance: 1399500 },
-      { date: "Jan 09", performance: 1401200 },
-      { date: "Jan 10", performance: 1399800 },
-      { date: "Jan 11", performance: 1398500 },
-      { date: "Jan 12", performance: 1400000 },
-      { date: "Jan 13", performance: 1401800 },
-      { date: "Jan 14", performance: 1402500 },
-      { date: "Jan 15", performance: 1401000 },
-    ],
-  },
+const allocationColors = {
+  a: "#0867ED", // Blue
+  b: "#00CA72", // Green
+  c: "#F2C916", // Yellow
 };
 
 interface CustomTooltipProps {
@@ -89,7 +35,7 @@ const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) =>
   if (active && payload && payload.length) {
     return (
       <div className="bg-background/80 backdrop-blur-sm p-3 border border-border rounded-lg shadow-xl">
-        <p className="text-sm font-bold text-foreground">{label}</p>
+        <p className="text-sm font-bold text-foreground">{new Date(label ?? "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
         <p className="text-sm" style={{ color: color || "var(--chart-blue)" }}>
           Performance:{" "}
           {new Intl.NumberFormat("en-US", {
@@ -106,17 +52,53 @@ const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) =>
 };
 
 export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | null }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [minValue, setMinValue] = useState(0);
+    const [maxValue, setMaxValue] = useState(1000);
+
+    useEffect(() => {
+        if (!allocation) return;
+
+        const vaultReportsRef = ref(database, 'vaultReports');
+
+        onValue(vaultReportsRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const reports = Object.values(data) as any[];
+            if (reports.length > 0) {
+              const latestReport = reports[reports.length - 1];
+              const allocationChartData = latestReport.allocations[allocation.toUpperCase()]?.chartData.map((d: any) => ({...d, performance: d.balance}));
+              if (allocationChartData) {
+                setChartData(allocationChartData);
+
+                const values = allocationChartData.map((d: any) => d.performance);
+                const dataMin = Math.min(...values);
+                const dataMax = Math.max(...values);
+
+                const padding = (dataMax - dataMin) * 0.1;
+                const newMinValue = Math.floor(dataMin - padding);
+                const newMaxValue = Math.ceil(dataMax + padding);
+                setMinValue(newMinValue);
+                setMaxValue(newMaxValue);
+              }
+            }
+          }
+        }, (error) => {
+          console.error('Error fetching vaultReports:', error);
+        });
+
+        return () => {
+          onValue(vaultReportsRef, () => {}); // Detach listener
+        };
+      }, [allocation]);
+
+
   if (!allocation) {
     return null; // Or a fallback UI
   }
 
-  const { data: chartData, color: chartColor } = allocationData[allocation];
-
-  const values = chartData.map((d) => d.performance);
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
-  const padding = (maxValue - minValue) * 0.1;
-
+  const chartColor = allocationColors[allocation];
   const gradientId = `fillPerformance-${allocation}`;
 
   return (
@@ -149,11 +131,12 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
+                tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 tick={{ fill: "var(--muted-foreground)" }}
               />
 
               <YAxis
-                domain={[minValue - padding, maxValue + padding]}
+                domain={[minValue, maxValue]}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={10}

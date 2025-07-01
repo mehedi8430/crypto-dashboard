@@ -58,7 +58,7 @@ export default function TotalNavPanel() {
       </div>
 
       {/* Chart */}
-      <TotalNavChart selected={selected} />
+      <TotalNavChart />
     </section>
   );
 }
