@@ -102,7 +102,8 @@ export default function Allocations() {
 
   return (
     <section className="space-y-4">
-      <div className="w-full ">
+      {/* Chart Section */}
+      <div className="w-full">
         <AllocationsChart
           allocation={
             pathname.endsWith('/a') ? "a" :
@@ -113,66 +114,82 @@ export default function Allocations() {
         />
       </div>
 
+      {/* Allocation Overview Section */}
+      <div className="section-container">
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <h2 className="font-bold text-lg sm:text-xl">
+                  Allocation
+                  {
+                    pathname.endsWith('/a') ? " A" :
+                      pathname.endsWith('/b') ? " B" :
+                        pathname.endsWith('/c') ? " C" :
+                          null
+                  }:
+                  {
+                    pathname.endsWith('/a') ? " Core Holdings" :
+                      pathname.endsWith('/b') ? " Growth Strategy" :
+                        pathname.endsWith('/c') ? " Alternative Assets" :
+                          null
+                  }
+                </h2>
+                <div className={`
+                  size-4 rounded-full flex-shrink-0
+                  ${pathname.endsWith('/a') ? "bg-[#0867ED]" :
+                    pathname.endsWith('/b') ? "bg-[#00CA72]" :
+                      pathname.endsWith('/c') ? "bg-[#F2C916]" :
+                        ''
+                  } 
+                `}></div>
+              </div>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                Performance overview and daily tracking
+              </p>
+            </div>
+          </div>
+
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {statics.map((item, i) => (
+              <div key={i} className="border rounded-xl p-4 sm:p-5 min-w-0">
+                <p className="text-muted-foreground text-sm mb-2 truncate">
+                  {item.title}
+                </p>
+                <h1 className="font-bold text-2xl sm:text-3xl lg:text-4xl truncate">
+                  {item.total}
+                </h1>
+              </div>
+            ))}
+          </div>
+
+          {/* Allocation Metrics Panel */}
+          <div className="w-full overflow-hidden">
+            {allocation && <AllocationMetricsPanel allocation={allocation} />}
+          </div>
+        </div>
+      </div>
+
+      {/* Daily Performance History Section */}
       <div className="section-container">
         <div>
-          <div className="flex items-start justify-between">
-            <h2 className="font-bold">
-              Allocation
-              {
-                pathname.endsWith('/a') ? " A" :
-                  pathname.endsWith('/b') ? " B" :
-                    pathname.endsWith('/c') ? " C" :
-                      null
-              }:
-              {
-                pathname.endsWith('/a') ? " Core Holdings" :
-                  pathname.endsWith('/b') ? " Growth Strategy" :
-                    pathname.endsWith('/c') ? " Alternative Assets" :
-                      null
-              }
-            </h2>
-
-            <div className={`
-          size-4 rounded-full
-          ${pathname.endsWith('/a') ? "bg-[#0867ED]" :
-                pathname.endsWith('/b') ? "bg-[#00CA72]" :
-                  pathname.endsWith('/c') ? "bg-[#F2C916]" :
-                    ''
-              } 
-        `}></div>
+          <h2 className="font-bold text-lg sm:text-xl">Daily Performance History</h2>
+          <div className="w-full overflow-x-auto">
+            <DataTable<TPerformanceRecord>
+              data={financialData}
+              columns={columns}
+              isLoading={false}
+              page={1}
+              limit={20}
+              total={35}
+              onPageChange={() => { }}
+              onLimitChange={() => { }}
+            />
           </div>
-          <p className="text-muted-foreground">Performance overview and daily tracking</p>
         </div>
-        <div className="flex items-center gap-4">
-          {
-            statics.map((item, i) => (
-              <div key={i} className="w-full border rounded-xl p-5">
-                <p className="text-muted-foreground">{item.title}</p>
-                <h1 className="font-bold text-4xl">{item.total}</h1>
-              </div>
-            ))
-          }
-        </div>
-      <div className="">
-        {allocation && <AllocationMetricsPanel allocation={allocation} />}
       </div>
-
-      </div>
-
-      <div className="section-container">
-        <h2 className="font-bold">Daily Performance History</h2>
-        <DataTable<TPerformanceRecord>
-          data={financialData}
-          columns={columns}
-          isLoading={false}
-          page={1}
-          limit={20}
-          total={35}
-          onPageChange={() => { }}
-          onLimitChange={() => { }}
-        />
-      </div>
-      
     </section>
   );
 };

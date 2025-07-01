@@ -19,7 +19,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
 
   const coins: TCoinData[] = [
     {
-      image:ETH,
+      image: ETH,
       name: "Ethereum",
       symbol: "ETH",
       open: "+4.68",
@@ -29,7 +29,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
-      image:BTC,
+      image: BTC,
       name: "Bitcoin",
       symbol: "BTC",
       open: "+4.68",
@@ -39,7 +39,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "down",
     },
     {
-      image:TrueUSD,
+      image: TrueUSD,
       name: "TrueUSD",
       symbol: "USDT",
       open: "+4.68",
@@ -49,7 +49,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
-      image:T,
+      image: T,
       name: "Tether",
       symbol: "TUSD",
       open: "+4.68",
@@ -59,7 +59,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "up",
     },
     {
-      image:D,
+      image: D,
       name: "DAI",
       symbol: "DUSD",
       open: "+4.68",
@@ -69,7 +69,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
       volumeTrend: "down",
     },
     {
-      image:Synthetix,
+      image: Synthetix,
       name: "Synthetix",
       symbol: "SUSD",
       open: "+4.68",
@@ -128,11 +128,10 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div
           className={`
           flex items-center justify-center
-          ${
-            row.original.volumeTrend === "up"
+          ${row.original.volumeTrend === "up"
               ? "text-green-500"
               : "text-red-500"
-          }
+            }
         `}
         >
           <p>{row.original.volume}</p>
@@ -148,7 +147,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
 
-      <div>
+      <div className="overflow-x-auto">
         <DataTable<TCoinData>
           data={coins}
           columns={columns}
@@ -159,11 +158,6 @@ export default function AssetPerformancePanel(): React.ReactNode {
           onPageChange={setPage}
           onLimitChange={setLimit}
           isPagination={false}
-          // actions={() => (
-          //   <div>
-          //     <EllipsisVertical />
-          //   </div>
-          // )}
         />
       </div>
     </section>

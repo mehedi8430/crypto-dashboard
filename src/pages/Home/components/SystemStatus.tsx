@@ -69,7 +69,7 @@ export default function SystemStatus() {
     ];
 
     return (
-        <div className="">
+        <div className="lg:h-64 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold" style={{ color: 'var(--color-foreground)' }}>System Status</h2>
@@ -87,7 +87,7 @@ export default function SystemStatus() {
             </div>
 
             {/* Footer */}
-            <div className="mt-5 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="mt-auto border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--piechart-c)' }}>
                     <IconAllSystemsCheckmark />
                     <span>All systems operational - Portfolio monitoring active</span>
