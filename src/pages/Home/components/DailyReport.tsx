@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TPerformanceReportCard } from "@/types";
+import { Link } from "react-router";
 
 export default function DailyReport() {
   const performanceReportCards: TPerformanceReportCard[] = Array(10).fill({
@@ -20,7 +21,9 @@ export default function DailyReport() {
     <section className="section-container h-full">
       <div className="flex items-center justify-between">
         <h1 className="font-bold">Daily Report</h1>
+        <Link to="/dashboard/report">
         <Button variant='link'>View All</Button>
+        </Link>
       </div>
       <ScrollArea>
         {
