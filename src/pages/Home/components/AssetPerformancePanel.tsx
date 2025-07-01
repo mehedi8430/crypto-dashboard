@@ -111,11 +111,10 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div
           className={`
           flex items-center justify-center
-          ${
-            row.original.volumeTrend === "up"
+          ${row.original.volumeTrend === "up"
               ? "text-green-500"
               : "text-red-500"
-          }
+            }
         `}
         >
           <p>{row.original.volume}</p>
@@ -131,7 +130,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
 
-      <div>
+      <div className="overflow-x-auto">
         <DataTable<TCoinData>
           data={coins}
           columns={columns}

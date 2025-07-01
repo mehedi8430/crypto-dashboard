@@ -108,12 +108,14 @@ export default function Allocations() {
 
   return (
     <section className="space-y-4">
-      <div className="w-full ">
+      {/* Chart Section */}
+      <div className="w-full">
         <AllocationsChart
           allocation={allocation}
         />
       </div>
 
+      {/* Allocation Overview Section */}
       <div className="section-container">
         <div>
           <div className="flex items-start justify-between">
@@ -144,15 +146,17 @@ export default function Allocations() {
                 <p className="text-muted-foreground">{item.title}</p>
                 <h1 className="font-bold text-4xl">{item.total}</h1>
               </div>
-            ))
-          }
+            ))}
+          </div>
+
+          {/* Allocation Metrics Panel */}
+          <div className="w-full overflow-hidden">
+            {allocation && <AllocationMetricsPanel allocation={allocation} />}
+          </div>
         </div>
-      <div className="">
-        {allocation && <AllocationMetricsPanel allocation={allocation} />}
       </div>
 
-      </div>
-
+      {/* Daily Performance History Section */}
       <div className="section-container">
         <h2 className="font-bold">Daily Performance History</h2>
         <DataTable<TPerformanceRecord>
