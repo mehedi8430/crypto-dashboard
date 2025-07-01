@@ -6,7 +6,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function DailyReport() {
     const performanceReportCards: TPerformanceReportCard[] = Array(10).fill({
@@ -26,73 +25,68 @@ export default function DailyReport() {
     return (
         <section className="flex flex-col gap-4">
             <Accordion type="single" collapsible className="w-full">
-                <ScrollArea className="h-[85vh]">
-                    {performanceReportCards.map((report, index) => (
-                        <AccordionItem
-                            value={`item-${index + 1}`}
-                            key={index}
-                            className="border-b-0 mb-5"
-                        >
-                            <div className="rounded-lg border shadow-sm ">
-                                <div className="bg-card text-card-foreground flex items-center justify-between rounded-lg px-5 py-[18px] shadow-sm w-full flex-wrap">
-
-
-                                    {/* Left Section */}
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex items-center gap-2 text-muted-foreground">
-                                            <AccordionTrigger className="hover:no-underline" />
-                                        </div>
-                                        <CalendarDays className="h-6 w-6 text-muted-foreground" />
-                                        <div>
-                                            <p className="font-medium text-foreground">
-                                                {report.date}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Daily Performance Report
-                                            </p>
-                                        </div>
+                {performanceReportCards.map((report, index) => (
+                    <AccordionItem
+                        value={`item-${index + 1}`}
+                        key={index}
+                        className="border-b-0 mb-5"
+                    >
+                        <div className="rounded-lg border shadow-sm">
+                            <div className="bg-card text-card-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg px-4 sm:px-5 py-4 sm:py-[18px] shadow-sm w-full gap-4 sm:gap-0">
+                                {/* Left Section */}
+                                <div className="flex items-center gap-4 w-full sm:w-auto">
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <AccordionTrigger className="hover:no-underline" />
                                     </div>
-
-                                    {/* Right Section */}
-                                    <div className="flex items-center gap-30">
-                                        <div>
-                                            <p className="text-xs text-muted-foreground">
-                                                STARTING NAV
-                                            </p>
-                                            <p className="font-medium text-foreground">
-                                                {report.startingNAV}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground">ENDING NAV</p>
-                                            <p className="font-medium text-foreground">
-                                                {report.endingNAV}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground text-right">
-                                                GROWTH RATE
-                                            </p>
-                                            <p
-                                                className={`font-medium text-right ${report.growthRate.sign === "+"
-                                                    ? "text-green-500"
-                                                    : "text-red-500"
-                                                    }`}
-                                            >
-                                                {report.growthRate.sign}
-                                                {report.growthRate.value}%
-                                            </p>
-                                        </div>
+                                    <CalendarDays className="h-6 w-6 text-muted-foreground" />
+                                    <div className="flex-1 sm:flex-none">
+                                        <p className="font-medium text-foreground">
+                                            {report.date}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Daily Performance Report
+                                        </p>
                                     </div>
                                 </div>
-                                <AccordionContent className="bg-card text-card-foreground border-t rounded-b-lg py-4 px-10">
-                                    <p>{report.deception}</p>
-                                </AccordionContent>
-                            </div>
-                        </AccordionItem>
-                    ))}
-                </ScrollArea>
 
+                                {/* Right Section */}
+                                <div className="flex items-center gap-4 w-full sm:w-auto">
+                                    <div className="flex-1 sm:flex-none">
+                                        <p className="text-[7px] md:text-xs text-muted-foreground">
+                                            STARTING NAV
+                                        </p>
+                                        <p className="font-medium text-foreground">
+                                            {report.startingNAV}
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 sm:flex-none">
+                                        <p className="text-[7px] md:text-xs text-muted-foreground">ENDING NAV</p>
+                                        <p className="font-medium text-foreground">
+                                            {report.endingNAV}
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 sm:flex-none">
+                                        <p className="text-[7px] md:text-xs text-muted-foreground sm:text-right">
+                                            GROWTH RATE
+                                        </p>
+                                        <p
+                                            className={`font-medium sm:text-right ${report.growthRate.sign === "+"
+                                                ? "text-green-500"
+                                                : "text-red-500"
+                                                }`}
+                                        >
+                                            {report.growthRate.sign}
+                                            {report.growthRate.value}%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <AccordionContent className="bg-card text-card-foreground border-t rounded-b-lg py-4 px-4 sm:px-10">
+                                <p>{report.deception}</p>
+                            </AccordionContent>
+                        </div>
+                    </AccordionItem>
+                ))}
             </Accordion>
         </section>
     );
