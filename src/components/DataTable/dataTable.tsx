@@ -25,7 +25,6 @@ import React, {
   useImperativeHandle,
   type ForwardedRef,
 } from "react";
-import { ScrollArea } from "../ui/scroll-area";
 import AppPagination from "../AppPagination";
 
 export interface DataTableHandle<TData> {
