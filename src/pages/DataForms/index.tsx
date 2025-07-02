@@ -128,8 +128,8 @@ export default function DataForms() {
         const lastReport = reports[lastReportKey];
         // Prepare data for the form
         const formData = {
-            ...lastReport,
-            reportDate: new Date(lastReport.reportDate).toISOString().split('T')[0],
+          ...lastReport,
+          reportDate: new Date(lastReport.reportDate).toISOString().split('T')[0],
         };
         setInitialData(formData);
         form.reset(formData); // Reset form with the latest data
@@ -214,11 +214,11 @@ export default function DataForms() {
   );
 
   if (!initialData) {
-      return (
-          <div className="flex justify-center items-center h-screen">
-              <div>Loading...</div>
-          </div>
-      )
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loader"></span>
+      </div>
+    )
   }
 
   return (
