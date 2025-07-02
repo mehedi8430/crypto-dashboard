@@ -255,7 +255,6 @@ function Sidebar({
     </div>
   );
 }
-
 function SidebarTrigger({
   className,
   onClick,
@@ -268,17 +267,17 @@ function SidebarTrigger({
       <button
         data-sidebar="trigger"
         data-slot="sidebar-trigger"
-        className={cn("size-0 duration-500", className)}
+        className={cn("md:hidden p-2 text-muted-foreground", className)} // Added md:hidden
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
         }}
         {...props}
       >
-        <PanelLeftIcon />
+        <PanelLeftIcon className="h-6 w-6" />
       </button>
     );
-  } else {
+  }else {
     return (
       <button
         data-sidebar="trigger"
