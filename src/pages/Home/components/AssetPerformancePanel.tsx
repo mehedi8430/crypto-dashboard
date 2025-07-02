@@ -1,84 +1,71 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataTable } from "@/components/DataTable/dataTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { TCoinData } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { database } from "@/Firebase/Firebase";
 
 // coins images
-import ETH from "@/assets/icons/coins/Ethereum ETH.png"
-import BTC from "@/assets/icons/coins/Group (1).png"
-import T from "@/assets/icons/coins/Group (2).png"
-import D from "@/assets/icons/coins/Group (3).png"
-import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png"
-import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png"
+import ETH from "@/assets/icons/coins/Ethereum ETH.png";
+import BTC from "@/assets/icons/coins/Group (1).png";
+import T from "@/assets/icons/coins/Group (2).png";
+import D from "@/assets/icons/coins/Group (3).png";
+import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png";
+import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png";
+
+const coinImages: { [key: string]: string } = {
+  ETH,
+  BTC,
+  TUSD: TrueUSD,
+  USDT: T,
+  DAI: D,
+  SUSD: Synthetix,
+};
 
 export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
+  const [coins, setCoins] = useState<TCoinData[]>([]);
 
-  const coins: TCoinData[] = [
-    {
-      image:ETH,
-      name: "Ethereum",
-      symbol: "ETH",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "up",
-    },
-    {
-      image:BTC,
-      name: "Bitcoin",
-      symbol: "BTC",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "down",
-    },
-    {
-      image:TrueUSD,
-      name: "TrueUSD",
-      symbol: "USDT",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "up",
-    },
-    {
-      image:T,
-      name: "Tether",
-      symbol: "TUSD",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "up",
-    },
-    {
-      image:D,
-      name: "DAI",
-      symbol: "DUSD",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "down",
-    },
-    {
-      image:Synthetix,
-      name: "Synthetix",
-      symbol: "SUSD",
-      open: "+4.68",
-      close: "+0%",
-      change: "+68",
-      volume: "00.10%",
-      volumeTrend: "down",
-    },
-  ];
+  useEffect(() => {
+    const vaultReportsRef = ref(database, "vaultReports");
+
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const assetPerformanceData = latestReport.assetPerformance;
+
+          const formattedCoinsData = Object.keys(assetPerformanceData).map(
+            (key) => {
+              const coin = assetPerformanceData[key];
+              return {
+                image: coinImages[key],
+                name: key,
+                symbol: coin.symbol,
+                open: `+${coin.open}`,
+                close: `+${coin.close}%`,
+                change: `+${coin.changePercent}`,
+                volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
+                volumeTrend:
+                  coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
+              };
+            }
+          );
+          setCoins(formattedCoinsData);
+        }
+      }
+    });
+
+    return () => {
+      onValue(vaultReportsRef, () => {}); // Detach listener
+    };
+  }, []);
 
   const columns: ColumnDef<TCoinData>[] = [
     {
@@ -88,7 +75,6 @@ export default function AssetPerformancePanel(): React.ReactNode {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
-            {/* <AvatarImage src={row?.original?.avatar} alt="avatar" /> */}
             <AvatarFallback className="text-white font-semibold">
               <img src={row.original.image} alt="" />
             </AvatarFallback>
@@ -148,22 +134,17 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
 
-      <div>
+      <div className="">
         <DataTable<TCoinData>
           data={coins}
           columns={columns}
-          isLoading={false}
+          isLoading={!coins.length}
           page={page}
           limit={limit}
-          total={35}
+          total={coins.length}
           onPageChange={setPage}
           onLimitChange={setLimit}
           isPagination={false}
-          // actions={() => (
-          //   <div>
-          //     <EllipsisVertical />
-          //   </div>
-          // )}
         />
       </div>
     </section>

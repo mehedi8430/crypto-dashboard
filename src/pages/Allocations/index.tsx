@@ -1,76 +1,82 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTitleStore } from "@/stores/titleStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import AllocationsChart from "./components/AllocationsChart";
 import type { TPerformanceRecord } from "@/types";
 import { DataTable } from "@/components/DataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AllocationMetricsPanel } from "./components/AllocationMetricsPanel";
+import { ref, onValue } from "firebase/database";
+import { database } from "@/Firebase/Firebase";
 
 export default function Allocations() {
   const { pathname } = useLocation();
   const { setTitle } = useTitleStore();
-
-  const financialData: TPerformanceRecord[] = [
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "+$3,088.08", percentChange: "+0.26", notes: "-" },
-    { date: "June 23, 2025", balance: "$1,337,420.30", dailyChange: "-$12,530.77", percentChange: "-0.26", notes: "-" }
-  ];
-
-  const statics = [
-    {
-      title: 'Starting Balance',
-      total: '$1,337,420.30',
-      progress: 0.10
-    },
-    {
-      title: 'Current Balance',
-      total: '$1,337,420.30',
-      progress: 0
-    },
-    {
-      title: 'Daily performance',
-      total: '$1,337,420.30',
-      progress: 0
-    },
-    {
-      title: 'Total Return',
-      total: '$1,337,420.30',
-      progress: 0.20
-    },
-  ];
-
-  useEffect(() => {
-    setTitle(
-      pathname.endsWith('/a') ? 'Allocations A' :
-        pathname.endsWith('/b') ? 'Allocations B' :
-          pathname.endsWith('/c') ? 'Allocations C' : ''
-    );
-    return () => setTitle('Dashboard');
-  }, [pathname, setTitle]);
+  const [financialData, setFinancialData] = useState<TPerformanceRecord[]>([]);
+  const [statics, setStatics] = useState<any[]>([]);
 
   const allocation =
     pathname.endsWith('/a') ? "a" :
       pathname.endsWith('/b') ? "b" :
         pathname.endsWith('/c') ? "c" :
           null;
+
+  useEffect(() => {
+    setTitle(
+      allocation ? `Allocations ${allocation.toUpperCase()}` : 'Allocations'
+    );
+    return () => setTitle('Dashboard');
+  }, [pathname, setTitle, allocation]);
+
+  useEffect(() => {
+    if (!allocation) return;
+
+    const vaultReportsRef = ref(database, 'vaultReports');
+
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const allocationData = latestReport.allocations[allocation.toUpperCase()];
+
+          if (allocationData) {
+            setFinancialData(allocationData.dailyPerformanceHistory.map((item: any) => ({
+              ...item,
+              balance: `$${item.balance.toLocaleString()}`,
+              dailyChange: `${item.dailyChange >= 0 ? '+' : '-'}$${Math.abs(item.dailyChange).toLocaleString()}`,
+              percentChange: `${item.percentChange >= 0 ? '+' : '-'}${Math.abs(item.percentChange)}%`,
+            })));
+
+            setStatics([
+              {
+                title: 'Starting Balance',
+                total: `$${allocationData.startingBalance.toLocaleString()}`,
+              },
+              {
+                title: 'Current Balance',
+                total: `$${allocationData.endingBalance.toLocaleString()}`,
+              },
+              {
+                title: 'Daily performance',
+                total: `${allocationData.dailyGain >= 0 ? '+' : '-'}$${Math.abs(allocationData.dailyGain).toLocaleString()}`,
+              },
+              {
+                title: 'Total Return',
+                total: `${allocationData.dailyGainPercent >= 0 ? '+' : ''}${allocationData.dailyGainPercent}%`,
+              },
+            ]);
+          }
+        }
+      }
+    });
+
+    return () => {
+      onValue(vaultReportsRef, () => {}); // Detach listener
+    };
+  }, [allocation]);
 
   const columns: ColumnDef<TPerformanceRecord>[] = [
     {
@@ -102,33 +108,23 @@ export default function Allocations() {
 
   return (
     <section className="space-y-4">
-      <div className="w-full ">
+      {/* Chart Section */}
+      <div className="w-full">
         <AllocationsChart
-          allocation={
-            pathname.endsWith('/a') ? "a" :
-              pathname.endsWith('/b') ? "b" :
-                pathname.endsWith('/c') ? "c" :
-                  null
-          }
+          allocation={allocation}
         />
       </div>
 
+      {/* Allocation Overview Section */}
       <div className="section-container">
         <div>
           <div className="flex items-start justify-between">
             <h2 className="font-bold">
-              Allocation
+              Allocation {allocation?.toUpperCase()}:
               {
-                pathname.endsWith('/a') ? " A" :
-                  pathname.endsWith('/b') ? " B" :
-                    pathname.endsWith('/c') ? " C" :
-                      null
-              }:
-              {
-                pathname.endsWith('/a') ? " Core Holdings" :
-                  pathname.endsWith('/b') ? " Growth Strategy" :
-                    pathname.endsWith('/c') ? " Alternative Assets" :
-                      null
+                allocation === 'a' ? " Core Holdings" :
+                  allocation === 'b' ? " Growth Strategy" :
+                    " Alternative Assets"
               }
             </h2>
 
@@ -153,21 +149,23 @@ export default function Allocations() {
             ))
           }
         </div>
-      <div className="">
-        {allocation && <AllocationMetricsPanel allocation={allocation} />}
+
+        {/* Allocation Metrics Panel */}
+        <div className="w-full overflow-hidden">
+          {allocation && <AllocationMetricsPanel allocation={allocation} />}
+        </div>
       </div>
 
-      </div>
-
+      {/* Daily Performance History Section */}
       <div className="section-container">
         <h2 className="font-bold">Daily Performance History</h2>
         <DataTable<TPerformanceRecord>
           data={financialData}
           columns={columns}
-          isLoading={false}
+          isLoading={!financialData.length}
           page={1}
           limit={20}
-          total={35}
+          total={financialData.length}
           onPageChange={() => { }}
           onLimitChange={() => { }}
         />

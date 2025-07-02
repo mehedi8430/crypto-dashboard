@@ -37,10 +37,10 @@ const colorStyles: { [key: string]: string } = {
 // A reusable card component for individual metrics
 const MetricCard: React.FC<{ title: string; value: string; colorKey: string }> = ({ title, value, colorKey }) => {
   return (
-    <div className="flex-1 space-y-1.5">
-      <p className="text-sm text-foreground">{title}</p>
-      <div className={cn("w-full p-2.5 rounded-lg outline outline-offset-[-1px]", colorStyles[colorKey])}>
-        <p className="text-base font-medium">{value}</p>
+    <div className="flex-1 space-y-1.5 min-w-0">
+      <p className="text-xs sm:text-sm text-foreground truncate">{title}</p>
+      <div className={cn("w-full p-2 sm:p-2.5 rounded-lg outline outline-offset-[-1px]", colorStyles[colorKey])}>
+        <p className="text-sm sm:text-base font-medium truncate">{value}</p>
       </div>
     </div>
   );
@@ -48,50 +48,72 @@ const MetricCard: React.FC<{ title: string; value: string; colorKey: string }> =
 
 // A reusable card component for date information
 const DateCard: React.FC<{ title: string; date: string }> = ({ title, date }) => (
-  <div className="flex-1 space-y-1.5">
-    <p className="text-sm text-foreground">{title}</p>
-    <div className="w-full p-2.5  bg-(--input) rounded-lg outline outline-offset-[-1px] outline-neutral-700">
-      <p className="text-base font-normal text-foreground">{date}</p>
+  <div className="flex-1 space-y-1.5 min-w-0">
+    <p className="text-xs sm:text-sm text-foreground truncate">{title}</p>
+    <div className="w-full p-2 sm:p-2.5 bg-(--input) rounded-lg outline outline-offset-[-1px] outline-neutral-700">
+      <p className="text-sm sm:text-base font-normal text-foreground truncate">{date}</p>
     </div>
   </div>
 );
-
 
 export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ allocation }) => {
   const data = panelData[allocation];
   if (!data) return null;
 
   return (
-    <div className="flex flex-col gap-5 text-foreground mt-4">
+    <div className="flex flex-col gap-4 sm:gap-5 text-foreground mt-4 w-full overflow-hidden">
       {/* Panel Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-lg font-semibold">Allocation Metrics Panel</h3>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>$129,170.88</span>
-            <div className="w-1 h-1 bg-zinc-400 rounded-full" />
-            <span>+0.39% today</span>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base sm:text-lg font-semibold truncate">Allocation Metrics Panel</h3>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+            <span className="truncate">$129,170.88</span>
+            <div className="w-1 h-1 bg-zinc-400 rounded-full flex-shrink-0" />
+            <span className="truncate">+0.39% today</span>
           </div>
         </div>
         {data.overrideBadge && (
-          <div className="px-2 py-1 bg-yellow-400/20 rounded-[5px]">
-            <p className="text-base font-medium text-yellow-400">{data.overrideBadge}</p>
+          <div className="px-2 py-1 bg-yellow-400/20 rounded-[5px] flex-shrink-0 self-start">
+            <p className="text-xs sm:text-base font-medium text-yellow-400 whitespace-nowrap">
+              {data.overrideBadge}
+            </p>
           </div>
         )}
       </div>
 
       {/* Panel Body */}
-      <div className="space-y-5">
-        <div className="flex flex-col md:flex-row gap-5">
-          <MetricCard title="Band Assignment" value={data.bandAssignment.text} colorKey={data.bandAssignment.colorKey} />
-          <MetricCard title="Routing Strategy" value={data.routingStrategy.text} colorKey={data.routingStrategy.colorKey} />
-          <MetricCard title="Override status" value={data.overrideStatus.text} colorKey={data.overrideStatus.colorKey} />
+      <div className="space-y-4 sm:space-y-5">
+        {/* Metrics Row */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
+          <MetricCard
+            title="Band Assignment"
+            value={data.bandAssignment.text}
+            colorKey={data.bandAssignment.colorKey}
+          />
+          <MetricCard
+            title="Routing Strategy"
+            value={data.routingStrategy.text}
+            colorKey={data.routingStrategy.colorKey}
+          />
+          <MetricCard
+            title="Override status"
+            value={data.overrideStatus.text}
+            colorKey={data.overrideStatus.colorKey}
+          />
         </div>
-        <div className="flex flex-col md:flex-row gap-5">
-          <DateCard title="$ Last payout Event" date="06/17/2025, 09:15 AM" />
-          <DateCard title="$ Next Unlock Epoch" date="07/20/2025, 04:00 PM" />
+
+        {/* Date Cards Row */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
+          <DateCard
+            title="$ Last payout Event"
+            date="06/17/2025, 09:15 AM"
+          />
+          <DateCard
+            title="$ Next Unlock Epoch"
+            date="07/20/2025, 04:00 PM"
+          />
         </div>
       </div>
     </div>
   );
-}
+};

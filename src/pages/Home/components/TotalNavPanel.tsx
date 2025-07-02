@@ -27,38 +27,38 @@ export default function TotalNavPanel() {
   };
 
   return (
-    <section className="section-container">
-      <div className="flex flex-col md:flex-row justify-between items-center">
-        <h3 className="text-foreground/80 text-xs">
-          Total NAV
-          <span className="text-foreground text-[16px] font-bold ml-1">
-            $35,00.00
-          </span>
-        </h3>
+<section className="section-container">
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <h3 className="text-foreground/80 text-xs">
+      Total NAV
+      <span className="text-foreground text-[16px] font-bold ml-1">
+        $35,00.00
+      </span>
+    </h3>
 
-        <div className="flex items-center gap-5">
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
-            <p className="text-foreground/70 text-[10px]">Total growth</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
-            <p className="text-foreground/70 text-[10px]">Total growth</p>
-          </div>
-
-          <SelectInput
-            options={monthOptions}
-            placeholder="Select a month"
-            label="Month"
-            value={selected}
-            onValueChange={handleMonthChange}
-          />
-        </div>
+    <div className="flex flex-wrap items-center gap-4 md:gap-5">
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-primary text-xs">+0.68%</p>
+        <p className="text-foreground/70 text-[10px]">Total growth</p>
       </div>
 
-      {/* Chart */}
-      <TotalNavChart selected={selected} />
-    </section>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-primary text-xs">+0.68%</p>
+        <p className="text-foreground/70 text-[10px]">Total growth</p>
+      </div>
+
+      <SelectInput
+        options={monthOptions}
+        placeholder="Select a month"
+        label="Month"
+        value={selected}
+        onValueChange={handleMonthChange}
+      />
+    </div>
+  </div>
+
+  {/* Chart */}
+  <TotalNavChart />
+</section>
   );
 }

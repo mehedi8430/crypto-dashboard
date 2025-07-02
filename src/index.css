@@ -52,7 +52,7 @@
   --radius: 0.625rem;
   --background: oklch(0.9695 0.0045 258.32);
   --foreground: oklch(0.257 0.0143 248.38);
-  --card: oklch(100% 0 0);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
@@ -85,13 +85,14 @@
   --piechart-a: #ffc107;
   --piechart-b: #007bff;
   --piechart-c: #28a745;
-  --chart-blue: #3b82f6; /* Added this line */
+  --chart-blue: #3b82f6;
+  /* Added this line */
 }
 
 .dark {
   --background: oklch(0.228 0.0204 254.89);
   --foreground: oklch(0.9406 0.0027 286.35);
-  --card: oklch(13.98% 0 0);
+  --card: oklch(0.2062 0.0167 252.53);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
@@ -124,7 +125,8 @@
   --piechart-a: #ffc107;
   --piechart-b: #007bff;
   --piechart-c: #28a745;
-  --chart-blue: #3b82f6; /* Added this line */
+  --chart-blue: #3b82f6;
+  /* Added this line */
 }
 
 @layer base {
@@ -147,4 +149,27 @@
   .test {
     color: #ffffff1a;
   }
+
+h1 {
+    @apply text-2xl md:text-3xl font-bold;
+  }
+
+  h2 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+
+  h3 {
+    @apply text-lg md:text-xl font-semibold;
+  }
+
+  p {
+    @apply text-sm md:text-base;
+  }
+
+  /* Responsive section padding */
+  .section-container {
+    @apply p-4 md:p-6;
+  }
+
+
 }

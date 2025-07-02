@@ -24,14 +24,14 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 max-lg:py-2">
         {/* Total NAV Panel Section */}
-        <div className="col-span-4 lg:col-span-2">
+        <div className="col-span-4 lg:col-span-3">
           <TotalNavPanel />
         </div>
 
         {/* Allocation Breakdown */}
-        <div className="col-span-4 lg:col-span-2">
+        <div className="col-span-4 lg:col-span-1">
           <AllocationBreakdown />
         </div>
 

@@ -1,378 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-
-// Sample data for different months
-const monthlyData = {
-  january: [
-    { date: "Mon 9AM", total_nav: 810, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 822, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 825, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 818, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 815, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 820, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 828, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 822, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 830, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 835, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 840, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 832, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 820, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 825, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 830, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 823, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 818, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 825, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 832, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 828, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 815, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 820, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 825, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 818, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 808, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 814, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 820, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 816, time: "18:00" },
-    { date: "Sun 6PM", total_nav: 816, time: "18:00" },
-  ],
-  february: [
-    { date: "Mon 9AM", total_nav: 840, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 845, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 850, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 843, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 845, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 850, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 858, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 852, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 850, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 855, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 862, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 857, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 843, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 848, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 855, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 850, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 847, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 852, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 860, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 855, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 842, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 847, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 853, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 848, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 855, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 860, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 868, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 863, time: "18:00" },
-    { date: "Sun 6PM", total_nav: 863, time: "18:00" },
-    { date: "Sun 6PM", total_nav: 863, time: "18:00" },
-  ],
-  march: [
-    { date: "Mon 9AM", total_nav: 775, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 780, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 785, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 778, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 780, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 785, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 792, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 787, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 785, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 790, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 798, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 793, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 783, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 788, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 795, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 790, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 787, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 792, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 800, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 795, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 782, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 787, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 793, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 788, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 790, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 795, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 802, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 798, time: "18:00" },
-    { date: "Sun 6PM", total_nav: 798, time: "18:00" },
-    { date: "Sun 6PM", total_nav: 798, time: "18:00" },
-  ],
-  april: [
-    { date: "Mon 9AM", total_nav: 905, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 910, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 918, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 912, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 910, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 915, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 925, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 920, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 915, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 920, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 928, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 923, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 913, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 918, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 925, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 920, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 917, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 922, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 930, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 925, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 912, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 917, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 923, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 918, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 920, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 925, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 933, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 928, time: "18:00" },
-  ],
-  may: [
-    { date: "Mon 9AM", total_nav: 870, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 875, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 882, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 877, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 875, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 880, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 888, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 883, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 880, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 885, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 893, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 888, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 878, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 883, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 890, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 885, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 882, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 887, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 895, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 890, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 877, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 882, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 888, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 883, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 885, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 890, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 898, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 893, time: "18:00" },
-  ],
-  june: [
-    { date: "Mon 9AM", total_nav: 945, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 950, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 958, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 952, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 950, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 955, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 963, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 958, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 955, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 960, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 968, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 963, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 953, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 958, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 965, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 960, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 957, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 962, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 970, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 965, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 952, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 957, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 963, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 958, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 960, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 965, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 973, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 968, time: "18:00" },
-  ],
-  july: [
-    { date: "Mon 9AM", total_nav: 795, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 800, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 808, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 802, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 800, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 805, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 813, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 808, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 805, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 810, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 818, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 813, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 803, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 808, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 815, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 810, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 807, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 812, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 820, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 815, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 802, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 807, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 813, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 808, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 810, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 815, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 823, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 818, time: "18:00" },
-  ],
-  august: [
-    { date: "Mon 9AM", total_nav: 885, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 890, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 898, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 892, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 890, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 895, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 903, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 898, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 895, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 900, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 908, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 903, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 893, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 898, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 905, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 900, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 897, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 902, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 910, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 905, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 892, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 897, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 903, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 898, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 900, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 905, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 913, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 908, time: "18:00" },
-  ],
-  september: [
-    { date: "Mon 9AM", total_nav: 755, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 760, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 768, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 762, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 760, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 765, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 773, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 768, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 765, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 770, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 778, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 773, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 763, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 768, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 775, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 770, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 767, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 772, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 780, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 775, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 762, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 767, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 773, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 768, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 770, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 775, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 783, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 778, time: "18:00" },
-  ],
-  october: [
-    { date: "Mon 9AM", total_nav: 935, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 940, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 948, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 942, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 940, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 945, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 953, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 948, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 945, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 950, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 958, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 953, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 943, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 948, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 955, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 950, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 947, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 952, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 960, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 955, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 942, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 947, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 953, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 948, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 950, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 955, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 963, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 958, time: "18:00" },
-  ],
-  november: [
-    { date: "Mon 9AM", total_nav: 815, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 820, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 828, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 822, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 820, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 825, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 833, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 828, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 825, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 830, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 838, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 833, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 823, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 828, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 835, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 830, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 827, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 832, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 840, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 835, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 822, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 827, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 833, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 828, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 830, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 835, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 843, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 838, time: "18:00" },
-  ],
-  december: [
-    { date: "Mon 9AM", total_nav: 875, time: "09:00" },
-    { date: "Mon 12PM", total_nav: 880, time: "12:00" },
-    { date: "Mon 3PM", total_nav: 888, time: "15:00" },
-    { date: "Mon 6PM", total_nav: 882, time: "18:00" },
-    { date: "Tue 9AM", total_nav: 880, time: "09:00" },
-    { date: "Tue 12PM", total_nav: 885, time: "12:00" },
-    { date: "Tue 3PM", total_nav: 893, time: "15:00" },
-    { date: "Tue 6PM", total_nav: 888, time: "18:00" },
-    { date: "Wed 9AM", total_nav: 885, time: "09:00" },
-    { date: "Wed 12PM", total_nav: 890, time: "12:00" },
-    { date: "Wed 3PM", total_nav: 898, time: "15:00" },
-    { date: "Wed 6PM", total_nav: 893, time: "18:00" },
-    { date: "Thu 9AM", total_nav: 883, time: "09:00" },
-    { date: "Thu 12PM", total_nav: 888, time: "12:00" },
-    { date: "Thu 3PM", total_nav: 895, time: "15:00" },
-    { date: "Thu 6PM", total_nav: 890, time: "18:00" },
-    { date: "Fri 9AM", total_nav: 887, time: "09:00" },
-    { date: "Fri 12PM", total_nav: 892, time: "12:00" },
-    { date: "Fri 3PM", total_nav: 900, time: "15:00" },
-    { date: "Fri 6PM", total_nav: 895, time: "18:00" },
-    { date: "Sat 9AM", total_nav: 882, time: "09:00" },
-    { date: "Sat 12PM", total_nav: 887, time: "12:00" },
-    { date: "Sat 3PM", total_nav: 893, time: "15:00" },
-    { date: "Sat 6PM", total_nav: 888, time: "18:00" },
-    { date: "Sun 9AM", total_nav: 890, time: "09:00" },
-    { date: "Sun 12PM", total_nav: 895, time: "12:00" },
-    { date: "Sun 3PM", total_nav: 903, time: "15:00" },
-    { date: "Sun 6PM", total_nav: 898, time: "18:00" },
-  ],
-};
+import { useEffect, useState } from 'react';
+import { ref, onValue } from 'firebase/database';
+import { database } from '@/Firebase/Firebase'; // Your Firebase config
 
 const chartConfig = {
   total_nav: {
@@ -381,33 +16,51 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function TotalNavChart({ selected }: { selected: string }) {
-  const chartData =
-    monthlyData[selected as keyof typeof monthlyData] || monthlyData.january;
-  const values = chartData.map((d) => d.total_nav);
-  const dataMin = Math.min(...values);
-  const dataMax = Math.max(...values);
+export default function TotalNavChart() {
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [minValue, setMinValue] = useState(0);
+  const [maxValue, setMaxValue] = useState(1000);
+  const [dynamicTicks, setDynamicTicks] = useState<number[]>([]);
 
-  // Extract unique weekdays (Mon, Tue, Wed, etc.)
-  const uniqueWeekdays = Array.from(
-    new Map(
-      chartData.map((item) => {
-        const day = item.date.split(" ")[0];
-        return [day, item];
-      })
-    ).values()
-  ).slice(0, 7);
+  useEffect(() => {
+    const vaultReportsRef = ref(database, 'vaultReports');
 
-  const padding = (dataMax - dataMin) * 0.1; // 10% padding
-  const minValue = Math.floor(dataMin - padding);
-  const maxValue = Math.ceil(dataMax + padding);
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const navChartData = latestReport.nav.chartData.map((d: any) => ({...d, total_nav: d.nav}));
+          setChartData(navChartData);
 
-  // Generate dynamic ticks
-  const tickCount = 5;
-  const tickStep = (maxValue - minValue) / (tickCount - 1);
-  const dynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-    Math.round(minValue + tickStep * i)
-  );
+          const values = navChartData.map((d: any) => d.total_nav);
+          const dataMin = Math.min(...values);
+          const dataMax = Math.max(...values);
+
+          const padding = (dataMax - dataMin) * 0.1;
+          const newMinValue = Math.floor(dataMin - padding);
+          const newMaxValue = Math.ceil(dataMax + padding);
+          setMinValue(newMinValue);
+          setMaxValue(newMaxValue);
+
+          const tickCount = 5;
+          const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
+          const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
+            Math.round(newMinValue + tickStep * i)
+          );
+          setDynamicTicks(newDynamicTicks);
+        }
+      }
+    }, (error) => {
+      console.error('Error fetching vaultReports:', error);
+    });
+
+    return () => {
+      onValue(vaultReportsRef, () => {}); // Detach listener
+    };
+  }, []);
+
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipCursor = (props: any) => {
@@ -417,13 +70,11 @@ export default function TotalNavChart({ selected }: { selected: string }) {
       const { x } = points[0];
       const value = payload[0]?.value;
 
-      // Calculate the y position based on the actual chart scaling
       const normalizedValue = (value - minValue) / (maxValue - minValue);
       const yPosition = height - normalizedValue * height;
 
       return (
         <g>
-          {/* Vertical cursor line */}
           <line
             x1={x}
             y1={yPosition}
@@ -434,8 +85,6 @@ export default function TotalNavChart({ selected }: { selected: string }) {
             strokeDasharray="5 3"
             opacity={0.7}
           />
-
-          {/* Active point circle with glow effect */}
           <circle
             cx={x}
             cy={yPosition}
@@ -446,8 +95,6 @@ export default function TotalNavChart({ selected }: { selected: string }) {
             opacity={1}
             filter="drop-shadow(0 0 6px var(--color-chart-1))"
           />
-
-          {/* Inner circle for contrast */}
           <circle cx={x} cy={yPosition} r={4} fill="white" opacity={1} />
         </g>
       );
@@ -469,8 +116,9 @@ export default function TotalNavChart({ selected }: { selected: string }) {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-2 h-2 rounded-full bg-foreground" />
             <span className="text-[10px] text-foreground/70">
-              {label.split(" ")[0]} {payload[0].payload.time},{" "}
-              {new Date().getFullYear()}
+              {new Date(label).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}{" "}
+              {payload[0].payload.time.split('.')[0]},{" "}
+              {new Date(label).getFullYear()}
             </span>
           </div>
         </div>
@@ -512,13 +160,16 @@ export default function TotalNavChart({ selected }: { selected: string }) {
         <XAxis
           dataKey="date"
           tickLine={false}
-          interval={0}
+          interval="preserveStartEnd"
           tickMargin={8}
           height={40}
-          ticks={uniqueWeekdays.map((item) => item.date)}
           tickFormatter={(value) => {
-            const parts = value.split(" ");
-            return parts[0];
+            const date = new Date(value);
+            return date.toLocaleDateString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: '2-digit'
+            });
           }}
           axisLine={false}
         />

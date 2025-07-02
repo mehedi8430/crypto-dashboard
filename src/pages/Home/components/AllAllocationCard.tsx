@@ -1,82 +1,67 @@
 import { Link } from "react-router";
 import Allocation from "./Allocation";
+import { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { database } from "@/Firebase/Firebase";
 
-const allocationData = [
-  {
-    label: "A",
-    startingBalance: 236903.03,
-    endingBalance: 237827.95,
-    gainPercent: 0.39,
-    chartData: [
-      { day: "Mon", value: 234000 },
-      { day: "Tue", value: 335500 },
-      { day: "Wed", value: 636200 },
-      { day: "Thu", value: 338800 },
-      { day: "Fri", value: 237000 },
-      { day: "Sat", value: 637400 },
-      { day: "Sun", value: 297827.95 },
-    ],
-    chartConfig: {
-      desktop: {
-        label: "value",
-        color: "#0867ED",
-      },
-    },
-  },
-  {
-    label: "B",
-    startingBalance: 126000,
-    endingBalance: 130000,
-    gainPercent: -3.17,
-    chartData: [
-      { day: "Mon", value: 610000 },
-      { day: "Tue", value: 125000 },
-      { day: "Wed", value: 328000 },
-      { day: "Thu", value: 529000 },
-      { day: "Fri", value: 130000 },
-      { day: "Sat", value: 430000 },
-      { day: "Sun", value: 230000 },
-    ],
-    chartConfig: {
-      desktop: {
-        label: "value",
-        color: "#12BE73",
-      },
-    },
-  },
-  {
-    label: "C",
-    startingBalance: 500000,
-    endingBalance: 470000,
-    gainPercent: 6.0,
-    chartData: [
-      { day: "Mon", value: 510000 },
-      { day: "Tue", value: 500000 },
-      { day: "Wed", value: 180000 },
-      { day: "Thu", value: 470000 },
-      { day: "Fri", value: 470000 },
-      { day: "Sat", value: 170000 },
-      { day: "Sun", value: 370000 },
-    ],
-    chartConfig: {
-      desktop: {
-        label: "value",
-        color: "#F2C916",
-      },
-    },
-  },
-];
+const allocationColors: { [key: string]: string } = {
+  A: "#0867ED",
+  B: "#12BE73",
+  C: "#F2C916",
+};
 
 export default function AllAllocationCard() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [allocationData, setAllocationData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const vaultReportsRef = ref(database, 'vaultReports');
+
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const allocations = latestReport.allocations;
+
+          const formattedAllocationData = Object.keys(allocations).map((key) => {
+            const allocation = allocations[key];
+            return {
+              label: key,
+              startingBalance: allocation.startingBalance,
+              endingBalance: allocation.endingBalance,
+              gainPercent: allocation.dailyGainPercent,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              chartData: allocation.chartData.map((d: any) => ({...d, day: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }), value: d.balance})),
+              chartConfig: {
+                desktop: {
+                  label: "value",
+                  color: allocationColors[key],
+                },
+              },
+            };
+          });
+          setAllocationData(formattedAllocationData);
+        }
+      }
+    });
+
+    return () => {
+      onValue(vaultReportsRef, () => {}); // Detach listener
+    };
+  }, []);
+
   return (
     <>
       {allocationData.map((item) => (
         <Link
           to={`/dashboard/allocations/${item.label.toLowerCase()}`}
           className="col-span-4 lg:col-span-1"
+          key={item.label}
         >
           <Allocation
-            key={item.label}
             label={item.label}
             startingBalance={item.startingBalance}
             endingBalance={item.endingBalance}
