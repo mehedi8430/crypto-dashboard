@@ -4,7 +4,7 @@ import { useForm, useFieldArray, Controller, FormProvider } from 'react-hook-for
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { database } from '@/Firebase/Firebase';
-import { ref, push, set } from 'firebase/database';
+import { ref, push, set, query, orderByChild, limitToLast, onValue } from 'firebase/database';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
@@ -104,148 +104,46 @@ const formSchema = z.object({
   dailyReportText: z.string().optional(),
 });
 
-const mockData = [
-  {
-    "generatedDate": "2025-07-02",
-    "generatedTime": "03:06:00Z",
-    "data": [
-      {
-        "nav": {
-          "startingNav": 3156789,
-          "endingNav": 3500000,
-          "growthPercent": 0.17,
-          "chartData": [
-            { "date": "2025-06-16", "time": "09:00:00.000Z", "nav": 3150000 },
-            { "date": "2025-06-17", "time": "09:00:00.000Z", "nav": 3200000 },
-            { "date": "2025-06-18", "time": "09:00:00.000Z", "nav": 3180000 },
-            { "date": "2025-06-19", "time": "09:00:00.000Z", "nav": 3250000 },
-            { "date": "2025-06-20", "time": "09:00:00.000Z", "nav": 3300000 },
-            { "date": "2025-06-21", "time": "09:00:00.000Z", "nav": 3400000 },
-            { "date": "2025-06-22", "time": "09:00:00.000Z", "nav": 3500000 }
-          ]
-        },
-        "allocationBreakdown": {
-          "A_percent": 41.5,
-          "B_percent": 35.1,
-          "C_percent": 26.5,
-          "auditPac_percent": 90
-        },
-        "allocations": {
-          "A": {
-            "name": "Allocation A: Core Holdings",
-            "startingBalance": 1337420.30,
-            "dailyGain": 3088.08,
-            "dailyGainPercent": 0.23,
-            "endingBalance": 1337420.30,
-            "notes": "Band Assignment: Expansion, Routing Strategy: Dynamic, Override Status: Inactive. Last Payout: 06/17/2025, 09:15 AM. Next Unlock: 07/20/2025, 04:00 PM.",
-            "chartData": [
-              { "date": "2025-06-01", "time": "12:00:00.000Z", "balance": 1330000 },
-              { "date": "2025-06-02", "time": "12:00:00.000Z", "balance": 1332000 },
-              { "date": "2025-06-03", "time": "12:00:00.000Z", "balance": 1335000 },
-              { "date": "2025-06-04", "time": "12:00:00.000Z", "balance": 1336000 },
-              { "date": "2025-06-05", "time": "12:00:00.000Z", "balance": 1337420.30 }
-            ],
-            "dailyPerformanceHistory": [
-              { "date": "2025-06-23", "balance": 1337420.30, "dailyChange": 3088.08, "percentChange": 0.26, "notes": "-" },
-              { "date": "2025-06-22", "balance": 1334332.22, "dailyChange": -12530.77, "percentChange": -0.26, "notes": "-" },
-              { "date": "2025-06-21", "balance": 1346862.99, "dailyChange": 3088.08, "percentChange": 0.26, "notes": "-" }
-            ]
-          },
-          "B": {
-            "name": "Allocation B: Growth Strategy",
-            "startingBalance": 1337420.30,
-            "dailyGain": 3088.08,
-            "dailyGainPercent": 0.23,
-            "endingBalance": 1337420.30,
-            "notes": "Band Assignment: Expansion, Routing Strategy: Dynamic, Override Status: Inactive. Last Payout: 06/17/2025, 09:15 AM. Next Unlock: 07/20/2025, 04:00 PM.",
-            "chartData": [
-              { "date": "2025-06-01", "time": "12:00:00.000Z", "balance": 1300000 },
-              { "date": "2025-06-02", "time": "12:00:00.000Z", "balance": 1310000 },
-              { "date": "2025-06-03", "time": "12:00:00.000Z", "balance": 1315000 },
-              { "date": "2025-06-04", "time": "12:00:00.000Z", "balance": 1345000 },
-              { "date": "2025-06-05", "time": "12:00:00.000Z", "balance": 1337420.30 }
-            ],
-            "dailyPerformanceHistory": [
-              { "date": "2025-06-23", "balance": 1337420.30, "dailyChange": 3088.08, "percentChange": 0.26, "notes": "-" },
-              { "date": "2025-06-22", "balance": 1334332.22, "dailyChange": -12530.77, "percentChange": -0.26, "notes": "-" }
-            ]
-          },
-          "C": {
-            "name": "Allocation C: Alternative Assets",
-            "startingBalance": 1337420.30,
-            "dailyGain": 3088.08,
-            "dailyGainPercent": 0.23,
-            "endingBalance": 1337420.30,
-            "notes": "Band Assignment: Override, Routing Strategy: Override Driven, Override Status: Active +1.25%. Last Payout: 06/17/2025, 09:15 AM. Next Unlock: 07/20/2025, 04:00 PM.",
-            "chartData": [
-              { "date": "2025-06-01", "time": "12:00:00.000Z", "balance": 1340000 },
-              { "date": "2025-06-02", "time": "12:00:00.000Z", "balance": 1320000 },
-              { "date": "2025-06-03", "time": "12:00:00.000Z", "balance": 1350000 },
-              { "date": "2025-06-04", "time": "12:00:00.000Z", "balance": 1330000 },
-              { "date": "2025-06-05", "time": "12:00:00.000Z", "balance": 1337420.30 }
-            ],
-            "dailyPerformanceHistory": [
-              { "date": "2025-06-23", "balance": 1337420.30, "dailyChange": 3088.08, "percentChange": 0.26, "notes": "-" }
-            ]
-          }
-        },
-        "assetPerformance": {
-          "ETH": { "symbol": "ETH", "open": 4.68, "close": 4.72, "changePercent": 0.68, "volumeUsd": 1200000 },
-          "BTC": { "symbol": "BTC", "open": 4.68, "close": 4.70, "changePercent": 0.68, "volumeUsd": 2500000 },
-          "TUSD": { "symbol": "TUSD", "open": 4.68, "close": 4.68, "changePercent": 0.00, "volumeUsd": 500000 },
-          "USDT": { "symbol": "USDT", "open": 4.68, "close": 4.68, "changePercent": 0.00, "volumeUsd": 800000 },
-          "DAI": { "symbol": "DAI", "open": 4.68, "close": 4.68, "changePercent": 0.00, "volumeUsd": 300000 },
-          "SUSD": { "symbol": "SUSD", "open": 4.68, "close": 4.69, "changePercent": 0.10, "volumeUsd": 2341047 }
-        },
-        "systemStatus": {
-          "tradingEngine": true,
-          "dataFeeds": true,
-          "riskManagement": true,
-          "compliance": true,
-          "lastSyncSuccess": true
-        },
-        "visualFlags": {
-          "tradingEngine": "Operational",
-          "dataFeeds": "Operational",
-          "riskManagement": "Operational",
-          "compliance": "Operational",
-          "systemSync": "OK"
-        },
-        "teamNotes": {
-          "devStatus": "In Development",
-          "developer": "John Doe",
-          "expectedPreview": "2025-07-15",
-          "dataEntryMode": "Manual"
-        },
-        "id": "68632c57479e7465a80f8524",
-        "reportDate": "2025-06-23",
-        "lastUpdatedDate": "2025-06-23",
-        "lastUpdatedTime": "09:34:18.000Z",
-        "dailyReportText": "June 16 delivered a lean +0.33% vault-gain as... See Details. Comprehensive daily performance analysis and market commentary."
-      }
-    ]
-  }
-]
 
 // --- Main React Component ---
 export default function DataForms() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  // const [submitError, setSubmitError] = useState<string | null>(null);
-  // const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  useEffect(() => {
-    document.title = 'Create New Vault Report';
-    return () => { document.title = 'Dashboard'; };
-  }, []);
+  const [initialData, setInitialData] = useState<z.infer<typeof formSchema> | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      ...mockData[0].data[0],
-      reportDate: new Date(mockData[0].data[0].reportDate).toISOString().split('T')[0],
-    }
+    defaultValues: initialData || undefined
   });
+
+  useEffect(() => {
+    document.title = 'Create New Vault Report';
+    const reportsRef = ref(database, 'vaultReports');
+    const lastReportQuery = query(reportsRef, orderByChild('generatedDate'), limitToLast(1));
+
+    const unsubscribe = onValue(lastReportQuery, (snapshot) => {
+      if (snapshot.exists()) {
+        const reports = snapshot.val();
+        const lastReportKey = Object.keys(reports)[0];
+        const lastReport = reports[lastReportKey];
+        // Prepare data for the form
+        const formData = {
+            ...lastReport,
+            reportDate: new Date(lastReport.reportDate).toISOString().split('T')[0],
+        };
+        setInitialData(formData);
+        form.reset(formData); // Reset form with the latest data
+      }
+    }, (error) => {
+      console.error("Error fetching last report:", error);
+      toast.error("Failed to fetch latest report data.");
+    });
+
+    return () => {
+      unsubscribe();
+      document.title = 'Dashboard';
+    };
+  }, [form]); // form dependency to reset the form when data is fetched
 
   const { fields: navChartFields, append: appendNavChart, remove: removeNavChart } = useFieldArray({ control: form.control, name: "nav.chartData" });
   const { fields: allocAChartFields, append: appendAllocAChart, remove: removeAllocAChart } = useFieldArray({ control: form.control, name: "allocations.A.chartData" });
@@ -258,9 +156,6 @@ export default function DataForms() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    // setSubmitError(null);
-    // setSubmitSuccess(false);
-
     try {
       const reportsRef = ref(database, 'vaultReports');
       const newReportRef = push(reportsRef);
@@ -277,13 +172,12 @@ export default function DataForms() {
 
       await set(newReportRef, submissionData);
 
-      // setSubmitSuccess(true);
       toast.success('Report submitted successfully!')
       form.reset();
+      navigate('/dashboard');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
       console.error("Firebase submission error:", errorMessage);
-      // setSubmitError(`Failed to submit form: ${errorMessage}`);
       toast.error(errorMessage)
     } finally {
       setIsSubmitting(false);
@@ -319,14 +213,18 @@ export default function DataForms() {
     </div>
   );
 
+  if (!initialData) {
+      return (
+          <div className="flex justify-center items-center h-screen">
+              <div>Loading...</div>
+          </div>
+      )
+  }
 
   return (
     <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Create New Vault Report</h1>
-
-        {/* {submitSuccess && <div className="mb-4 p-3 bg-green-900 border border-green-700 text-green-300 rounded-lg">Report submitted successfully!</div>}
-        {submitError && <div className="mb-4 p-3 bg-red-900 border border-red-700 text-red-300 rounded-lg">{submitError}</div>} */}
 
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -466,7 +364,6 @@ export default function DataForms() {
               type="submit"
               disabled={isSubmitting}
               className="w-full text-lg"
-              onClick={() => navigate('/dashboard')}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Vault Report'}
             </Button>
@@ -476,6 +373,3 @@ export default function DataForms() {
     </div>
   );
 }
-
-
-
