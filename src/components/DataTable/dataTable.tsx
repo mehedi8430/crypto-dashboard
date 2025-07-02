@@ -102,93 +102,98 @@ function DataTableInner<TData, TValue>(
   return (
     <div className="flex flex-col w-full space-y-4">
       {/* Table Container with Horizontal Scroll */}
-      <div className="w-full">
-        <ScrollArea className="w-full">
-          <div className="min-w-full overflow-x-scroll">
-            <Table className="min-w-[600px] sm:min-w-[700px] border-separate border-spacing-y-1 sm:border-spacing-y-2">
-              <TableHeader className="[&_tr]:border-b-0">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                    {headerGroup.headers.map((header, i) => (
-                      <TableHead
-                        key={i}
-                        className={`
+      <Table className="border-separate border-spacing-y-1 sm:border-spacing-y-2">
+        <TableHeader className="[&_tr]:border-b-0">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className="hover:bg-transparent">
+              {headerGroup.headers.map((header, i) => (
+                <TableHead
+                  key={i}
+                  className={`
                           text-muted-foreground text-xs sm:text-sm
                           min-w-[80px] sm:min-w-[120px]
                           px-2 sm:px-4 py-2 sm:py-3
-                          ${!actions && headerGroup.headers.length - 1 === i ? "text-center" : ""}
+                          ${
+                            !actions && headerGroup.headers.length - 1 === i
+                              ? "text-center"
+                              : ""
+                          }
                         `}
-                        style={{ width: header.column.getSize() }}
-                      >
-                        <div className="truncate">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </div>
-                      </TableHead>
-                    ))}
-                    {actions && (
-                      <TableHead className="text-muted-foreground text-center text-xs sm:text-sm min-w-[80px] sm:min-w-[120px] px-2 sm:px-4 py-2 sm:py-3">
-                        <div className="truncate">Actions</div>
-                      </TableHead>
-                    )}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  renderSkeleton()
-                ) : table.getRowModel().rows.length > 0 ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className="border-0 bg-muted/50 hover:bg-muted my-1 sm:my-2 rounded-md"
-                    >
-                      {row.getVisibleCells().map((cell, i) => (
-                        <TableCell
-                          key={i}
-                          style={{ width: cell.column.getSize() }}
-                          className={`
+                  style={{ width: header.column.getSize() }}
+                >
+                  <div className="truncate">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </div>
+                </TableHead>
+              ))}
+              {actions && (
+                <TableHead className="text-muted-foreground text-center text-xs sm:text-sm min-w-[80px] sm:min-w-[120px] px-2 sm:px-4 py-2 sm:py-3">
+                  <div className="truncate">Actions</div>
+                </TableHead>
+              )}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
+            renderSkeleton()
+          ) : table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className="border-0 bg-muted/50 hover:bg-muted my-1 sm:my-2 rounded-md"
+              >
+                {row.getVisibleCells().map((cell, i) => (
+                  <TableCell
+                    key={i}
+                    style={{ width: cell.column.getSize() }}
+                    className={`
                             min-w-[80px] sm:min-w-[120px]
                             px-2 sm:px-4 py-2 sm:py-3
                             text-xs sm:text-sm
                             ${i === 0 ? "rounded-l-lg sm:rounded-l-2xl" : ""}
-                            ${row.getVisibleCells().length - 1 === i && !actions
-                              ? "rounded-r-lg sm:rounded-r-2xl"
-                              : ""
+                            ${
+                              row.getVisibleCells().length - 1 === i && !actions
+                                ? "rounded-r-lg sm:rounded-r-2xl"
+                                : ""
                             }
                           `}
-                        >
-                          <div className="truncate">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </div>
-                        </TableCell>
-                      ))}
-                      {actions && (
-                        <TableCell className="rounded-r-lg sm:rounded-r-2xl min-w-[80px] sm:min-w-[120px] px-2 sm:px-4 py-2 sm:py-3">
-                          <div className="flex justify-center">
-                            {actions(row.original)}
-                          </div>
-                        </TableCell>
+                  >
+                    <div className="truncate">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length + (actions ? 1 : 0)}
-                      className="h-16 sm:h-24 text-center text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 py-4 sm:py-6"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </TableCell>
+                ))}
+                {actions && (
+                  <TableCell className="rounded-r-lg sm:rounded-r-2xl min-w-[80px] sm:min-w-[120px] px-2 sm:px-4 py-2 sm:py-3">
+                    <div className="flex justify-center">
+                      {actions(row.original)}
+                    </div>
+                  </TableCell>
                 )}
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
-      </div>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length + (actions ? 1 : 0)}
+                className="h-16 sm:h-24 text-center text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 py-4 sm:py-6"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
       {/* Pagination Section */}
       {isPagination && (
@@ -197,9 +202,7 @@ function DataTableInner<TData, TValue>(
             <span className="block sm:inline">
               Showing {limit <= total ? limit : total} Results
             </span>
-            <span className="block sm:inline sm:ml-1">
-              from {total} Total
-            </span>
+            <span className="block sm:inline sm:ml-1">from {total} Total</span>
           </div>
           <div className="order-1 sm:order-2">
             <AppPagination
