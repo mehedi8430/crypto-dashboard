@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 
 
@@ -44,6 +43,8 @@ const allocationSchema = z.object({
   notes: z.string().optional(),
   chartData: z.array(balanceChartDataSchema),
   dailyPerformanceHistory: z.array(dailyPerformanceHistorySchema),
+  lastPayout: z.string().optional(),
+  nextUnlock: z.string().optional(),
 });
 
 const assetPerformanceSchema = z.object({
@@ -284,20 +285,6 @@ export default function DataForms() {
                     <Controller control={form.control} name="allocationBreakdown.auditPac_percent" render={({ field }) => <FormItem><FormLabel>Audit PAC %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.auditPac_percent?.message}</FormMessage></FormItem>} />
                   </div>
                 </div>
-
-                <div className="bg-card p-4 rounded-lg space-y-4">
-                  <h3 className="font-bold text-lg">System Status</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {(Object.keys(form.getValues().systemStatus) as Array<keyof z.infer<typeof formSchema>["systemStatus"]>).map((key) => (
-                      <Controller key={key} control={form.control} name={`systemStatus.${key}`} render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3 shadow-sm bg-accent/50">
-                          <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-                          <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} onBlur={field.onBlur} name={field.name} disabled={field.disabled} /></FormControl>
-                        </FormItem>
-                      )} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -313,6 +300,8 @@ export default function DataForms() {
                       <Controller control={form.control} name={`allocations.${key}.endingBalance`} render={({ field }) => <FormItem><FormLabel>End Balance</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.endingBalance?.message}</FormMessage></FormItem>} />
                       <Controller control={form.control} name={`allocations.${key}.dailyGain`} render={({ field }) => <FormItem><FormLabel>Daily Gain</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.dailyGain?.message}</FormMessage></FormItem>} />
                       <Controller control={form.control} name={`allocations.${key}.dailyGainPercent`} render={({ field }) => <FormItem><FormLabel>Daily Gain %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.dailyGainPercent?.message}</FormMessage></FormItem>} />
+                      <Controller control={form.control} name={`allocations.${key}.lastPayout`} render={({ field }) => <FormItem><FormLabel>Last Payout</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl></FormItem>} />
+                      <Controller control={form.control} name={`allocations.${key}.nextUnlock`} render={({ field }) => <FormItem><FormLabel>Next Unlock</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl></FormItem>} />
                     </div>
                     <h5 className="font-semibold pt-4 border-t border-border">Chart Data</h5>
                     {key === 'A' && renderChartDataFields(allocAChartFields, removeAllocAChart, appendAllocAChart, "allocations.A.chartData", "balance")}
@@ -325,27 +314,6 @@ export default function DataForms() {
                     {key === 'C' && renderDailyPerformanceFields(allocCDailyFields, removeAllocCDaily, appendAllocCDaily, "allocations.C.dailyPerformanceHistory")}
                   </div>
                 ))}
-              </div>
-            </div>
-
-            <div className="bg-card p-4 rounded-lg space-y-4">
-              <h3 className="font-bold text-lg">Visual Flags</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Controller control={form.control} name="visualFlags.tradingEngine" render={({ field }) => <FormItem><FormLabel>Trading Engine</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.visualFlags?.tradingEngine?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="visualFlags.dataFeeds" render={({ field }) => <FormItem><FormLabel>Data Feeds</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.visualFlags?.dataFeeds?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="visualFlags.riskManagement" render={({ field }) => <FormItem><FormLabel>Risk Management</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.visualFlags?.riskManagement?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="visualFlags.compliance" render={({ field }) => <FormItem><FormLabel>Compliance</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.visualFlags?.compliance?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="visualFlags.systemSync" render={({ field }) => <FormItem><FormLabel>System Sync</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.visualFlags?.systemSync?.message}</FormMessage></FormItem>} />
-              </div>
-            </div>
-
-            <div className="bg-card p-4 rounded-lg space-y-4">
-              <h3 className="font-bold text-lg">Team Notes</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Controller control={form.control} name="teamNotes.devStatus" render={({ field }) => <FormItem><FormLabel>Dev Status</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.teamNotes?.devStatus?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="teamNotes.developer" render={({ field }) => <FormItem><FormLabel>Developer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.teamNotes?.developer?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="teamNotes.expectedPreview" render={({ field }) => <FormItem><FormLabel>Expected Preview</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage>{form.formState.errors.teamNotes?.expectedPreview?.message}</FormMessage></FormItem>} />
-                <Controller control={form.control} name="teamNotes.dataEntryMode" render={({ field }) => <FormItem><FormLabel>Data Entry Mode</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage>{form.formState.errors.teamNotes?.dataEntryMode?.message}</FormMessage></FormItem>} />
               </div>
             </div>
 
