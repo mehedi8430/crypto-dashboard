@@ -9,20 +9,20 @@ import { ref, onValue } from "firebase/database";
 import { database } from "@/Firebase/Firebase";
 
 // coins images
-import ETH from "@/assets/icons/coins/Ethereum ETH.png"
-import BTC from "@/assets/icons/coins/Group (1).png"
-import T from "@/assets/icons/coins/Group (2).png"
-import D from "@/assets/icons/coins/Group (3).png"
-import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png"
-import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png"
+import ETH from "@/assets/icons/coins/Ethereum ETH.png";
+import BTC from "@/assets/icons/coins/Group (1).png";
+import T from "@/assets/icons/coins/Group (2).png";
+import D from "@/assets/icons/coins/Group (3).png";
+import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png";
+import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png";
 
 const coinImages: { [key: string]: string } = {
-    ETH,
-    BTC,
-    TUSD: TrueUSD,
-    USDT: T,
-    DAI: D,
-    SUSD: Synthetix,
+  ETH,
+  BTC,
+  TUSD: TrueUSD,
+  USDT: T,
+  DAI: D,
+  SUSD: Synthetix,
 };
 
 export default function AssetPerformancePanel(): React.ReactNode {
@@ -31,7 +31,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
   const [coins, setCoins] = useState<TCoinData[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const vaultReportsRef = ref(database, "vaultReports");
 
     onValue(vaultReportsRef, (snapshot) => {
       const data = snapshot.val();
@@ -41,19 +41,22 @@ export default function AssetPerformancePanel(): React.ReactNode {
           const latestReport = reports[reports.length - 1];
           const assetPerformanceData = latestReport.assetPerformance;
 
-          const formattedCoinsData = Object.keys(assetPerformanceData).map((key) => {
-            const coin = assetPerformanceData[key];
-            return {
-              image: coinImages[key],
-              name: key,
-              symbol: coin.symbol,
-              open: `+${coin.open}`,
-              close: `+${coin.close}%`,
-              change: `+${coin.changePercent}`,
-              volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
-              volumeTrend: coin.changePercent >= 0 ? "up" as const : "down" as const,
-            };
-          });
+          const formattedCoinsData = Object.keys(assetPerformanceData).map(
+            (key) => {
+              const coin = assetPerformanceData[key];
+              return {
+                image: coinImages[key],
+                name: key,
+                symbol: coin.symbol,
+                open: `+${coin.open}`,
+                close: `+${coin.close}%`,
+                change: `+${coin.changePercent}`,
+                volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
+                volumeTrend:
+                  coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
+              };
+            }
+          );
           setCoins(formattedCoinsData);
         }
       }
@@ -111,10 +114,11 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div
           className={`
           flex items-center justify-center
-          ${row.original.volumeTrend === "up"
+          ${
+            row.original.volumeTrend === "up"
               ? "text-green-500"
               : "text-red-500"
-            }
+          }
         `}
         >
           <p>{row.original.volume}</p>
@@ -130,7 +134,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
 
-      <div className="overflow-x-scroll">
+      <div className="">
         <DataTable<TCoinData>
           data={coins}
           columns={columns}

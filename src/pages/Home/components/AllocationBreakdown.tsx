@@ -14,7 +14,7 @@ export default function AllocationBreakdown() {
   const [chartData, setChartData] = useState<Allocation[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const vaultReportsRef = ref(database, "vaultReports");
 
     onValue(vaultReportsRef, (snapshot) => {
       const data = snapshot.val();
@@ -26,9 +26,21 @@ export default function AllocationBreakdown() {
           const allocationData = latestReport.allocationBreakdown;
 
           const formattedChartData = [
-            { name: "A", value: allocationData.A_percent, fill: allocationColors.A },
-            { name: "B", value: allocationData.B_percent, fill: allocationColors.B },
-            { name: "C", value: allocationData.C_percent, fill: allocationColors.C },
+            {
+              name: "A",
+              value: allocationData.A_percent,
+              fill: allocationColors.A,
+            },
+            {
+              name: "B",
+              value: allocationData.B_percent,
+              fill: allocationColors.B,
+            },
+            {
+              name: "C",
+              value: allocationData.C_percent,
+              fill: allocationColors.C,
+            },
           ];
           setChartData(formattedChartData);
         }
@@ -39,7 +51,6 @@ export default function AllocationBreakdown() {
       onValue(vaultReportsRef, () => {}); // Detach listener
     };
   }, []);
-
 
   return (
     <section className="section-container h-full">
@@ -61,7 +72,7 @@ export default function AllocationBreakdown() {
           ))}
         </div>
         <AllocationPieChart data={chartData} />
-        <p className="font-bold md:max-w-[80px] max-md:mt-4">Audit 90% PAC</p>
+        {/* <p className="font-bold md:max-w-[80px] max-md:mt-4">Audit 90% PAC</p> */}
       </div>
     </section>
   );
