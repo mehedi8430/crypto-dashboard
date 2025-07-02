@@ -24,42 +24,42 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 max-lg:py-2">
         {/* Total NAV Panel Section */}
-        <div className="col-span-1 md:col-span-2 xl:col-span-2">
+        <div className="col-span-4 lg:col-span-2">
           <TotalNavPanel />
         </div>
 
         {/* Allocation Breakdown */}
-        <div className="col-span-1 md:col-span-2 xl:col-span-2">
+        <div className="col-span-4 lg:col-span-2">
           <AllocationBreakdown />
         </div>
 
         {/* Allocation (A), (B), (C) */}
         <AllAllocationCard />
 
-        {/* Daily Report */}
-        <div className="col-span-1 md:col-span-1 md:row-span-2">
+        {/* Daily Report - spans 2 rows */}
+        <div className="col-span-4 lg:col-span-1 row-span-2">
           <DailyReport />
         </div>
 
         {/* Asset Performance Panel */}
-        <div className="col-span-1 md:col-span-2 xl:col-span-3">
+        <div className="col-span-4 lg:col-span-3">
           <AssetPerformancePanel />
         </div>
 
-        {/* From the news */}
-        <div className="col-span-1 md:col-span-2 xl:col-span-1">
-          <FromTheNews />
-        </div>
-
         {/* System Status */}
-        <div className="col-span-1 md:col-span-2 xl:col-span-3">
+        <div className="col-span-4 lg:col-span-3">
           <Card className="h-full">
             <CardContent>
               <SystemStatus />
             </CardContent>
           </Card>
+        </div>
+
+        {/* From the news */}
+        <div className="col-span-4 lg:col-span-1">
+          <FromTheNews />
         </div>
       </div>
     </section>
