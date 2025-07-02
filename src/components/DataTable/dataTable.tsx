@@ -112,11 +112,10 @@ function DataTableInner<TData, TValue>(
                           text-muted-foreground text-xs sm:text-sm
                           min-w-[80px] sm:min-w-[120px]
                           px-2 sm:px-4 py-2 sm:py-3
-                          ${
-                            !actions && headerGroup.headers.length - 1 === i
-                              ? "text-center"
-                              : ""
-                          }
+                          ${!actions && headerGroup.headers.length - 1 === i
+                      ? "text-center"
+                      : ""
+                    }
                         `}
                   style={{ width: header.column.getSize() }}
                 >
@@ -124,9 +123,9 @@ function DataTableInner<TData, TValue>(
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </div>
                 </TableHead>
               ))}
@@ -157,11 +156,10 @@ function DataTableInner<TData, TValue>(
                             px-2 sm:px-4 py-2 sm:py-3
                             text-xs sm:text-sm
                             ${i === 0 ? "rounded-l-lg sm:rounded-l-2xl" : ""}
-                            ${
-                              row.getVisibleCells().length - 1 === i && !actions
-                                ? "rounded-r-lg sm:rounded-r-2xl"
-                                : ""
-                            }
+                            ${row.getVisibleCells().length - 1 === i && !actions
+                        ? "rounded-r-lg sm:rounded-r-2xl"
+                        : ""
+                      }
                           `}
                   >
                     <div className="truncate">
