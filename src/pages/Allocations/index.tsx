@@ -108,31 +108,30 @@ export default function Allocations() {
     }
   ];
 
-  function generateResponsiveWidths({
-    start = 330,
-    step = 10,
-    initialWidth = 15.9,
-    increment = 0.6,
-    unit = 'rem',
-    fullWidthBreakpoint = 470,
-  }: {
-    start?: number;
-    step?: number;
-    initialWidth?: number;
-    increment?: number;
-    unit?: string;
-    fullWidthBreakpoint?: number;
-  } = {}) {
-    const classList = [`w-[${initialWidth}${unit}]`];
+  // function generateResponsiveWidths({
+  //   start = 330,
+  //   step = 10,
+  //   initialWidth = 15.9,
+  //   increment = 0.6,
+  //   unit = 'rem',
+  //   fullWidthBreakpoint = 470,
+  // }: {
+  //   start?: number;
+  //   step?: number;
+  //   initialWidth?: number;
+  //   increment?: number;
+  //   unit?: string;
+  //   fullWidthBreakpoint?: number;
+  // } = {}) {
+  //   const classList = [`w-[${initialWidth}${unit}]`];
 
-    for (let bp = start, i = 1; bp < fullWidthBreakpoint; bp += step, i++) {
-      const width = (initialWidth + increment * i).toFixed(1);
-      classList.push(`min-[${bp}px]:w-[${width}${unit}]`);
-    }
-    classList.push(`min-[${fullWidthBreakpoint}px]:w-full`);
-    return classList.join(' ');
-  }
-
+  //   for (let bp = start, i = 1; bp < fullWidthBreakpoint; bp += step, i++) {
+  //     const width = (initialWidth + increment * i).toFixed(1);
+  //     classList.push(`min-[${bp}px]:w-[${width}${unit}]`);
+  //   }
+  //   classList.push(`min-[${fullWidthBreakpoint}px]:w-full`);
+  //   return classList.join(' ');
+  // }
 
 
   return (
@@ -190,7 +189,27 @@ export default function Allocations() {
         <div className="space-y-4">
           <h2 className="font-bold">Daily Performance History</h2>
 
-          <div className={generateResponsiveWidths()}>
+          {/* <div className={generateResponsiveWidths()}> */}
+          <div
+            className="
+            w-[15.9rem] 
+            min-[330px]:w-[16.5rem] 
+            min-[340px]:w-[17.1rem] 
+            min-[350px]:w-[17.7rem] 
+            min-[360px]:w-[18.3rem] 
+            min-[370px]:w-[18.9rem] 
+            min-[380px]:w-[19.5rem] 
+            min-[390px]:w-[20.1rem] 
+            min-[400px]:w-[20.7rem] 
+            min-[410px]:w-[21.3rem] 
+            min-[420px]:w-[21.9rem] 
+            min-[430px]:w-[22.5rem] 
+            min-[440px]:w-[23.1rem] 
+            min-[450px]:w-[23.7rem] 
+            min-[460px]:w-[24.3rem] 
+            min-[470px]:w-full
+          "
+          >
             <DataTable<TPerformanceRecord>
               data={financialData}
               columns={columns}
