@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -31,7 +31,7 @@ export default function TotalNavChart() {
         const reports = Object.values(data) as any[];
         if (reports.length > 0) {
           const latestReport = reports[reports.length - 1];
-          const navChartData = latestReport.nav.chartData.map((d: any) => ({...d, total_nav: d.nav}));
+          const navChartData = latestReport.nav.chartData.map((d: any) => ({ ...d, total_nav: d.nav }));
           setChartData(navChartData);
 
           const values = navChartData.map((d: any) => d.total_nav);
@@ -57,12 +57,11 @@ export default function TotalNavChart() {
     });
 
     return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
+      onValue(vaultReportsRef, () => { }); // Detach listener
     };
   }, []);
 
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipCursor = (props: any) => {
     const { points, height, payload } = props;
 
@@ -102,7 +101,6 @@ export default function TotalNavChart() {
     return null;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipContent = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -130,70 +128,72 @@ export default function TotalNavChart() {
   return (
     <ChartContainer
       config={chartConfig}
-      className="aspect-auto h-[230px] w-full mt-6"
+      className="aspect-auto h-[230px] w-full"
       style={{ pointerEvents: "all" }}
     >
-      <AreaChart
-        accessibilityLayer
-        data={chartData}
-        margin={{
-          left: 12,
-          right: 12,
-        }}
-      >
-        <defs>
-          <linearGradient id="fillTotalNav" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--color-chart-1)"
-              stopOpacity={0.5}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--color-chart-1)"
-              stopOpacity={0.1}
-            />
-          </linearGradient>
-        </defs>
+      <ResponsiveContainer>
+        <AreaChart
+          accessibilityLayer
+          data={chartData}
+          margin={{
+            left: 12,
+            right: 12,
+          }}
+        >
+          <defs>
+            <linearGradient id="fillTotalNav" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="5%"
+                stopColor="var(--color-chart-1)"
+                stopOpacity={0.5}
+              />
+              <stop
+                offset="95%"
+                stopColor="var(--color-chart-1)"
+                stopOpacity={0.1}
+              />
+            </linearGradient>
+          </defs>
 
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="date"
-          tickLine={false}
-          interval="preserveStartEnd"
-          tickMargin={8}
-          height={40}
-          tickFormatter={(value) => {
-            const date = new Date(value);
-            return date.toLocaleDateString('en-US', {
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="date"
+            tickLine={false}
+            interval="preserveStartEnd"
+            tickMargin={8}
+            height={40}
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return date.toLocaleDateString('en-US', {
                 month: '2-digit',
                 day: '2-digit',
                 year: '2-digit'
-            });
-          }}
-          axisLine={false}
-        />
-        <YAxis
-          ticks={dynamicTicks}
-          domain={[minValue, maxValue]}
-          axisLine={false}
-          tickLine={false}
-          tick={{ fill: "var(--color-chart-1-foreground)" }}
-          tickMargin={10}
-          tickFormatter={(value) => `$${value.toFixed(1)}`}
-        />
-        <ChartTooltip
-          content={<CustomTooltipContent />}
-          cursor={<CustomTooltipCursor />}
-        />
-        <Area
-          dataKey="total_nav"
-          type="monotone"
-          fill="url(#fillTotalNav)"
-          fillOpacity={0.4}
-          stroke="var(--color-chart-1)"
-        />
-      </AreaChart>
+              });
+            }}
+            axisLine={false}
+          />
+          <YAxis
+            ticks={dynamicTicks}
+            domain={[minValue, maxValue]}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "var(--color-chart-1-foreground)" }}
+            tickMargin={5}
+            tickFormatter={(value) => `$${value.toFixed(1)}`}
+          />
+          <ChartTooltip
+            content={<CustomTooltipContent />}
+            cursor={<CustomTooltipCursor />}
+          />
+          <Area
+            dataKey="total_nav"
+            type="monotone"
+            fill="url(#fillTotalNav)"
+            fillOpacity={0.4}
+            stroke="var(--color-chart-1)"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </ChartContainer>
   );
 }

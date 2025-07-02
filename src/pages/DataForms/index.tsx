@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-
+import { Checkbox } from '@/components/ui/checkbox';
 
 // --- Zod Validation Schemas (No changes here) ---
 const navChartDataSchema = z.object({
@@ -105,7 +105,6 @@ const formSchema = z.object({
  dailyReportText: z.string().optional(),
 });
 
-
 // --- Main React Component ---
 export default function DataForms() {
  const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,6 +116,7 @@ export default function DataForms() {
   defaultValues: initialData || undefined
  });
 
+ // First useEffect for fetching initial data
  useEffect(() => {
   document.title = 'Create New Vault Report';
   const reportsRef = ref(database, 'vaultReports');
@@ -153,30 +153,27 @@ export default function DataForms() {
  const { fields: allocBDailyFields, append: appendAllocBDaily, remove: removeAllocBDaily } = useFieldArray({ control: form.control, name: "allocations.B.dailyPerformanceHistory" });
  const { fields: allocCDailyFields, append: appendAllocCDaily, remove: removeAllocCDaily } = useFieldArray({ control: form.control, name: "allocations.C.dailyPerformanceHistory" });
 
-  // --- MODIFICATION START ---
-  // 1. Watch the master 'reportDate' field for changes.
-  const watchedReportDate = form.watch('reportDate');
+ // Watch the master 'reportDate' field for changes
+ const watchedReportDate = form.watch('reportDate');
 
-  // 2. Add a useEffect to synchronize all other date fields when 'reportDate' changes.
-  useEffect(() => {
-    if (watchedReportDate) {
-      const updateFieldArrayDates = (fields: { id: string }[], basePath: string) => {
-        fields.forEach((_, index) => {
-          form.setValue(`${basePath}.${index}.date` as any, watchedReportDate);
-        });
-      };
+ // Second useEffect to synchronize all other date fields when 'reportDate' changes
+ useEffect(() => {
+  if (watchedReportDate) {
+   const updateFieldArrayDates = (fields: { id: string }[], basePath: string) => {
+    fields.forEach((_, index) => {
+     form.setValue(`${basePath}.${index}.date` as any, watchedReportDate);
+    });
+   };
 
-      updateFieldArrayDates(navChartFields, "nav.chartData");
-      updateFieldArrayDates(allocAChartFields, "allocations.A.chartData");
-      updateFieldArrayDates(allocBChartFields, "allocations.B.chartData");
-      updateFieldArrayDates(allocCChartFields, "allocations.C.chartData");
-      updateFieldArrayDates(allocADailyFields, "allocations.A.dailyPerformanceHistory");
-      updateFieldArrayDates(allocBDailyFields, "allocations.B.dailyPerformanceHistory");
-      updateFieldArrayDates(allocCDailyFields, "allocations.C.dailyPerformanceHistory");
-    }
-  }, [watchedReportDate, navChartFields, allocAChartFields, allocBChartFields, allocCChartFields, allocADailyFields, allocBDailyFields, allocCDailyFields, form]);
-  // --- MODIFICATION END ---
-
+   updateFieldArrayDates(navChartFields, "nav.chartData");
+   updateFieldArrayDates(allocAChartFields, "allocations.A.chartData");
+   updateFieldArrayDates(allocBChartFields, "allocations.B.chartData");
+   updateFieldArrayDates(allocCChartFields, "allocations.C.chartData");
+   updateFieldArrayDates(allocADailyFields, "allocations.A.dailyPerformanceHistory");
+   updateFieldArrayDates(allocBDailyFields, "allocations.B.dailyPerformanceHistory");
+   updateFieldArrayDates(allocCDailyFields, "allocations.C.dailyPerformanceHistory");
+  }
+ }, [watchedReportDate, navChartFields, allocAChartFields, allocBChartFields, allocCChartFields, allocADailyFields, allocBDailyFields, allocCDailyFields, form]);
 
  async function onSubmit(values: z.infer<typeof formSchema>) {
   setIsSubmitting(true);
@@ -218,10 +215,7 @@ export default function DataForms() {
      <Button type="button" onClick={() => removeFn(index)} className="bg-destructive hover:bg-destructive/90 h-10">Remove</Button>
     </div>
    ))}
-      {/* --- MODIFICATION START --- */}
-      {/* 3. Update the append function to use the current reportDate */}
-      <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', time: '', [valueKey]: 0 })} className="text-sm">Add Data Point</Button>
-      {/* --- MODIFICATION END --- */}
+   <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', time: '', [valueKey]: 0 })} className="text-sm">Add Data Point</Button>
   </div>
  );
 
@@ -236,20 +230,16 @@ export default function DataForms() {
      <Button type="button" onClick={() => removeFn(index)} className="bg-destructive hover:bg-destructive/90 h-10">Remove</Button>
     </div>
    ))}
-      {/* --- MODIFICATION START --- */}
-      {/* 4. Update the append function to use the current reportDate */}
-      <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', balance: 0, dailyChange: 0, percentChange: 0, notes: '-' })} className="text-sm">Add Daily Record</Button>
-      {/* --- MODIFICATION END --- */}
+   <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', balance: 0, dailyChange: 0, percentChange: 0, notes: '-' })} className="text-sm">Add Daily Record</Button>
   </div>
  );
 
-  // ... (Rest of the component remains the same)
  if (!initialData) {
-   return (
-     <div className="flex justify-center items-center h-screen">
-       <span className="loader"></span>
-     </div>
-   )
+  return (
+   <div className="flex justify-center items-center h-screen">
+    <span className="loader"></span>
+   </div>
+  )
  }
 
  return (
@@ -315,6 +305,20 @@ export default function DataForms() {
           <Controller control={form.control} name="allocationBreakdown.auditPac_percent" render={({ field }) => <FormItem><FormLabel>Audit PAC %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.auditPac_percent?.message}</FormMessage></FormItem>} />
          </div>
         </div>
+
+        <div className="bg-card p-4 rounded-lg space-y-4">
+         <h3 className="font-bold text-lg">System Status</h3>
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {(Object.keys(form.getValues().systemStatus) as Array<keyof z.infer<typeof formSchema>["systemStatus"]>).map((key) => (
+           <Controller key={key} control={form.control} name={`systemStatus.${key}`} render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3 shadow-sm bg-accent/50">
+             <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+             <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} onBlur={field.onBlur} name={field.name} disabled={field.disabled} /></FormControl>
+            </FormItem>
+           )} />
+          ))}
+         </div>
+        </div>
        </div>
       </div>
 
@@ -343,6 +347,36 @@ export default function DataForms() {
           {key === 'B' && renderDailyPerformanceFields(allocBDailyFields, removeAllocBDaily, appendAllocBDaily, "allocations.B.dailyPerformanceHistory")}
           {key === 'C' && renderDailyPerformanceFields(allocCDailyFields, removeAllocCDaily, appendAllocCDaily, "allocations.C.dailyPerformanceHistory")}
          </div>
+        ))}
+       </div>
+      </div>
+
+      <div className="bg-card p-4 rounded-lg space-y-4">
+       <h3 className="font-bold text-lg">Visual Flags</h3>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {(Object.keys(form.getValues().visualFlags) as Array<keyof z.infer<typeof formSchema>["visualFlags"]>).map((key) => (
+         <Controller key={key} control={form.control} name={`visualFlags.${key}`} render={({ field }) => (
+          <FormItem>
+           <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+           <FormControl><Input {...field} /></FormControl>
+           <FormMessage>{form.formState.errors.visualFlags?.[key]?.message}</FormMessage>
+          </FormItem>
+         )} />
+        ))}
+       </div>
+      </div>
+
+      <div className="bg-card p-4 rounded-lg space-y-4">
+       <h3 className="font-bold text-lg">Team Notes</h3>
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {(Object.keys(form.getValues().teamNotes) as Array<keyof z.infer<typeof formSchema>["teamNotes"]>).map((key) => (
+         <Controller key={key} control={form.control} name={`teamNotes.${key}`} render={({ field }) => (
+          <FormItem>
+           <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+           <FormControl><Input {...field} /></FormControl>
+           <FormMessage>{form.formState.errors.teamNotes?.[key]?.message}</FormMessage>
+          </FormItem>
+         )} />
         ))}
        </div>
       </div>
