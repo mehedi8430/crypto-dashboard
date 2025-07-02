@@ -146,13 +146,13 @@ export default function Allocations() {
                 <p className="text-muted-foreground">{item.title}</p>
                 <h1 className="font-bold text-4xl">{item.total}</h1>
               </div>
-            ))}
-          </div>
+            ))
+          }
+        </div>
 
-          {/* Allocation Metrics Panel */}
-          <div className="w-full overflow-hidden">
-            {allocation && <AllocationMetricsPanel allocation={allocation} />}
-          </div>
+        {/* Allocation Metrics Panel */}
+        <div className="w-full overflow-hidden">
+          {allocation && <AllocationMetricsPanel allocation={allocation} />}
         </div>
       </div>
 
