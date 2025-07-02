@@ -130,7 +130,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-scroll">
         <DataTable<TCoinData>
           data={coins}
           columns={columns}

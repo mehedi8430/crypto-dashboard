@@ -104,7 +104,7 @@ function DataTableInner<TData, TValue>(
       {/* Table Container with Horizontal Scroll */}
       <div className="w-full">
         <ScrollArea className="w-full">
-          <div className="min-w-full overflow-x-auto">
+          <div className="min-w-full overflow-x-scroll">
             <Table className="min-w-[600px] sm:min-w-[700px] border-separate border-spacing-y-1 sm:border-spacing-y-2">
               <TableHeader className="[&_tr]:border-b-0">
                 {table.getHeaderGroups().map((headerGroup) => (
