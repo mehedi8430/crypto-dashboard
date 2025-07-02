@@ -86,7 +86,6 @@
   --piechart-b: #007bff;
   --piechart-c: #28a745;
   --chart-blue: #3b82f6;
-  /* Added this line */
 }
 
 .dark {
@@ -126,7 +125,6 @@
   --piechart-b: #007bff;
   --piechart-c: #28a745;
   --chart-blue: #3b82f6;
-  /* Added this line */
 }
 
 @layer base {
@@ -139,7 +137,7 @@
   }
 
   .section-container {
-    @apply bg-card text-card-foreground flex flex-col gap-6 rounded-xl border p-2 md:p-6 shadow-sm;
+    @apply bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm p-4 md:p-6;
   }
 
   .section-container-no-padding {
@@ -165,13 +163,6 @@
   p {
     @apply text-sm md:text-base;
   }
-
-  /* Responsive section padding */
-  .section-container {
-    @apply p-4 md:p-6;
-  }
-
-
 }
 
 .loader {
@@ -197,21 +188,16 @@
 }
 
 @keyframes coin-flip {
-
-  0%,
-  100% {
+  0%, 100% {
     animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
   }
-
   0% {
     transform: rotateY(0deg);
   }
-
   50% {
     transform: rotateY(1800deg);
     animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
   }
-
   100% {
     transform: rotateY(3600deg);
   }

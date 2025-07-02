@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { database } from "@/Firebase/Firebase";
+import { ref, onValue } from "firebase/database";
 
 interface AllocationMetricsPanelProps {
   allocation: "a" | "b" | "c";
@@ -57,6 +60,39 @@ const DateCard: React.FC<{ title: string; date: string }> = ({ title, date }) =>
 );
 
 export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ allocation }) => {
+  const [allocationDetails, setAllocationDetails] = useState({
+    lastPayout: '',
+    nextUnlock: ''
+  });
+
+  useEffect(() => {
+    if (!allocation) return;
+
+    const vaultReportsRef = ref(database, 'vaultReports');
+
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const allocationData = latestReport.allocations[allocation.toUpperCase()];
+
+          if (allocationData) {
+            setAllocationDetails({
+                lastPayout: allocationData.lastPayout,
+                nextUnlock: allocationData.nextUnlock
+            });
+          }
+        }
+      }
+    });
+
+    return () => {
+      onValue(vaultReportsRef, () => {}); // Detach listener
+    };
+  }, [allocation]);
+
   const data = panelData[allocation];
   if (!data) return null;
 
@@ -106,11 +142,11 @@ export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
           <DateCard
             title="$ Last payout Event"
-            date="06/17/2025, 09:15 AM"
+            date={allocationDetails.lastPayout ? new Date(allocationDetails.lastPayout).toLocaleString() : 'N/A'}
           />
           <DateCard
             title="$ Next Unlock Epoch"
-            date="07/20/2025, 04:00 PM"
+            date={allocationDetails.nextUnlock ? new Date(allocationDetails.nextUnlock).toLocaleString() : 'N/A'}
           />
         </div>
       </div>
