@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi, userApi } from "@/services/api";
 import { useAuthStore } from "@/stores";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 // Query Keys
 export const queryKeys = {
@@ -15,6 +17,7 @@ export const queryKeys = {
 
 // Auth Hooks
 export const useLogin = () => {
+  const navigate = useNavigate();
   const { login } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -24,6 +27,7 @@ export const useLogin = () => {
       login(data.user, data.token);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       toast.success("Login successful");
+      navigate("/dashboard");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Login failed");
@@ -57,7 +61,7 @@ export const useLogout = () => {
       queryClient.clear();
       toast.success("Logged out successfully");
     },
-    onError: (error: any) => {
+    onError: () => {
       // Still logout on error
       logout();
       queryClient.clear();
@@ -102,6 +106,6 @@ export const useUsers = (params?: {
   return useQuery({
     queryKey: queryKeys.user.list(params),
     queryFn: () => userApi.getUsers(params),
-    keepPreviousData: true,
+    // keepPreviousData: true,
   });
 };

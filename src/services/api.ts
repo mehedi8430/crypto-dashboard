@@ -36,7 +36,7 @@ export const userApi = {
     return response.data;
   },
 
-  updateProfile: async (userData: Partial<User>) => {
+  updateProfile: async (userData: Partial<TUser>) => {
     const response = await apiClient.put("/users/:id", userData);
     return response.data;
   },
