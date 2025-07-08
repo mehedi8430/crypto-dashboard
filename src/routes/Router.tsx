@@ -5,7 +5,7 @@ import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
- 
+
 export const routes = createBrowserRouter([
   {
     path: "/",
@@ -38,6 +38,10 @@ export const routes = createBrowserRouter([
           },
           {
             path: "c",
+            element: <Allocations />,
+          },
+          {
+            path: "d",
             element: <Allocations />,
           },
         ]
