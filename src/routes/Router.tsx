@@ -40,6 +40,10 @@ export const routes = createBrowserRouter([
             path: "c",
             element: <Allocations />,
           },
+          {
+            path: "d",
+            element: <Allocations />,
+          },
         ],
       },
       {

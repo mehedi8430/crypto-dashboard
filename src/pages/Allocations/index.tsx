@@ -22,7 +22,8 @@ export default function Allocations() {
     pathname.endsWith('/a') ? "a" :
       pathname.endsWith('/b') ? "b" :
         pathname.endsWith('/c') ? "c" :
-          null;
+          pathname.endsWith('/d') ? "d" :
+            null;
 
   useEffect(() => {
     setTitle(
