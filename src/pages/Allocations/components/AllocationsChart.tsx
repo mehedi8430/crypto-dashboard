@@ -22,6 +22,7 @@ const allocationColors = {
   a: "#0867ED", // Blue
   b: "#00CA72", // Green
   c: "#F2C916", // Yellow
+  d: "#FF69B4", // Hotpink
 };
 
 interface CustomTooltipProps {
@@ -51,46 +52,46 @@ const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) =>
   return null;
 };
 
-export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | null }) {
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [minValue, setMinValue] = useState(0);
-    const [maxValue, setMaxValue] = useState(1000);
+export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | "d" | null }) {
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [minValue, setMinValue] = useState(0);
+  const [maxValue, setMaxValue] = useState(1000);
 
-    useEffect(() => {
-        if (!allocation) return;
+  useEffect(() => {
+    if (!allocation) return;
 
-        const vaultReportsRef = ref(database, 'vaultReports');
+    const vaultReportsRef = ref(database, 'vaultReports');
 
-        onValue(vaultReportsRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            const reports = Object.values(data) as any[];
-            if (reports.length > 0) {
-              const latestReport = reports[reports.length - 1];
-              const allocationChartData = latestReport.allocations[allocation.toUpperCase()]?.chartData.map((d: any) => ({...d, performance: d.balance}));
-              if (allocationChartData) {
-                setChartData(allocationChartData);
+    onValue(vaultReportsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reports = Object.values(data) as any[];
+        if (reports.length > 0) {
+          const latestReport = reports[reports.length - 1];
+          const allocationChartData = latestReport.allocations[allocation.toUpperCase()]?.chartData.map((d: any) => ({ ...d, performance: d.balance }));
+          if (allocationChartData) {
+            setChartData(allocationChartData);
 
-                const values = allocationChartData.map((d: any) => d.performance);
-                const dataMin = Math.min(...values);
-                const dataMax = Math.max(...values);
+            const values = allocationChartData.map((d: any) => d.performance);
+            const dataMin = Math.min(...values);
+            const dataMax = Math.max(...values);
 
-                const padding = (dataMax - dataMin) * 0.1;
-                const newMinValue = Math.floor(dataMin - padding);
-                const newMaxValue = Math.ceil(dataMax + padding);
-                setMinValue(newMinValue);
-                setMaxValue(newMaxValue);
-              }
-            }
+            const padding = (dataMax - dataMin) * 0.1;
+            const newMinValue = Math.floor(dataMin - padding);
+            const newMaxValue = Math.ceil(dataMax + padding);
+            setMinValue(newMinValue);
+            setMaxValue(newMaxValue);
           }
-        }, (error) => {
-          console.error('Error fetching vaultReports:', error);
-        });
+        }
+      }
+    }, (error) => {
+      console.error('Error fetching vaultReports:', error);
+    });
 
-        return () => {
-          onValue(vaultReportsRef, () => {}); // Detach listener
-        };
-      }, [allocation]);
+    return () => {
+      onValue(vaultReportsRef, () => { }); // Detach listener
+    };
+  }, [allocation]);
 
 
   if (!allocation) {

@@ -5,7 +5,7 @@ import { database } from "@/Firebase/Firebase";
 import { ref, onValue } from "firebase/database";
 
 interface AllocationMetricsPanelProps {
-  allocation: "a" | "b" | "c";
+  allocation: "a" | "b" | "c" | "d";
 }
 
 // Data for the panels, derived from the images and demo code
@@ -28,6 +28,12 @@ const panelData = {
     overrideStatus: { text: "Active +1.25%", colorKey: "yellow" },
     overrideBadge: "Override Active",
   },
+  d: {
+    bandAssignment: { text: "Override", colorKey: "pink" },
+    routingStrategy: { text: "Override Driven", colorKey: "pink" },
+    overrideStatus: { text: "Active +1.25%", colorKey: "pink" },
+    overrideBadge: "Override Active",
+  },
 };
 
 // Tailwind CSS classes for different colors to be used in the panel
@@ -35,6 +41,7 @@ const colorStyles: { [key: string]: string } = {
   blue: "bg-blue-600/10 text-blue-600 outline-blue-600",
   green: "bg-green-600/10 text-green-600 outline-green-600",
   yellow: "bg-yellow-400/10 text-yellow-400 outline-yellow-400",
+  pink: "bg-[#FF69B4]/10 text-[#FF69B4] outline-[#FF69B4]"
 };
 
 // A reusable card component for individual metrics
@@ -80,8 +87,8 @@ export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ 
 
           if (allocationData) {
             setAllocationDetails({
-                lastPayout: allocationData.lastPayout,
-                nextUnlock: allocationData.nextUnlock
+              lastPayout: allocationData.lastPayout,
+              nextUnlock: allocationData.nextUnlock
             });
           }
         }
@@ -89,7 +96,7 @@ export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ 
     });
 
     return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
+      onValue(vaultReportsRef, () => { }); // Detach listener
     };
   }, [allocation]);
 
