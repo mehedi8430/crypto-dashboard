@@ -5,6 +5,7 @@ import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
+import LoginPage from "@/pages/Login";
 
 export const routes = createBrowserRouter([
   {
@@ -12,6 +13,7 @@ export const routes = createBrowserRouter([
     element: <App />,
     errorElement: <div>Error occurred</div>,
   },
+  // Dashboard
   {
     path: "/dashboard",
     element: <DashboardLayout />,
@@ -51,5 +53,11 @@ export const routes = createBrowserRouter([
         element: <DataForms />,
       },
     ],
+  },
+  // Authentication
+  {
+    path: "/login",
+    element: <LoginPage />,
+    errorElement: <div>Error occurred</div>,
   },
 ]);
