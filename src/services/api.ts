@@ -1,12 +1,13 @@
 import { apiClient } from "@/lib/api";
 
 // Define the User type or import it from your models/types
-export interface User {
-  id: string;
+export type TUser = {
   email: string;
-  name: string;
-  // Add other user fields as needed
-}
+  password: string;
+  fullName: string;
+  role: "ADMIN" | "USER";
+  isDeleted?: boolean;
+};
 
 export const authApi = {
   login: async (credentials: { email: string; password: string }) => {
@@ -14,11 +15,7 @@ export const authApi = {
     return response.data;
   },
 
-  register: async (userData: {
-    email: string;
-    password: string;
-    name: string;
-  }) => {
+  register: async (userData: TUser) => {
     const response = await apiClient.post("/auth/register", userData);
     return response.data;
   },

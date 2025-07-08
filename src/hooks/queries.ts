@@ -31,6 +31,21 @@ export const useLogin = () => {
   });
 };
 
+export const useRegister = () => {
+  const { login } = useAuthStore();
+
+  return useMutation({
+    mutationFn: authApi.register,
+    onSuccess: (data) => {
+      login(data.user, data.token);
+      toast.success(data.message || "Registration successful! Welcome!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Registartion failed");
+    },
+  });
+};
+
 export const useLogout = () => {
   const { logout } = useAuthStore();
   const queryClient = useQueryClient();
