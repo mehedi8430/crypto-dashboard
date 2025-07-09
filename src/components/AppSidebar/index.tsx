@@ -50,6 +50,10 @@ export default function AppSidebar({
               title: "Allocation C",
               url: "/dashboard/allocations/c",
             },
+            {
+              title: "Allocation D",
+              url: "/dashboard/allocations/d",
+            },
           ],
         }
       );

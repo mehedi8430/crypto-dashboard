@@ -8,6 +8,7 @@ const allocationColors = {
   A: "#FFC107",
   B: "#007BFF",
   C: "#28A745",
+  D: "#FF69B4",
 };
 
 export default function AllocationBreakdown() {
@@ -40,6 +41,11 @@ export default function AllocationBreakdown() {
               name: "C",
               value: allocationData.C_percent,
               fill: allocationColors.C,
+            },
+            {
+              name: "D",
+              value: allocationData.D_percent,
+              fill: allocationColors.D,
             },
           ];
           setChartData(formattedChartData);

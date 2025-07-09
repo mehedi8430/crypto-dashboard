@@ -67,12 +67,14 @@ const formSchema = z.object({
   A_percent: z.number({ required_error: "Field is required" }),
   B_percent: z.number({ required_error: "Field is required" }),
   C_percent: z.number({ required_error: "Field is required" }),
+  D_percent: z.number({ required_error: "Field is required" }),
   auditPac_percent: z.number({ required_error: "Field is required" }),
  }),
  allocations: z.object({
   A: allocationSchema,
   B: allocationSchema,
   C: allocationSchema,
+  D: allocationSchema,
  }),
  assetPerformance: z.object({
   ETH: assetPerformanceSchema,
@@ -149,9 +151,11 @@ export default function DataForms() {
  const { fields: allocAChartFields, append: appendAllocAChart, remove: removeAllocAChart } = useFieldArray({ control: form.control, name: "allocations.A.chartData" });
  const { fields: allocBChartFields, append: appendAllocBChart, remove: removeAllocBChart } = useFieldArray({ control: form.control, name: "allocations.B.chartData" });
  const { fields: allocCChartFields, append: appendAllocCChart, remove: removeAllocCChart } = useFieldArray({ control: form.control, name: "allocations.C.chartData" });
+ const { fields: allocDChartFields, append: appendAllocDChart, remove: removeAllocDChart } = useFieldArray({ control: form.control, name: "allocations.D.chartData" });
  const { fields: allocADailyFields, append: appendAllocADaily, remove: removeAllocADaily } = useFieldArray({ control: form.control, name: "allocations.A.dailyPerformanceHistory" });
  const { fields: allocBDailyFields, append: appendAllocBDaily, remove: removeAllocBDaily } = useFieldArray({ control: form.control, name: "allocations.B.dailyPerformanceHistory" });
  const { fields: allocCDailyFields, append: appendAllocCDaily, remove: removeAllocCDaily } = useFieldArray({ control: form.control, name: "allocations.C.dailyPerformanceHistory" });
+ const { fields: allocDDailyFields, append: appendAllocDDaily, remove: removeAllocDDaily } = useFieldArray({ control: form.control, name: "allocations.D.dailyPerformanceHistory" });
 
  // Watch the master 'reportDate' field for changes
  const watchedReportDate = form.watch('reportDate');
@@ -169,11 +173,13 @@ export default function DataForms() {
    updateFieldArrayDates(allocAChartFields, "allocations.A.chartData");
    updateFieldArrayDates(allocBChartFields, "allocations.B.chartData");
    updateFieldArrayDates(allocCChartFields, "allocations.C.chartData");
+   updateFieldArrayDates(allocDChartFields, "allocations.D.chartData");
    updateFieldArrayDates(allocADailyFields, "allocations.A.dailyPerformanceHistory");
    updateFieldArrayDates(allocBDailyFields, "allocations.B.dailyPerformanceHistory");
    updateFieldArrayDates(allocCDailyFields, "allocations.C.dailyPerformanceHistory");
+   updateFieldArrayDates(allocDDailyFields, "allocations.D.dailyPerformanceHistory");
   }
- }, [watchedReportDate, navChartFields, allocAChartFields, allocBChartFields, allocCChartFields, allocADailyFields, allocBDailyFields, allocCDailyFields, form]);
+ }, [watchedReportDate, navChartFields, allocAChartFields, allocBChartFields, allocCChartFields, allocDChartFields, allocADailyFields, allocBDailyFields, allocCDailyFields, allocDDailyFields, form]);
 
  async function onSubmit(values: z.infer<typeof formSchema>) {
   setIsSubmitting(true);
@@ -302,6 +308,7 @@ export default function DataForms() {
           <Controller control={form.control} name="allocationBreakdown.A_percent" render={({ field }) => <FormItem><FormLabel>Allocation A %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.A_percent?.message}</FormMessage></FormItem>} />
           <Controller control={form.control} name="allocationBreakdown.B_percent" render={({ field }) => <FormItem><FormLabel>Allocation B %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.B_percent?.message}</FormMessage></FormItem>} />
           <Controller control={form.control} name="allocationBreakdown.C_percent" render={({ field }) => <FormItem><FormLabel>Allocation C %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.C_percent?.message}</FormMessage></FormItem>} />
+          <Controller control={form.control} name="allocationBreakdown.D_percent" render={({ field }) => <FormItem><FormLabel>Allocation D %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.D_percent?.message}</FormMessage></FormItem>} />
           <Controller control={form.control} name="allocationBreakdown.auditPac_percent" render={({ field }) => <FormItem><FormLabel>Audit PAC %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.auditPac_percent?.message}</FormMessage></FormItem>} />
          </div>
         </div>
@@ -341,11 +348,13 @@ export default function DataForms() {
           {key === 'A' && renderChartDataFields(allocAChartFields, removeAllocAChart, appendAllocAChart, "allocations.A.chartData", "balance")}
           {key === 'B' && renderChartDataFields(allocBChartFields, removeAllocBChart, appendAllocBChart, "allocations.B.chartData", "balance")}
           {key === 'C' && renderChartDataFields(allocCChartFields, removeAllocCChart, appendAllocCChart, "allocations.C.chartData", "balance")}
+          {key === 'D' && renderChartDataFields(allocDChartFields, removeAllocDChart, appendAllocDChart, "allocations.D.chartData", "balance")}
 
           <h5 className="font-semibold pt-4 border-t border-border">Daily Performance History</h5>
           {key === 'A' && renderDailyPerformanceFields(allocADailyFields, removeAllocADaily, appendAllocADaily, "allocations.A.dailyPerformanceHistory")}
           {key === 'B' && renderDailyPerformanceFields(allocBDailyFields, removeAllocBDaily, appendAllocBDaily, "allocations.B.dailyPerformanceHistory")}
           {key === 'C' && renderDailyPerformanceFields(allocCDailyFields, removeAllocCDaily, appendAllocCDaily, "allocations.C.dailyPerformanceHistory")}
+          {key === 'D' && renderDailyPerformanceFields(allocDDailyFields, removeAllocDDaily, appendAllocDDaily, "allocations.D.dailyPerformanceHistory")}
          </div>
         ))}
        </div>
