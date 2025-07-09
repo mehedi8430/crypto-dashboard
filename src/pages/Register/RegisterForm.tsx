@@ -14,11 +14,11 @@ export default function RegisterForm() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!"); // Use a custom modal in a real app
+      alert("Passwords do not match!");
       return;
     }
 
-    // You might add more validation here (e.g., password strength)
+
 
     register.mutate({ email, password, fullName, role: "USER" });
   };
