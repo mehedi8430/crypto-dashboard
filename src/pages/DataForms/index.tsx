@@ -7,6 +7,13 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import TotalNavPanel from "@/pages/Home/components/TotalNavPanel";
+import AllocationBreakdown from "@/pages/Home/components/AllocationBreakdown";
+import AllAllocationCard from "@/pages/Home/components/AllAllocationCard";
+import AssetPerformancePanel from "@/pages/Home/components/AssetPerformancePanel";
+import SystemStatus from "@/pages/Home/components/SystemStatus";
+import { Card, CardContent } from "@/components/ui/card";
+import { Pen } from 'lucide-react';
 
 // Mock Data
 const mockData = {
@@ -229,6 +236,7 @@ const formSchema = z.object({
 export default function DataForms() {
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [initialData] = useState(mockData);
+ const [isEditing, setIsEditing] = useState(false);
 
 
  const form = useForm<z.infer<typeof formSchema>>({
@@ -241,6 +249,7 @@ export default function DataForms() {
   try {
    console.log("Form Submitted", values);
    toast.success('Report submitted successfully!');
+   setIsEditing(false);
    // Here you would typically send the data to a server or update your mock data source
   } catch (error) {
    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
@@ -264,60 +273,89 @@ export default function DataForms() {
  return (
   <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 lg:p-8">
    <div className="max-w-7xl mx-auto">
-    <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Manage Data</h1>
+    <div className="flex justify-between items-center mb-6">
+     <h1 className="text-2xl font-bold">Admin Dashboard - Manage Data</h1>
+     <Button onClick={() => setIsEditing(!isEditing)} size="icon" variant="outline">
+      <Pen className="h-4 w-4" />
+     </Button>
+    </div>
 
-
-    <FormProvider {...form}>
-     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-
-      <div className="bg-card p-4 rounded-lg">
-       <FormItem>
+    {isEditing ? (
+     <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+       <div className="bg-card p-4 rounded-lg">
+        <FormItem>
          <FormLabel>Report Date</FormLabel>
          <FormControl><Input type="date" {...form.register("reportDate")} /></FormControl>
          <FormMessage>{form.formState.errors.reportDate?.message}</FormMessage>
         </FormItem>
-      </div>
+       </div>
+       {/* Other form sections go here */}
+       {/* Example for NAV */}
+       <div className="bg-card p-4 rounded-lg space-y-4">
+        <h3 className="font-bold text-lg">Total NAV</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <FormItem><FormLabel>Starting NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.startingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.startingNav?.message}</FormMessage></FormItem>
+         <FormItem><FormLabel>Ending NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.endingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.endingNav?.message}</FormMessage></FormItem>
+         <FormItem><FormLabel>Growth %</FormLabel><FormControl><Input type="number" step="0.01" {...form.register("nav.growthPercent", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.growthPercent?.message}</FormMessage></FormItem>
+        </div>
+       </div>
 
-
-      {/* Other form sections go here */}
-      {/* Example for NAV */}
-      <div className="bg-card p-4 rounded-lg space-y-4">
-         <h3 className="font-bold text-lg">Total NAV</h3>
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormItem><FormLabel>Starting NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.startingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.startingNav?.message}</FormMessage></FormItem>
-          <FormItem><FormLabel>Ending NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.endingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.endingNav?.message}</FormMessage></FormItem>
-          <FormItem><FormLabel>Growth %</FormLabel><FormControl><Input type="number" step="0.01" {...form.register("nav.growthPercent", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.growthPercent?.message}</FormMessage></FormItem>
-         </div>
-      </div>
-
-
-      {/* Example for Allocations */}
-      <div className="bg-card p-4 rounded-lg space-y-6">
-       <h3 className="font-bold text-lg">Allocations</h3>
-       {(Object.keys(form.getValues().allocations) as Array<keyof typeof mockData.allocations>).map((key) => (
+       {/* Example for Allocations */}
+       <div className="bg-card p-4 rounded-lg space-y-6">
+        <h3 className="font-bold text-lg">Allocations</h3>
+        {(Object.keys(form.getValues().allocations) as Array<keyof typeof mockData.allocations>).map((key) => (
          <div key={key} className="bg-accent/50 p-4 rounded-lg space-y-4">
           <h4 className="font-bold text-primary">{form.getValues().allocations[key].name}</h4>
-            <div className="grid grid-cols-2 gap-4">
-                <FormItem><FormLabel>Start Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.startingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
-                <FormItem><FormLabel>End Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.endingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
-                <FormItem><FormLabel>Daily Gain</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGain`, { valueAsNumber: true })} /></FormControl></FormItem>
-                <FormItem><FormLabel>Daily Gain %</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGainPercent`, { valueAsNumber: true })} /></FormControl></FormItem>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+           <FormItem><FormLabel>Start Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.startingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
+           <FormItem><FormLabel>End Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.endingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
+           <FormItem><FormLabel>Daily Gain</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGain`, { valueAsNumber: true })} /></FormControl></FormItem>
+           <FormItem><FormLabel>Daily Gain %</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGainPercent`, { valueAsNumber: true })} /></FormControl></FormItem>
+          </div>
          </div>
         ))}
+       </div>
+
+       <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full text-lg"
+       >
+        {isSubmitting ? 'Submitting...' : 'Update Data'}
+       </Button>
+      </form>
+     </FormProvider>
+    ) : (
+     <div className="grid grid-cols-4 gap-4 max-lg:py-2">
+      {/* Total NAV Panel Section */}
+      <div className="col-span-4 lg:col-span-3">
+       <TotalNavPanel />
       </div>
 
+      {/* Allocation Breakdown */}
+      <div className="col-span-4 lg:col-span-1">
+       <AllocationBreakdown />
+      </div>
 
-      <Button
-       type="submit"
-       disabled={isSubmitting}
-       className="w-full text-lg"
-      >
-       {isSubmitting ? 'Submitting...' : 'Update Data'}
-      </Button>
-     </form>
-    </FormProvider>
+      {/* Allocation (A), (B), (C), (D) */}
+      <AllAllocationCard />
+
+      {/* Asset Performance Panel */}
+      <div className="col-span-4">
+       <AssetPerformancePanel />
+      </div>
+
+      {/* System Status */}
+      <div className="col-span-4">
+       <Card className="h-full">
+        <CardContent>
+         <SystemStatus />
+        </CardContent>
+       </Card>
+      </div>
+     </div>
+    )}
    </div>
   </div>
  );

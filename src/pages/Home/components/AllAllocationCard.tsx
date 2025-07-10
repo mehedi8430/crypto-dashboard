@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Link } from "react-router";
 import Allocation from "./Allocation";
 import { useEffect, useState } from "react";
 import { mockData } from "@/data/mockData";
+import type { ChartConfig } from "@/components/ui/chart";
 
 const allocationColors: { [key: string]: string } = {
   A: "#0867ED",
@@ -9,30 +11,46 @@ const allocationColors: { [key: string]: string } = {
   C: "#F2C916",
 };
 
+type AllocationData = {
+  label: string;
+  startingBalance: number;
+  endingBalance: number;
+  gainPercent: number;
+  chartData: { day: string; value: number }[];
+  chartConfig: ChartConfig;
+};
+
 export default function AllAllocationCard() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [allocationData, setAllocationData] = useState<any[]>([]);
+  const [allocationData, setAllocationData] = useState<AllocationData[]>([]);
 
   useEffect(() => {
-    const allocations = mockData.allocations;
+    const { D: _D, ...allocationsToShow } = mockData.allocations;
 
-    const formattedAllocationData = Object.keys(allocations).map((key) => {
-      const allocation = allocations[key as keyof typeof allocations];
-      return {
-        label: key,
-        startingBalance: allocation.startingBalance,
-        endingBalance: allocation.endingBalance,
-        gainPercent: allocation.dailyGainPercent,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        chartData: allocation.chartData.map((d: any) => ({...d, day: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }), value: d.balance})),
-        chartConfig: {
-          desktop: {
-            label: "value",
-            color: allocationColors[key as keyof typeof allocationColors],
+    const formattedAllocationData = Object.keys(allocationsToShow).map(
+      (key) => {
+        const allocation =
+          allocationsToShow[key as keyof typeof allocationsToShow];
+        return {
+          label: key,
+          startingBalance: allocation.startingBalance,
+          endingBalance: allocation.endingBalance,
+          gainPercent: allocation.dailyGainPercent,
+          chartData: allocation.chartData.map((d: { date: string; balance: number }) => ({
+            ...d,
+            day: new Date(d.date).toLocaleDateString("en-US", {
+              weekday: "short",
+            }),
+            value: d.balance,
+          })),
+          chartConfig: {
+            desktop: {
+              label: "value",
+              color: allocationColors[key as keyof typeof allocationColors],
+            },
           },
-        },
-      };
-    });
+        };
+      }
+    );
     setAllocationData(formattedAllocationData);
   }, []);
 
