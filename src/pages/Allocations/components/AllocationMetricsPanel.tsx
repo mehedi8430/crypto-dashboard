@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
-import { database } from "@/Firebase/Firebase";
-import { ref, onValue } from "firebase/database";
+import { mockData } from "@/data/mockData";
 
 interface AllocationMetricsPanelProps {
   allocation: "a" | "b" | "c" | "d";
@@ -75,29 +74,15 @@ export const AllocationMetricsPanel: React.FC<AllocationMetricsPanelProps> = ({ 
   useEffect(() => {
     if (!allocation) return;
 
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const allocationData = mockData.allocations[allocation.toUpperCase() as keyof typeof mockData.allocations];
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocationData = latestReport.allocations[allocation.toUpperCase()];
+    if (allocationData) {
+        setAllocationDetails({
+            lastPayout: allocationData.lastPayout as string,
+            nextUnlock: allocationData.nextUnlock as string
+        });
+    }
 
-          if (allocationData) {
-            setAllocationDetails({
-              lastPayout: allocationData.lastPayout,
-              nextUnlock: allocationData.nextUnlock
-            });
-          }
-        }
-      }
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
   }, [allocation]);
 
   const data = panelData[allocation];

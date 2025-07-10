@@ -5,8 +5,6 @@ import { createBrowserRouter } from "react-router";
 import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
-import LoginPage from "@/pages/Login";
-import RegisterPage from "@/pages/Register";
 
 export const routes = createBrowserRouter([
   {
@@ -54,16 +52,5 @@ export const routes = createBrowserRouter([
         element: <DataForms />,
       },
     ],
-  },
-  // Authentication
-  {
-    path: "/login",
-    element: <LoginPage />,
-    errorElement: <div>Error occurred</div>,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-    errorElement: <div>Error occurred</div>,
   },
 ]);

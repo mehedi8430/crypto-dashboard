@@ -15,8 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
+
 
 const allocationColors = {
   a: "#0867ED", // Blue
@@ -60,37 +60,24 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
   useEffect(() => {
     if (!allocation) return;
 
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const allocationData = mockData.allocations[allocation.toUpperCase() as keyof typeof mockData.allocations];
+    
+    if (allocationData) {
+        const allocationChartData = allocationData.chartData.map((d: any) => ({ ...d, performance: d.balance }));
+        if (allocationChartData) {
+        setChartData(allocationChartData);
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocationChartData = latestReport.allocations[allocation.toUpperCase()]?.chartData.map((d: any) => ({ ...d, performance: d.balance }));
-          if (allocationChartData) {
-            setChartData(allocationChartData);
+        const values = allocationChartData.map((d: any) => d.performance);
+        const dataMin = Math.min(...values);
+        const dataMax = Math.max(...values);
 
-            const values = allocationChartData.map((d: any) => d.performance);
-            const dataMin = Math.min(...values);
-            const dataMax = Math.max(...values);
-
-            const padding = (dataMax - dataMin) * 0.1;
-            const newMinValue = Math.floor(dataMin - padding);
-            const newMaxValue = Math.ceil(dataMax + padding);
-            setMinValue(newMinValue);
-            setMaxValue(newMaxValue);
-          }
+        const padding = (dataMax - dataMin) * 0.1;
+        const newMinValue = Math.floor(dataMin - padding);
+        const newMaxValue = Math.ceil(dataMax + padding);
+        setMinValue(newMinValue);
+        setMaxValue(newMaxValue);
         }
-      }
-    }, (error) => {
-      console.error('Error fetching vaultReports:', error);
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
+    }
   }, [allocation]);
 
 

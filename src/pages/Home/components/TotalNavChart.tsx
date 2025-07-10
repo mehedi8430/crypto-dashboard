@@ -6,8 +6,7 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { useEffect, useState } from 'react';
-import { ref, onValue } from 'firebase/database';
-import { database } from '@/Firebase/Firebase'; // Your Firebase config
+import { mockData } from "@/data/mockData";
 
 const chartConfig = {
   total_nav: {
@@ -23,42 +22,25 @@ export default function TotalNavChart() {
   const [dynamicTicks, setDynamicTicks] = useState<number[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const navChartData = mockData.nav.chartData.map((d: any) => ({ ...d, total_nav: d.nav }));
+    setChartData(navChartData);
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const navChartData = latestReport.nav.chartData.map((d: any) => ({ ...d, total_nav: d.nav }));
-          setChartData(navChartData);
+    const values = navChartData.map((d: any) => d.total_nav);
+    const dataMin = Math.min(...values);
+    const dataMax = Math.max(...values);
 
-          const values = navChartData.map((d: any) => d.total_nav);
-          const dataMin = Math.min(...values);
-          const dataMax = Math.max(...values);
+    const padding = (dataMax - dataMin) * 0.1;
+    const newMinValue = Math.floor(dataMin - padding);
+    const newMaxValue = Math.ceil(dataMax + padding);
+    setMinValue(newMinValue);
+    setMaxValue(newMaxValue);
 
-          const padding = (dataMax - dataMin) * 0.1;
-          const newMinValue = Math.floor(dataMin - padding);
-          const newMaxValue = Math.ceil(dataMax + padding);
-          setMinValue(newMinValue);
-          setMaxValue(newMaxValue);
-
-          const tickCount = 5;
-          const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
-          const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-            Math.round(newMinValue + tickStep * i)
-          );
-          setDynamicTicks(newDynamicTicks);
-        }
-      }
-    }, (error) => {
-      console.error('Error fetching vaultReports:', error);
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
+    const tickCount = 5;
+    const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
+    const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
+      Math.round(newMinValue + tickStep * i)
+    );
+    setDynamicTicks(newDynamicTicks);
   }, []);
 
 
