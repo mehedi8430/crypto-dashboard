@@ -1,7 +1,6 @@
-import { useLogin } from "@/hooks/queries";
+import { useLogin } from "@/queries/authQueries";
 import React from "react";
 import sideImage from "@/assets/image/login-side-image.gif";
-
 
 import "./LoginForm.css";
 
@@ -65,8 +64,7 @@ export function LoginForm() {
                 <a
                   href="#"
                   className="font-medium text-blue-500 hover:text-blue-400"
-                >
-                </a>
+                ></a>
               </div>
             </div>
             <div>
@@ -79,13 +77,14 @@ export function LoginForm() {
               </button>
             </div>
           </form>
-          <div className="social-login">
-            
-          </div>
+          <div className="social-login"></div>
           <div className="register-link">
             <p>
               Don't have account?{" "}
-              <a href="/register" className="font-medium text-blue-500 hover:text-blue-400">
+              <a
+                href="/register"
+                className="font-medium text-blue-500 hover:text-blue-400"
+              >
                 Register Now
               </a>
             </p>
@@ -93,11 +92,7 @@ export function LoginForm() {
         </div>
       </div>
       <div className="login-image-wrapper">
-        <img
-          src={sideImage}
-          alt="Crypto Animation"
-          className="login-image"
-        />
+        <img src={sideImage} alt="Crypto Animation" className="login-image" />
       </div>
     </div>
   );
