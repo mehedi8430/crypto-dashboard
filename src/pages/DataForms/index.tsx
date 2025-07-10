@@ -1,244 +1,256 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller, FormProvider } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { database } from '@/Firebase/Firebase';
-import { ref, push, set, query, orderByChild, limitToLast, onValue } from 'firebase/database';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 
-// --- Zod Validation Schemas (No changes here) ---
-const navChartDataSchema = z.object({
- date: z.string().min(1, 'Date is required'),
- time: z.string().min(1, 'Time is required'),
- nav: z.number({ required_error: "NAV is required" }).positive('NAV must be positive'),
-});
-
-const balanceChartDataSchema = z.object({
- date: z.string().min(1, 'Date is required'),
- time: z.string().min(1, 'Time is required'),
- balance: z.number({ required_error: "Balance is required" }).positive('Balance must be positive'),
-});
-
-const dailyPerformanceHistorySchema = z.object({
- date: z.string().min(1, 'Date is required'),
- balance: z.number({ required_error: "Balance is required" }),
- dailyChange: z.number({ required_error: "Field is required" }),
- percentChange: z.number({ required_error: "Field is required" }),
- notes: z.string().optional(),
-});
-
-const allocationSchema = z.object({
- name: z.string().min(1, 'Name is required'),
- startingBalance: z.number({ required_error: "Field is required" }),
- dailyGain: z.number({ required_error: "Field is required" }),
- dailyGainPercent: z.number({ required_error: "Field is required" }),
- endingBalance: z.number({ required_error: "Field is required" }),
- notes: z.string().optional(),
- chartData: z.array(balanceChartDataSchema),
- dailyPerformanceHistory: z.array(dailyPerformanceHistorySchema),
- lastPayout: z.string().optional(),
- nextUnlock: z.string().optional(),
-});
-
-const assetPerformanceSchema = z.object({
- symbol: z.string().min(1, 'Symbol is required'),
- open: z.number({ required_error: "Field is required" }),
- close: z.number({ required_error: "Field is required" }),
- changePercent: z.number({ required_error: "Field is required" }),
- volumeUsd: z.number({ required_error: "Field is required" }),
-});
+// Mock Data
+const mockData = {
+  reportDate: "2024-07-15",
+  nav: {
+    startingNav: 100000,
+    endingNav: 105000,
+    growthPercent: 5,
+    chartData: [
+      { date: "2024-07-01", time: "09:00", nav: 100000 },
+      { date: "2024-07-02", time: "09:00", nav: 101000 },
+      { date: "2024-07-03", time: "09:00", nav: 102000 },
+      { date: "2024-07-04", time: "09:00", nav: 101500 },
+      { date: "2024-07-05", time: "09:00", nav: 103000 },
+      { date: "2024-07-06", time: "09:00", nav: 104000 },
+      { date: "2024-07-07", time: "09:00", nav: 105000 },
+    ],
+  },
+  allocationBreakdown: {
+    A_percent: 30,
+    B_percent: 25,
+    C_percent: 20,
+    D_percent: 15,
+    auditPac_percent: 10,
+  },
+  allocations: {
+    A: {
+      name: "Allocation A",
+      startingBalance: 30000,
+      dailyGain: 1500,
+      dailyGainPercent: 5,
+      endingBalance: 31500,
+      notes: "Core holdings performed well.",
+      chartData: [
+        { date: "2024-07-01", time: "09:00", balance: 30000 },
+        { date: "2024-07-02", time: "09:00", balance: 30500 },
+        { date: "2024-07-03", time: "09:00", balance: 31000 },
+        { date: "2024-07-04", time: "09:00", balance: 30800 },
+        { date: "2024-07-05", time: "09:00", balance: 31200 },
+        { date: "2024-07-06", time: "09:00", balance: 31400 },
+        { date: "2024-07-07", time: "09:00", balance: 31500 },
+      ],
+      dailyPerformanceHistory: [
+          { date: "2024-07-07", balance: 31500, dailyChange: 100, percentChange: 0.32, notes: "Stable growth" }
+      ],
+      lastPayout: new Date().toISOString(),
+      nextUnlock: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    B: {
+        name: "Allocation B",
+        startingBalance: 25000,
+        dailyGain: 1250,
+        dailyGainPercent: 5,
+        endingBalance: 26250,
+        notes: "Growth strategy showing promise.",
+        chartData: [
+            { date: "2024-07-01", time: "09:00", balance: 25000 },
+            { date: "2024-07-07", time: "09:00", balance: 26250 },
+        ],
+        dailyPerformanceHistory: [
+            { date: "2024-07-07", balance: 26250, dailyChange: 150, percentChange: 0.57, notes: "Positive trend" }
+        ],
+        lastPayout: new Date().toISOString(),
+        nextUnlock: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    C: {
+        name: "Allocation C",
+        startingBalance: 20000,
+        dailyGain: 1000,
+        dailyGainPercent: 5,
+        endingBalance: 21000,
+        notes: "Alternative assets are stable.",
+        chartData: [
+            { date: "2024-07-01", time: "09:00", balance: 20000 },
+            { date: "2024-07-07", time: "09:00", balance: 21000 },
+        ],
+        dailyPerformanceHistory: [
+            { date: "2024-07-07", balance: 21000, dailyChange: 50, percentChange: 0.24, notes: "Steady" }
+        ],
+        lastPayout: new Date().toISOString(),
+        nextUnlock: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    D: {
+        name: "Allocation D",
+        startingBalance: 15000,
+        dailyGain: 750,
+        dailyGainPercent: 5,
+        endingBalance: 15750,
+        notes: "Exploring new opportunities.",
+        chartData: [
+            { date: "2024-07-01", time: "09:00", balance: 15000 },
+            { date: "2024-07-07", time: "09:00", balance: 15750 },
+        ],
+        dailyPerformanceHistory: [
+            { date: "2024-07-07", balance: 15750, dailyChange: 20, percentChange: 0.13, notes: "Initial phase" }
+        ],
+        lastPayout: new Date().toISOString(),
+        nextUnlock: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  },
+  assetPerformance: {
+    ETH: { symbol: "ETH", open: 3000, close: 3100, changePercent: 3.33, volumeUsd: 1500000000 },
+    BTC: { symbol: "BTC", open: 60000, close: 62000, changePercent: 3.33, volumeUsd: 30000000000 },
+    TUSD: { symbol: "TUSD", open: 1, close: 1, changePercent: 0, volumeUsd: 500000000 },
+    USDT: { symbol: "USDT", open: 1, close: 1, changePercent: 0, volumeUsd: 70000000000 },
+    DAI: { symbol: "DAI", open: 1, close: 1, changePercent: 0, volumeUsd: 200000000 },
+    SUSD: { symbol: "SUSD", open: 1, close: 1, changePercent: 0, volumeUsd: 10000000 },
+  },
+  systemStatus: {
+    tradingEngine: true,
+    dataFeeds: true,
+    riskManagement: true,
+    compliance: true,
+    lastSyncSuccess: true,
+  },
+  visualFlags: {
+    tradingEngine: "green",
+    dataFeeds: "green",
+    riskManagement: "green",
+    compliance: "green",
+    systemSync: "green",
+  },
+  teamNotes: {
+    devStatus: "All systems operational",
+    developer: "Admin",
+    expectedPreview: "N/A",
+    dataEntryMode: "Manual",
+  },
+  dailyReportText: "A brief summary of today's market performance and outlook.",
+};
 
 const formSchema = z.object({
- reportDate: z.string().min(1, "Report date is required"),
- nav: z.object({
-  startingNav: z.number({ required_error: "Field is required" }),
-  endingNav: z.number({ required_error: "Field is required" }),
-  growthPercent: z.number({ required_error: "Field is required" }),
-  chartData: z.array(navChartDataSchema),
- }),
- allocationBreakdown: z.object({
-  A_percent: z.number({ required_error: "Field is required" }),
-  B_percent: z.number({ required_error: "Field is required" }),
-  C_percent: z.number({ required_error: "Field is required" }),
-  D_percent: z.number({ required_error: "Field is required" }),
-  auditPac_percent: z.number({ required_error: "Field is required" }),
- }),
- allocations: z.object({
-  A: allocationSchema,
-  B: allocationSchema,
-  C: allocationSchema,
-  D: allocationSchema,
- }),
- assetPerformance: z.object({
-  ETH: assetPerformanceSchema,
-  BTC: assetPerformanceSchema,
-  TUSD: assetPerformanceSchema,
-  USDT: assetPerformanceSchema,
-  DAI: assetPerformanceSchema,
-  SUSD: assetPerformanceSchema,
- }),
- systemStatus: z.object({
-  tradingEngine: z.boolean(),
-  dataFeeds: z.boolean(),
-  riskManagement: z.boolean(),
-  compliance: z.boolean(),
-  lastSyncSuccess: z.boolean(),
- }),
- visualFlags: z.object({
-  tradingEngine: z.string().min(1, "Flag is required"),
-  dataFeeds: z.string().min(1, "Flag is required"),
-  riskManagement: z.string().min(1, "Flag is required"),
-  compliance: z.string().min(1, "Flag is required"),
-  systemSync: z.string().min(1, "Flag is required"),
- }),
- teamNotes: z.object({
-  devStatus: z.string().optional(),
-  developer: z.string().optional(),
-  expectedPreview: z.string().optional(),
-  dataEntryMode: z.string().optional(),
- }),
- dailyReportText: z.string().optional(),
+    reportDate: z.string().min(1, "Report date is required"),
+    nav: z.object({
+     startingNav: z.number({ required_error: "Field is required" }),
+     endingNav: z.number({ required_error: "Field is required" }),
+     growthPercent: z.number({ required_error: "Field is required" }),
+    }),
+    allocationBreakdown: z.object({
+     A_percent: z.number({ required_error: "Field is required" }),
+     B_percent: z.number({ required_error: "Field is required" }),
+     C_percent: z.number({ required_error: "Field is required" }),
+     D_percent: z.number({ required_error: "Field is required" }),
+     auditPac_percent: z.number({ required_error: "Field is required" }),
+    }),
+    allocations: z.object({
+     A: z.object({
+        name: z.string(),
+        startingBalance: z.number(),
+        endingBalance: z.number(),
+        dailyGain: z.number(),
+        dailyGainPercent: z.number(),
+        notes: z.string().optional(),
+        lastPayout: z.string().optional(),
+        nextUnlock: z.string().optional(),
+     }),
+     B: z.object({
+        name: z.string(),
+        startingBalance: z.number(),
+        endingBalance: z.number(),
+        dailyGain: z.number(),
+        dailyGainPercent: z.number(),
+        notes: z.string().optional(),
+        lastPayout: z.string().optional(),
+        nextUnlock: z.string().optional(),
+     }),
+     C: z.object({
+        name: z.string(),
+        startingBalance: z.number(),
+        endingBalance: z.number(),
+        dailyGain: z.number(),
+        dailyGainPercent: z.number(),
+        notes: z.string().optional(),
+        lastPayout: z.string().optional(),
+        nextUnlock: z.string().optional(),
+     }),
+     D: z.object({
+        name: z.string(),
+        startingBalance: z.number(),
+        endingBalance: z.number(),
+        dailyGain: z.number(),
+        dailyGainPercent: z.number(),
+        notes: z.string().optional(),
+        lastPayout: z.string().optional(),
+        nextUnlock: z.string().optional(),
+     }),
+    }),
+    assetPerformance: z.object({
+     ETH: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+     BTC: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+     TUSD: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+     USDT: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+     DAI: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+     SUSD: z.object({ symbol: z.string(), open: z.number(), close: z.number(), changePercent: z.number(), volumeUsd: z.number() }),
+    }),
+    systemStatus: z.object({
+     tradingEngine: z.boolean(),
+     dataFeeds: z.boolean(),
+     riskManagement: z.boolean(),
+     compliance: z.boolean(),
+     lastSyncSuccess: z.boolean(),
+    }),
+    visualFlags: z.object({
+     tradingEngine: z.string().min(1, "Flag is required"),
+     dataFeeds: z.string().min(1, "Flag is required"),
+     riskManagement: z.string().min(1, "Flag is required"),
+     compliance: z.string().min(1, "Flag is required"),
+     systemSync: z.string().min(1, "Flag is required"),
+    }),
+    teamNotes: z.object({
+     devStatus: z.string().optional(),
+     developer: z.string().optional(),
+     expectedPreview: z.string().optional(),
+     dataEntryMode: z.string().optional(),
+    }),
+    dailyReportText: z.string().optional(),
 });
 
-// --- Main React Component ---
+
 export default function DataForms() {
  const [isSubmitting, setIsSubmitting] = useState(false);
- const navigate = useNavigate();
- const [initialData, setInitialData] = useState<z.infer<typeof formSchema> | null>(null);
+ const [initialData] = useState(mockData);
+
 
  const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
-  defaultValues: initialData || undefined
+  defaultValues: initialData,
  });
-
- // First useEffect for fetching initial data
- useEffect(() => {
-  document.title = 'Create New Vault Report';
-  const reportsRef = ref(database, 'vaultReports');
-  const lastReportQuery = query(reportsRef, orderByChild('generatedDate'), limitToLast(1));
-
-  const unsubscribe = onValue(lastReportQuery, (snapshot) => {
-   if (snapshot.exists()) {
-    const reports = snapshot.val();
-    const lastReportKey = Object.keys(reports)[0];
-    const lastReport = reports[lastReportKey];
-    const formData = {
-     ...lastReport,
-     reportDate: new Date(lastReport.reportDate).toISOString().split('T')[0],
-    };
-    setInitialData(formData);
-    form.reset(formData);
-   }
-  }, (error) => {
-   console.error("Error fetching last report:", error);
-   toast.error("Failed to fetch latest report data.");
-  });
-
-  return () => {
-   unsubscribe();
-   document.title = 'Dashboard';
-  };
- }, [form]);
-
- const { fields: navChartFields, append: appendNavChart, remove: removeNavChart } = useFieldArray({ control: form.control, name: "nav.chartData" });
- const { fields: allocAChartFields, append: appendAllocAChart, remove: removeAllocAChart } = useFieldArray({ control: form.control, name: "allocations.A.chartData" });
- const { fields: allocBChartFields, append: appendAllocBChart, remove: removeAllocBChart } = useFieldArray({ control: form.control, name: "allocations.B.chartData" });
- const { fields: allocCChartFields, append: appendAllocCChart, remove: removeAllocCChart } = useFieldArray({ control: form.control, name: "allocations.C.chartData" });
- const { fields: allocDChartFields, append: appendAllocDChart, remove: removeAllocDChart } = useFieldArray({ control: form.control, name: "allocations.D.chartData" });
- const { fields: allocADailyFields, append: appendAllocADaily, remove: removeAllocADaily } = useFieldArray({ control: form.control, name: "allocations.A.dailyPerformanceHistory" });
- const { fields: allocBDailyFields, append: appendAllocBDaily, remove: removeAllocBDaily } = useFieldArray({ control: form.control, name: "allocations.B.dailyPerformanceHistory" });
- const { fields: allocCDailyFields, append: appendAllocCDaily, remove: removeAllocCDaily } = useFieldArray({ control: form.control, name: "allocations.C.dailyPerformanceHistory" });
- const { fields: allocDDailyFields, append: appendAllocDDaily, remove: removeAllocDDaily } = useFieldArray({ control: form.control, name: "allocations.D.dailyPerformanceHistory" });
-
- // Watch the master 'reportDate' field for changes
- const watchedReportDate = form.watch('reportDate');
-
- // Second useEffect to synchronize all other date fields when 'reportDate' changes
- useEffect(() => {
-  if (watchedReportDate) {
-   const updateFieldArrayDates = (fields: { id: string }[], basePath: string) => {
-    fields.forEach((_, index) => {
-     form.setValue(`${basePath}.${index}.date` as any, watchedReportDate);
-    });
-   };
-
-   updateFieldArrayDates(navChartFields, "nav.chartData");
-   updateFieldArrayDates(allocAChartFields, "allocations.A.chartData");
-   updateFieldArrayDates(allocBChartFields, "allocations.B.chartData");
-   updateFieldArrayDates(allocCChartFields, "allocations.C.chartData");
-   updateFieldArrayDates(allocDChartFields, "allocations.D.chartData");
-   updateFieldArrayDates(allocADailyFields, "allocations.A.dailyPerformanceHistory");
-   updateFieldArrayDates(allocBDailyFields, "allocations.B.dailyPerformanceHistory");
-   updateFieldArrayDates(allocCDailyFields, "allocations.C.dailyPerformanceHistory");
-   updateFieldArrayDates(allocDDailyFields, "allocations.D.dailyPerformanceHistory");
-  }
- }, [watchedReportDate, navChartFields, allocAChartFields, allocBChartFields, allocCChartFields, allocDChartFields, allocADailyFields, allocBDailyFields, allocCDailyFields, allocDDailyFields, form]);
 
  async function onSubmit(values: z.infer<typeof formSchema>) {
   setIsSubmitting(true);
   try {
-   const reportsRef = ref(database, 'vaultReports');
-   const newReportRef = push(reportsRef);
-
-   const now = new Date();
-   const submissionData = {
-    ...values,
-    generatedDate: now.toISOString().split('T')[0],
-    generatedTime: now.toTimeString().split(' ')[0],
-    lastUpdatedDate: now.toISOString().split('T')[0],
-    lastUpdatedTime: now.toTimeString().split(' ')[0],
-    id: newReportRef.key,
-   };
-
-   await set(newReportRef, submissionData);
-
-   toast.success('Report submitted successfully!')
-   form.reset();
-   navigate('/dashboard');
+   console.log("Form Submitted", values);
+   toast.success('Report submitted successfully!');
+   // Here you would typically send the data to a server or update your mock data source
   } catch (error) {
    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-   console.error("Firebase submission error:", errorMessage);
+   console.error("Submission error:", errorMessage);
    toast.error(errorMessage)
   } finally {
    setIsSubmitting(false);
   }
  }
 
- const renderChartDataFields = (fields: Record<"id", string>[], removeFn: (i: number) => void, appendFn: (d: any) => void, namePrefix: string, valueKey: 'nav' | 'balance') => (
-  <div className="space-y-2">
-   {fields.map((field, index) => (
-    <div key={field.id} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-     <Controller control={form.control} name={`${namePrefix}.${index}.date` as any} render={({ field }) => <Input type="date" {...field} />} />
-     <Controller control={form.control} name={`${namePrefix}.${index}.time` as any} render={({ field }) => <Input type="time" {...field} />} />
-     <Controller control={form.control} name={`${namePrefix}.${index}.${valueKey}` as any} render={({ field }) => <Input type="number" placeholder="Value" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />} />
-     <Button type="button" onClick={() => removeFn(index)} className="bg-destructive hover:bg-destructive/90 h-10">Remove</Button>
-    </div>
-   ))}
-   <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', time: '', [valueKey]: 0 })} className="text-sm">Add Data Point</Button>
-  </div>
- );
-
- const renderDailyPerformanceFields = (fields: Record<"id", string>[], removeFn: (i: number) => void, appendFn: (d: any) => void, namePrefix: string) => (
-  <div className="space-y-2">
-   {fields.map((field, index) => (
-    <div key={field.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center">
-     <Controller control={form.control} name={`${namePrefix}.${index}.date` as any} render={({ field }) => <Input type="date" {...field} />} />
-     <Controller control={form.control} name={`${namePrefix}.${index}.balance` as any} render={({ field }) => <Input type="number" placeholder="Balance" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />} />
-     <Controller control={form.control} name={`${namePrefix}.${index}.dailyChange` as any} render={({ field }) => <Input type="number" placeholder="Daily Change" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />} />
-     <Controller control={form.control} name={`${namePrefix}.${index}.percentChange` as any} render={({ field }) => <Input type="number" placeholder="% Change" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />} />
-     <Button type="button" onClick={() => removeFn(index)} className="bg-destructive hover:bg-destructive/90 h-10">Remove</Button>
-    </div>
-   ))}
-   <Button type="button" onClick={() => appendFn({ date: form.getValues('reportDate') || '', balance: 0, dailyChange: 0, percentChange: 0, notes: '-' })} className="text-sm">Add Daily Record</Button>
-  </div>
- );
 
  if (!initialData) {
   return (
@@ -248,165 +260,61 @@ export default function DataForms() {
   )
  }
 
+
  return (
   <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 lg:p-8">
    <div className="max-w-7xl mx-auto">
-    <h1 className="text-2xl font-bold mb-6">Create New Vault Report</h1>
+    <h1 className="text-2xl font-bold mb-6">Admin Dashboard - Manage Data</h1>
+
 
     <FormProvider {...form}>
      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
+
       <div className="bg-card p-4 rounded-lg">
-       <Controller control={form.control} name="reportDate" render={({ field }) => (
-        <FormItem>
+       <FormItem>
          <FormLabel>Report Date</FormLabel>
-         <FormControl><Input type="date" {...field} /></FormControl>
+         <FormControl><Input type="date" {...form.register("reportDate")} /></FormControl>
          <FormMessage>{form.formState.errors.reportDate?.message}</FormMessage>
         </FormItem>
-       )} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-       <div className="lg:col-span-2 space-y-8">
-        <div className="bg-card p-4 rounded-lg space-y-4">
+
+      {/* Other form sections go here */}
+      {/* Example for NAV */}
+      <div className="bg-card p-4 rounded-lg space-y-4">
          <h3 className="font-bold text-lg">Total NAV</h3>
          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Controller control={form.control} name="nav.startingNav" render={({ field }) => <FormItem><FormLabel>Starting NAV</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.nav?.startingNav?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="nav.endingNav" render={({ field }) => <FormItem><FormLabel>Ending NAV</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.nav?.endingNav?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="nav.growthPercent" render={({ field }) => <FormItem><FormLabel>Growth %</FormLabel><FormControl><Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.nav?.growthPercent?.message}</FormMessage></FormItem>} />
+          <FormItem><FormLabel>Starting NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.startingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.startingNav?.message}</FormMessage></FormItem>
+          <FormItem><FormLabel>Ending NAV</FormLabel><FormControl><Input type="number" {...form.register("nav.endingNav", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.endingNav?.message}</FormMessage></FormItem>
+          <FormItem><FormLabel>Growth %</FormLabel><FormControl><Input type="number" step="0.01" {...form.register("nav.growthPercent", { valueAsNumber: true })} /></FormControl><FormMessage>{form.formState.errors.nav?.growthPercent?.message}</FormMessage></FormItem>
          </div>
-         <h4 className="font-semibold pt-4 border-t border-border">NAV Chart Data</h4>
-         {renderChartDataFields(navChartFields, removeNavChart, appendNavChart, "nav.chartData", "nav")}
-        </div>
-
-        <div className="bg-card p-4 rounded-lg space-y-4">
-         <h3 className="font-bold text-lg">Asset Performance Panel</h3>
-         <div className="space-y-3">
-          {(Object.keys(form.getValues().assetPerformance) as Array<keyof z.infer<typeof formSchema>["assetPerformance"]>).map((key) => {
-           type AssetKey = keyof z.infer<typeof formSchema>["assetPerformance"];
-           const assetErrors = form.formState.errors.assetPerformance?.[key as AssetKey];
-           return (
-            <div key={key}>
-             <h4 className="font-semibold text-primary">{key}</h4>
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 mt-1">
-              <Controller control={form.control} name={`assetPerformance.${key}.open` as any} render={({ field }) => <FormItem><FormLabel>Open</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{assetErrors?.open?.message}</FormMessage></FormItem>} />
-              <Controller control={form.control} name={`assetPerformance.${key}.close` as any} render={({ field }) => <FormItem><FormLabel>Close</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{assetErrors?.close?.message}</FormMessage></FormItem>} />
-              <Controller control={form.control} name={`assetPerformance.${key}.changePercent` as any} render={({ field }) => <FormItem><FormLabel>Change %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{assetErrors?.changePercent?.message}</FormMessage></FormItem>} />
-              <Controller control={form.control} name={`assetPerformance.${key}.volumeUsd` as any} render={({ field }) => <FormItem><FormLabel>Volume USD</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{assetErrors?.volumeUsd?.message}</FormMessage></FormItem>} />
-             </div>
-            </div>
-           );
-          })}
-         </div>
-        </div>
-       </div>
-
-       <div className="space-y-8">
-        <div className="bg-card p-4 rounded-lg space-y-4">
-         <h3 className="font-bold text-lg">Allocation Breakdown</h3>
-         <div className="grid grid-cols-2 gap-4">
-          <Controller control={form.control} name="allocationBreakdown.A_percent" render={({ field }) => <FormItem><FormLabel>Allocation A %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.A_percent?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="allocationBreakdown.B_percent" render={({ field }) => <FormItem><FormLabel>Allocation B %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.B_percent?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="allocationBreakdown.C_percent" render={({ field }) => <FormItem><FormLabel>Allocation C %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.C_percent?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="allocationBreakdown.D_percent" render={({ field }) => <FormItem><FormLabel>Allocation D %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.D_percent?.message}</FormMessage></FormItem>} />
-          <Controller control={form.control} name="allocationBreakdown.auditPac_percent" render={({ field }) => <FormItem><FormLabel>Audit PAC %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocationBreakdown?.auditPac_percent?.message}</FormMessage></FormItem>} />
-         </div>
-        </div>
-
-        <div className="bg-card p-4 rounded-lg space-y-4">
-         <h3 className="font-bold text-lg">System Status</h3>
-         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {(Object.keys(form.getValues().systemStatus) as Array<keyof z.infer<typeof formSchema>["systemStatus"]>).map((key) => (
-           <Controller key={key} control={form.control} name={`systemStatus.${key}`} render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3 shadow-sm bg-accent/50">
-             <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-             <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} onBlur={field.onBlur} name={field.name} disabled={field.disabled} /></FormControl>
-            </FormItem>
-           )} />
-          ))}
-         </div>
-        </div>
-       </div>
       </div>
 
+
+      {/* Example for Allocations */}
       <div className="bg-card p-4 rounded-lg space-y-6">
        <h3 className="font-bold text-lg">Allocations</h3>
-       <div className="grid grid-cols-1 gap-6">
-        {(Object.keys(form.getValues().allocations) as Array<keyof z.infer<typeof formSchema>["allocations"]>).map((key) => (
+       {(Object.keys(form.getValues().allocations) as Array<keyof typeof mockData.allocations>).map((key) => (
          <div key={key} className="bg-accent/50 p-4 rounded-lg space-y-4">
           <h4 className="font-bold text-primary">{form.getValues().allocations[key].name}</h4>
-          <Controller control={form.control} name={`allocations.${key}.notes`} render={({ field }) => <FormItem><FormLabel>Notes</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.notes?.message}</FormMessage></FormItem>} />
-          <div className="grid grid-cols-2 gap-4">
-           <Controller control={form.control} name={`allocations.${key}.startingBalance`} render={({ field }) => <FormItem><FormLabel>Start Balance</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.startingBalance?.message}</FormMessage></FormItem>} />
-           <Controller control={form.control} name={`allocations.${key}.endingBalance`} render={({ field }) => <FormItem><FormLabel>End Balance</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.endingBalance?.message}</FormMessage></FormItem>} />
-           <Controller control={form.control} name={`allocations.${key}.dailyGain`} render={({ field }) => <FormItem><FormLabel>Daily Gain</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.dailyGain?.message}</FormMessage></FormItem>} />
-           <Controller control={form.control} name={`allocations.${key}.dailyGainPercent`} render={({ field }) => <FormItem><FormLabel>Daily Gain %</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage>{form.formState.errors.allocations?.[key]?.dailyGainPercent?.message}</FormMessage></FormItem>} />
-           <Controller control={form.control} name={`allocations.${key}.lastPayout`} render={({ field }) => <FormItem><FormLabel>Last Payout</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl></FormItem>} />
-           <Controller control={form.control} name={`allocations.${key}.nextUnlock`} render={({ field }) => <FormItem><FormLabel>Next Unlock</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl></FormItem>} />
-          </div>
-          <h5 className="font-semibold pt-4 border-t border-border">Chart Data</h5>
-          {key === 'A' && renderChartDataFields(allocAChartFields, removeAllocAChart, appendAllocAChart, "allocations.A.chartData", "balance")}
-          {key === 'B' && renderChartDataFields(allocBChartFields, removeAllocBChart, appendAllocBChart, "allocations.B.chartData", "balance")}
-          {key === 'C' && renderChartDataFields(allocCChartFields, removeAllocCChart, appendAllocCChart, "allocations.C.chartData", "balance")}
-          {key === 'D' && renderChartDataFields(allocDChartFields, removeAllocDChart, appendAllocDChart, "allocations.D.chartData", "balance")}
-
-          <h5 className="font-semibold pt-4 border-t border-border">Daily Performance History</h5>
-          {key === 'A' && renderDailyPerformanceFields(allocADailyFields, removeAllocADaily, appendAllocADaily, "allocations.A.dailyPerformanceHistory")}
-          {key === 'B' && renderDailyPerformanceFields(allocBDailyFields, removeAllocBDaily, appendAllocBDaily, "allocations.B.dailyPerformanceHistory")}
-          {key === 'C' && renderDailyPerformanceFields(allocCDailyFields, removeAllocCDaily, appendAllocCDaily, "allocations.C.dailyPerformanceHistory")}
-          {key === 'D' && renderDailyPerformanceFields(allocDDailyFields, removeAllocDDaily, appendAllocDDaily, "allocations.D.dailyPerformanceHistory")}
+            <div className="grid grid-cols-2 gap-4">
+                <FormItem><FormLabel>Start Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.startingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
+                <FormItem><FormLabel>End Balance</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.endingBalance`, { valueAsNumber: true })} /></FormControl></FormItem>
+                <FormItem><FormLabel>Daily Gain</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGain`, { valueAsNumber: true })} /></FormControl></FormItem>
+                <FormItem><FormLabel>Daily Gain %</FormLabel><FormControl><Input type="number" {...form.register(`allocations.${key}.dailyGainPercent`, { valueAsNumber: true })} /></FormControl></FormItem>
+            </div>
          </div>
         ))}
-       </div>
       </div>
 
-      <div className="bg-card p-4 rounded-lg space-y-4">
-       <h3 className="font-bold text-lg">Visual Flags</h3>
-       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {(Object.keys(form.getValues().visualFlags) as Array<keyof z.infer<typeof formSchema>["visualFlags"]>).map((key) => (
-         <Controller key={key} control={form.control} name={`visualFlags.${key}`} render={({ field }) => (
-          <FormItem>
-           <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-           <FormControl><Input {...field} /></FormControl>
-           <FormMessage>{form.formState.errors.visualFlags?.[key]?.message}</FormMessage>
-          </FormItem>
-         )} />
-        ))}
-       </div>
-      </div>
-
-      <div className="bg-card p-4 rounded-lg space-y-4">
-       <h3 className="font-bold text-lg">Team Notes</h3>
-       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {(Object.keys(form.getValues().teamNotes) as Array<keyof z.infer<typeof formSchema>["teamNotes"]>).map((key) => (
-         <Controller key={key} control={form.control} name={`teamNotes.${key}`} render={({ field }) => (
-          <FormItem>
-           <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-           <FormControl><Input {...field} /></FormControl>
-           <FormMessage>{form.formState.errors.teamNotes?.[key]?.message}</FormMessage>
-          </FormItem>
-         )} />
-        ))}
-       </div>
-      </div>
-
-      <div className="bg-card p-4 rounded-lg space-y-4">
-       <h3 className="font-bold text-lg">Daily Report Text</h3>
-       <Controller control={form.control} name="dailyReportText" render={({ field }) => (
-        <FormItem>
-         <FormLabel>Daily Report Summary</FormLabel>
-         <FormControl><Textarea {...field} rows={4} /></FormControl>
-         <FormMessage>{form.formState.errors.dailyReportText?.message}</FormMessage>
-        </FormItem>
-       )} />
-      </div>
 
       <Button
        type="submit"
        disabled={isSubmitting}
        className="w-full text-lg"
       >
-       {isSubmitting ? 'Submitting...' : 'Submit Vault Report'}
+       {isSubmitting ? 'Submitting...' : 'Update Data'}
       </Button>
      </form>
     </FormProvider>

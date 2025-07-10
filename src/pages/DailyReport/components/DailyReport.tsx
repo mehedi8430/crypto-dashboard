@@ -9,38 +9,25 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
 
 export default function DailyReport() {
   const [performanceReportCards, setPerformanceReportCards] = useState<TPerformanceReportCard[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, 'vaultReports');
-
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        const formattedReports = reports.map(report => ({
-          date: new Date(report.reportDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-          deception: report.dailyReportText,
-          startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
-          endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
-          growthRate: {
-            value: report.nav.growthPercent,
-            sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
-            color: (report.nav.growthPercent >= 0 ? "green" : "red") as "green" | "red",
-            formatted: `${report.nav.growthPercent >= 0 ? '+' : '-'}${Math.abs(report.nav.growthPercent)}%`,
-          },
-        }));
-        setPerformanceReportCards(formattedReports);
-      }
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
-    };
+    const formattedReports = [mockData].map(report => ({
+        date: new Date(report.reportDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        deception: report.dailyReportText,
+        startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
+        endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
+        growthRate: {
+        value: report.nav.growthPercent,
+        sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
+        color: (report.nav.growthPercent >= 0 ? "green" : "red") as "green" | "red",
+        formatted: `${report.nav.growthPercent >= 0 ? '+' : '-'}${Math.abs(report.nav.growthPercent)}%`,
+        },
+    }));
+    setPerformanceReportCards(formattedReports);
   }, []);
 
   return (

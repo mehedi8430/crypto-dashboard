@@ -84,15 +84,4 @@ export const routes = createBrowserRouter([
       },
     ],
   },
-  // Authentication
-  {
-    path: "/login",
-    element: <LoginPage />,
-    errorElement: <div>Error occurred</div>,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-    errorElement: <div>Error occurred</div>,
-  },
 ]);

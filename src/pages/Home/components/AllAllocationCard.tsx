@@ -1,8 +1,7 @@
 import { Link } from "react-router";
 import Allocation from "./Allocation";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
 
 const allocationColors: { [key: string]: string } = {
   A: "#0867ED",
@@ -15,42 +14,26 @@ export default function AllAllocationCard() {
   const [allocationData, setAllocationData] = useState<any[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const allocations = mockData.allocations;
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
+    const formattedAllocationData = Object.keys(allocations).map((key) => {
+      const allocation = allocations[key as keyof typeof allocations];
+      return {
+        label: key,
+        startingBalance: allocation.startingBalance,
+        endingBalance: allocation.endingBalance,
+        gainPercent: allocation.dailyGainPercent,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocations = latestReport.allocations;
-
-          const formattedAllocationData = Object.keys(allocations).map((key) => {
-            const allocation = allocations[key];
-            return {
-              label: key,
-              startingBalance: allocation.startingBalance,
-              endingBalance: allocation.endingBalance,
-              gainPercent: allocation.dailyGainPercent,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              chartData: allocation.chartData.map((d: any) => ({...d, day: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }), value: d.balance})),
-              chartConfig: {
-                desktop: {
-                  label: "value",
-                  color: allocationColors[key],
-                },
-              },
-            };
-          });
-          setAllocationData(formattedAllocationData);
-        }
-      }
+        chartData: allocation.chartData.map((d: any) => ({...d, day: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }), value: d.balance})),
+        chartConfig: {
+          desktop: {
+            label: "value",
+            color: allocationColors[key as keyof typeof allocationColors],
+          },
+        },
+      };
     });
-
-    return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
-    };
+    setAllocationData(formattedAllocationData);
   }, []);
 
   return (

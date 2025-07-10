@@ -5,8 +5,7 @@ import type { TCoinData } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
 
 // coins images
 import ETH from "@/assets/icons/coins/Ethereum ETH.png";
@@ -31,40 +30,25 @@ export default function AssetPerformancePanel(): React.ReactNode {
   const [coins, setCoins] = useState<TCoinData[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, "vaultReports");
+    const assetPerformanceData = mockData.assetPerformance;
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const assetPerformanceData = latestReport.assetPerformance;
-
-          const formattedCoinsData = Object.keys(assetPerformanceData).map(
-            (key) => {
-              const coin = assetPerformanceData[key];
-              return {
-                image: coinImages[key],
-                name: key,
-                symbol: coin.symbol,
-                open: `+${coin.open}`,
-                close: `+${coin.close}%`,
-                change: `+${coin.changePercent}`,
-                volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
-                volumeTrend:
-                  coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
-              };
-            }
-          );
-          setCoins(formattedCoinsData);
-        }
+    const formattedCoinsData = Object.keys(assetPerformanceData).map(
+      (key) => {
+        const coin = assetPerformanceData[key as keyof typeof assetPerformanceData];
+        return {
+          image: coinImages[key],
+          name: key,
+          symbol: coin.symbol,
+          open: `+${coin.open}`,
+          close: `+${coin.close}%`,
+          change: `+${coin.changePercent}`,
+          volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
+          volumeTrend:
+            coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
+        };
       }
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
+    );
+    setCoins(formattedCoinsData);
   }, []);
 
   const columns: ColumnDef<TCoinData>[] = [

@@ -7,8 +7,7 @@ import type { TPerformanceRecord } from "@/types";
 import { DataTable } from "@/components/DataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AllocationMetricsPanel } from "./components/AllocationMetricsPanel";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
 
 export default function Allocations() {
   const { pathname } = useLocation();
@@ -35,50 +34,37 @@ export default function Allocations() {
   useEffect(() => {
     if (!allocation) return;
 
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const allocationData = mockData.allocations[allocation.toUpperCase() as keyof typeof mockData.allocations];
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocationData = latestReport.allocations[allocation.toUpperCase()];
+    if (allocationData) {
+        setFinancialData(allocationData.dailyPerformanceHistory.map((item: any) => ({
+          ...item,
+          balance: `$${item.balance.toLocaleString()}`,
+          dailyChange: `${item.dailyChange >= 0 ? '+' : '-'}$${Math.abs(item.dailyChange).toLocaleString()}`,
+          percentChange: `${item.percentChange >= 0 ? '+' : '-'}${Math.abs(item.percentChange)}%`,
+        })));
 
-          if (allocationData) {
-            setFinancialData(allocationData.dailyPerformanceHistory.map((item: any) => ({
-              ...item,
-              balance: `$${item.balance.toLocaleString()}`,
-              dailyChange: `${item.dailyChange >= 0 ? '+' : '-'}$${Math.abs(item.dailyChange).toLocaleString()}`,
-              percentChange: `${item.percentChange >= 0 ? '+' : '-'}${Math.abs(item.percentChange)}%`,
-            })));
-
-            setStatics([
-              {
-                title: 'Starting Balance',
-                total: `$${allocationData.startingBalance.toLocaleString()}`,
-              },
-              {
-                title: 'Current Balance',
-                total: `$${allocationData.endingBalance.toLocaleString()}`,
-              },
-              {
-                title: 'Daily performance',
-                total: `${allocationData.dailyGain >= 0 ? '+' : '-'}$${Math.abs(allocationData.dailyGain).toLocaleString()}`,
-              },
-              {
-                title: 'Total Return',
-                total: `${allocationData.dailyGainPercent >= 0 ? '+' : ''}${allocationData.dailyGainPercent}%`,
-              },
-            ]);
-          }
-        }
+        setStatics([
+          {
+            title: 'Starting Balance',
+            total: `$${allocationData.startingBalance.toLocaleString()}`,
+          },
+          {
+            title: 'Current Balance',
+            total: `$${allocationData.endingBalance.toLocaleString()}`,
+          },
+          {
+            title: 'Daily performance',
+            total: `${allocationData.dailyGain >= 0 ? '+' : '-'}$${Math.abs(allocationData.dailyGain).toLocaleString()}`,
+          },
+          {
+            title: 'Total Return',
+            total: `${allocationData.dailyGainPercent >= 0 ? '+' : ''}${allocationData.dailyGainPercent}%`,
+          },
+        ]);
       }
-    });
 
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
+
   }, [allocation]);
 
   const columns: ColumnDef<TPerformanceRecord>[] = [
@@ -108,32 +94,6 @@ export default function Allocations() {
       enableHiding: true,
     }
   ];
-
-  // function generateResponsiveWidths({
-  //   start = 330,
-  //   step = 10,
-  //   initialWidth = 15.9,
-  //   increment = 0.6,
-  //   unit = 'rem',
-  //   fullWidthBreakpoint = 470,
-  // }: {
-  //   start?: number;
-  //   step?: number;
-  //   initialWidth?: number;
-  //   increment?: number;
-  //   unit?: string;
-  //   fullWidthBreakpoint?: number;
-  // } = {}) {
-  //   const classList = [`w-[${initialWidth}${unit}]`];
-
-  //   for (let bp = start, i = 1; bp < fullWidthBreakpoint; bp += step, i++) {
-  //     const width = (initialWidth + increment * i).toFixed(1);
-  //     classList.push(`min-[${bp}px]:w-[${width}${unit}]`);
-  //   }
-  //   classList.push(`min-[${fullWidthBreakpoint}px]:w-full`);
-  //   return classList.join(' ');
-  // }
-
 
   return (
     <section className="space-y-4">
@@ -189,8 +149,6 @@ export default function Allocations() {
       <section className="section-container">
         <div className="space-y-4">
           <h2 className="font-bold">Daily Performance History</h2>
-
-          {/* <div className={generateResponsiveWidths()}> */}
           <div
             className="
             w-[15.9rem] 
