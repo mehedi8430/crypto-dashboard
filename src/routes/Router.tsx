@@ -15,6 +15,17 @@ export const routes = createBrowserRouter([
     element: <App />,
     errorElement: <div>Error occurred</div>,
   },
+  {
+    path: "/login",
+    element: (
+      <LoginPage />
+    ),
+  }, {
+    path: "/register",
+    element: (
+      <RegisterPage />
+    ),
+  },
   // Dashboard
   {
     path: "/dashboard",
