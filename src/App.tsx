@@ -5,15 +5,16 @@ import { useAuth } from "./hooks/useAuth";
 
 export default function App() {
   const navigate = useNavigate();
-  const currentUser = useAuth();
+  const userData = useAuth();
+  console.log({ userData });
 
   useEffect(() => {
-    if (currentUser?.isAuthenticated) {
+    if (userData?.id) {
       navigate("/dashboard", { replace: true });
     } else {
       navigate("/login", { replace: true });
     }
-  }, [currentUser, navigate]);
+  }, [userData, navigate]);
 
   return null;
 }

@@ -1,4 +1,4 @@
-import { useRegister } from "@/hooks/queries";
+import { useRegister } from "@/queries/authQueries";
 import React from "react";
 import sideImage from "@/assets/image/registrationsideimage.gif";
 import "./../Login/LoginForm.css";
@@ -18,8 +18,6 @@ export default function RegisterForm() {
       return;
     }
 
-
-
     register.mutate({ email, password, fullName, role: "USER" });
   };
 
@@ -35,9 +33,7 @@ export default function RegisterForm() {
       <div className="login-form-wrapper">
         <div className="login-form">
           <div className="login-header">
-            <h1 className="login-title">
-              Create your account
-            </h1>
+            <h1 className="login-title">Create your account</h1>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
@@ -112,7 +108,6 @@ export default function RegisterForm() {
           </form>
         </div>
       </div>
-
     </div>
   );
 }

@@ -15,12 +15,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useNavigate } from "react-router";
-import { useAuth } from "@/hooks/useAuth";
+import { useLogout } from "@/queries/authQueries";
 
 export default function NavUser() {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+  const logout = useLogout();
 
   return (
     // <SidebarMenu className="mb-12">
@@ -77,8 +75,7 @@ export default function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                logout();
-                navigate("/login", { replace: true });
+                logout.mutate();
               }}
             >
               <LogOut />

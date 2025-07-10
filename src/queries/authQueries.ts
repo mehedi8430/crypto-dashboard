@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { authApi, userApi } from "@/services/api";
-import { useAuthStore } from "@/stores";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { authApi } from "@/services/authApi";
+import { authStore } from "@/stores/authStore";
 
 // Query Keys
 export const queryKeys = {
@@ -18,13 +18,13 @@ export const queryKeys = {
 // Auth Hooks
 export const useLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login } = authStore();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: (data) => {
-      login(data.user, data.token);
+    onSuccess: (token: string) => {
+      login(token);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       toast.success("Login successful");
       navigate("/dashboard");
@@ -36,13 +36,13 @@ export const useLogin = () => {
 };
 
 export const useRegister = () => {
-  const { login } = useAuthStore();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      login(data.user, data.token);
       toast.success(data.message || "Registration successful! Welcome!");
+      navigate("/login");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Registartion failed");
@@ -51,7 +51,8 @@ export const useRegister = () => {
 };
 
 export const useLogout = () => {
-  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+  const { logout } = authStore();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -60,6 +61,7 @@ export const useLogout = () => {
       logout();
       queryClient.clear();
       toast.success("Logged out successfully");
+      navigate("/login", { replace: true });
     },
     onError: () => {
       // Still logout on error
@@ -67,45 +69,5 @@ export const useLogout = () => {
       queryClient.clear();
       toast.error("Logout failed");
     },
-  });
-};
-
-// User Hooks
-export const useProfile = () => {
-  const { isAuthenticated } = useAuthStore();
-
-  return useQuery({
-    queryKey: queryKeys.user.profile(),
-    queryFn: userApi.getProfile,
-    enabled: isAuthenticated,
-  });
-};
-
-export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
-  const { updateUser } = useAuthStore();
-
-  return useMutation({
-    mutationFn: userApi.updateProfile,
-    onSuccess: (data) => {
-      updateUser(data);
-      queryClient.invalidateQueries({ queryKey: queryKeys.user.profile() });
-      toast.success("Profile updated successfully");
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Update failed");
-    },
-  });
-};
-
-export const useUsers = (params?: {
-  page?: number;
-  limit?: number;
-  search?: string;
-}) => {
-  return useQuery({
-    queryKey: queryKeys.user.list(params),
-    queryFn: () => userApi.getUsers(params),
-    // keepPreviousData: true,
   });
 };

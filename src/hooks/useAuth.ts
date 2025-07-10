@@ -1,16 +1,21 @@
-import { useAuthStore } from "@/stores";
-import { useProfile } from "./queries";
+import type { TTokenPayload } from "@/types";
+import { jwtDecode } from "jwt-decode";
 
-export const useAuth = () => {
-  const { user, token, isAuthenticated, login, logout } = useAuthStore();
-  const { data: profile, isLoading } = useProfile();
+export function useAuth(): TTokenPayload | null {
+  try {
+    const storedData = localStorage.getItem("auth-storage");
 
-  return {
-    user: profile || user,
-    token,
-    isAuthenticated,
-    isLoading,
-    login,
-    logout,
-  };
-};
+    if (!storedData) return null;
+
+    const parsedData = JSON.parse(storedData);
+
+    const loginToken = parsedData?.token;
+
+    if (!loginToken || typeof loginToken !== "string") return null;
+
+    return jwtDecode<TTokenPayload>(loginToken);
+  } catch (error) {
+    console.error("Failed to decode JWT:", error);
+    return null;
+  }
+}

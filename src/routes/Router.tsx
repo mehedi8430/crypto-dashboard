@@ -7,6 +7,7 @@ import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const routes = createBrowserRouter([
   {
@@ -17,7 +18,11 @@ export const routes = createBrowserRouter([
   // Dashboard
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute roles={["ADMIN", "USER"]}>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <div>Error occurred</div>,
     children: [
       {
@@ -26,7 +31,11 @@ export const routes = createBrowserRouter([
       },
       {
         path: "report",
-        element: <DailyReport />,
+        element: (
+          <ProtectedRoute roles={["ADMIN", "USER"]}>
+            <DailyReport />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "allocations",
