@@ -6,7 +6,6 @@ import { useAuth } from "./hooks/useAuth";
 export default function App() {
   const navigate = useNavigate();
   const userData = useAuth();
-  console.log({ userData });
 
   useEffect(() => {
     if (userData?.id) {

@@ -9,7 +9,7 @@ export function useAuth(): TTokenPayload | null {
 
     const parsedData = JSON.parse(storedData);
 
-    const loginToken = parsedData?.token;
+    const loginToken = parsedData?.state?.token?.data;
 
     if (!loginToken || typeof loginToken !== "string") return null;
 

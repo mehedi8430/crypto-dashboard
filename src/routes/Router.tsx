@@ -42,25 +42,45 @@ export const routes = createBrowserRouter([
         children: [
           {
             path: "a",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "b",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "c",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "d",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
         ],
       },
       {
         path: "create-data-forms",
-        element: <DataForms />,
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <DataForms />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
