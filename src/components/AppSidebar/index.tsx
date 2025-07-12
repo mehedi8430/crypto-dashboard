@@ -4,6 +4,7 @@ import {
   Clipboard,
   ShoppingBag,
   ShieldBan,
+  Users,
 } from "lucide-react";
 import { type Sidebar } from "@/components/ui/sidebar";
 import NavSidebar from "./navSidebar";
@@ -12,7 +13,6 @@ import type { NavItem } from "@/types";
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-
   const currentUser = {
     role: "Admin",
   };
@@ -55,6 +55,12 @@ export default function AppSidebar({
               url: "/dashboard/allocations/d",
             },
           ],
+        },
+        {
+          title: "User Management",
+          url: "/dashboard/users",
+          icon: <Users />,
+          end: true,
         }
       );
       break;

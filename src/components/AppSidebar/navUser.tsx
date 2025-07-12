@@ -1,10 +1,9 @@
-import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -16,12 +15,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useLogout } from "@/queries/authQueries";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function NavUser() {
   const logout = useLogout();
+  const userData = useAuth();
+  console.log({ userData });
 
   return (
-    // <SidebarMenu className="mb-12">
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -31,14 +32,16 @@ export default function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-full">
-                {/* <AvatarImage src={currentUser?.avatar} alt={currentUser?.firstName} /> */}
-                <AvatarFallback className="rounded-lg">JD</AvatarFallback>
+                {/* <AvatarImage src={userData?.img} alt={userData?.fullName} /> */}
+                <AvatarFallback className="rounded-lg">
+                  {userData?.fullName?.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Jhon Doe</span>
-                <span className="truncate font-medium">jhon@gmail.com</span>
-                {/* <span className="truncate font-medium">{currentUser?.firstName} {currentUser?.lastName}</span> */}
-                {/* <span className="truncate text-xs">{currentUser?.email}</span> */}
+                <span className="truncate font-medium">
+                  {userData?.fullName}
+                </span>
+                <span className="truncate font-medium">{userData?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -53,26 +56,21 @@ export default function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   {/* <AvatarImage src={currentUser?.avatar} alt={currentUser?.firstName} /> */}
-                  <AvatarFallback className="rounded-lg">J</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {userData?.fullName?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Jhon Doe</span>
-                  <span className="truncate text-xs">jhon@gmail.com</span>
+                  <span className="truncate font-medium">
+                    {userData?.fullName}
+                  </span>
+                  <span className="truncate text-xs">{userData?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onClick={() => {
                 logout.mutate();

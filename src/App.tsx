@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "./hooks/useAuth";
 
 export default function App() {
   const navigate = useNavigate();

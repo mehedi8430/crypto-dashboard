@@ -8,6 +8,7 @@ import Allocations from "@/pages/Allocations";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import { ProtectedRoute } from "./ProtectedRoute";
+import Users from "@/pages/Users";
 
 export const routes = createBrowserRouter([
   {
@@ -17,14 +18,11 @@ export const routes = createBrowserRouter([
   },
   {
     path: "/login",
-    element: (
-      <LoginPage />
-    ),
-  }, {
+    element: <LoginPage />,
+  },
+  {
     path: "/register",
-    element: (
-      <RegisterPage />
-    ),
+    element: <RegisterPage />,
   },
   // Dashboard
   {
@@ -84,6 +82,14 @@ export const routes = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        path: "users",
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <Users />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "create-data-forms",
