@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { DataTable } from "@/components/DataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
@@ -17,9 +16,12 @@ type TUserData = {
 
 export default function Users() {
   const { setTitle } = useTitleStore();
-  const { isPending, data, isError, error } = useUsers();
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
+  const { isPending, data, isError, error } = useUsers({
+    page,
+    limit,
+  });
 
   useEffect(() => {
     setTitle("User Management");
@@ -57,7 +59,6 @@ export default function Users() {
     },
   ];
 
-  if (isPending) return <Loader />;
   if (isError) return <div>{error.message}</div>;
 
   return (
@@ -100,7 +101,7 @@ export default function Users() {
           <DataTable<TUserData>
             data={data?.data || []}
             columns={columns}
-            isLoading={!data?.data?.length}
+            isLoading={isPending}
             page={page}
             limit={limit}
             total={data?.meta?.total || 0}
