@@ -79,15 +79,6 @@ export function LoginForm() {
           </form>
           <div className="social-login"></div>
           <div className="register-link">
-            <p>
-              Don't have account?{" "}
-              <a
-                href="/register"
-                className="font-medium text-blue-500 hover:text-blue-400"
-              >
-                Register Now
-              </a>
-            </p>
           </div>
         </div>
       </div>

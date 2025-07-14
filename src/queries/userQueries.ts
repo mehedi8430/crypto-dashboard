@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { userApi } from "@/services/userApi";
 import { authStore } from "@/stores/authStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,23 +16,21 @@ export const queryKeys = {
 } as const;
 
 export const useProfile = () => {
-  const { isAuthenticated } = authStore();
+  const { token } = authStore();
 
   return useQuery({
     queryKey: queryKeys.user.profile(),
     queryFn: userApi.getProfile,
-    enabled: isAuthenticated,
+    enabled: !!token,
   });
 };
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-  const { updateUser } = authStore();
 
   return useMutation({
     mutationFn: userApi.updateProfile,
     onSuccess: (data) => {
-      updateUser(data);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.profile() });
       toast.success("Profile updated successfully");
     },
@@ -48,6 +48,16 @@ export const useUsers = (params?: {
   return useQuery({
     queryKey: queryKeys.user.list(params),
     queryFn: () => userApi.getUsers(params),
-    // keepPreviousData: true,
+  });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.list() });
+    },
   });
 };

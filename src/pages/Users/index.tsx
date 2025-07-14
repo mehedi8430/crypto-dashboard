@@ -6,6 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import AddUserForm from "./components/AddUserForm";
 
 type TUserData = {
   id: string;
@@ -22,6 +23,7 @@ export default function Users() {
     page,
     limit,
   });
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
 
   useEffect(() => {
     setTitle("User Management");
@@ -71,7 +73,7 @@ export default function Users() {
           </span>
         </h1>
 
-        <Button>
+        <Button onClick={() => setIsAddUserModalOpen(true)}>
           <Plus />
           <span>Add User</span>
         </Button>
@@ -111,6 +113,7 @@ export default function Users() {
           />
         </div>
       </div>
+      {isAddUserModalOpen && <AddUserForm onClose={() => setIsAddUserModalOpen(false)} />}
     </section>
   );
 }

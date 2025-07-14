@@ -20,4 +20,9 @@ export const userApi = {
     const response = await apiClient.get("/users", { params });
     return response.data;
   },
+
+  createUser: async (userData: Partial<TUser>) => {
+    const response = await apiClient.post("/auth/register", userData);
+    return response.data;
+  }
 };
