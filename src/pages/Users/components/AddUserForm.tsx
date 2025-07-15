@@ -21,6 +21,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useRegister } from "@/queries/authQueries";
 import { useState } from "react";
+import { useSingleUser } from "@/queries/userQueries";
 
 const userImages = [
   "https://i.ibb.co/jPWwK4hG/5864188-1.png",
@@ -43,18 +44,28 @@ const formSchema = z.object({
   img: z.string().min(1, "Image is required"),
 });
 
-export default function AddUserForm({ onClose }: { onClose: () => void }) {
+export default function AddUserForm({
+  onClose,
+  userId,
+}: {
+  onClose: () => void;
+  userId?: string;
+}) {
   const { mutate: createUser, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
+
+  console.log({ userId });
+  const { data: user } = useSingleUser(userId ?? "");
+  console.log({ user });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      role: "USER",
-      img: userImages[0],
+      fullName: user?.data?.fullName || "",
+      email: user?.data?.email || "",
+      password: user?.data?.password || "",
+      role: user?.data?.role || "USER",
+      img: user?.data?.img || userImages[0],
     },
   });
 
@@ -69,15 +80,58 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Avatar */}
+        <FormField
+          control={form.control}
+          name="img"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-lg">Avatar</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-4">
+                  <div className="w-[40%] flex items-center justify-center">
+                    <div className="h-34 w-34 rounded-full border border-border flex items-center justify-center">
+                      {field.value && (
+                        <img
+                          src={field.value}
+                          alt="user avatar"
+                          className="h-32 w-32 rounded-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-6 gap-4 w-[60%]">
+                    {userImages.map((image) => (
+                      <img
+                        key={image}
+                        src={image}
+                        alt="user avatar"
+                        className={`h-12 w-12 cursor-pointer rounded-full object-cover ring-2 ${
+                          field.value === image
+                            ? "ring-primary"
+                            : "ring-transparent"
+                        }`}
+                        onClick={() => field.onChange(image)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel className="text-lg">Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="John Doe" {...field} value={field.value} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,7 +142,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-lg">Email</FormLabel>
               <FormControl>
                 <Input
                   type="email"
@@ -106,7 +160,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="text-lg">Password</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input type={showPassword ? "text" : "password"} {...field} />
@@ -136,7 +190,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
           name="role"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>Role</FormLabel>
+              <FormLabel className="text-lg">Role</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full">
@@ -152,33 +206,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="img"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Avatar</FormLabel>
-              <FormControl>
-                <div className="flex items-center gap-2 overflow-x-scroll">
-                  {userImages.map((image) => (
-                    <img
-                      key={image}
-                      src={image}
-                      alt="user avatar"
-                      className={`h-12 w-12 cursor-pointer rounded-full object-cover ring-2 ${
-                        field.value === image
-                          ? "ring-primary"
-                          : "ring-transparent"
-                      }`}
-                      onClick={() => field.onChange(image)}
-                    />
-                  ))}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         <Button type="submit" disabled={isPending} className="w-full">
           {isPending ? "Adding User..." : "Add User"}
         </Button>

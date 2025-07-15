@@ -29,6 +29,7 @@ export default function Users() {
     limit,
   });
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [userToEditId, setUserToEditId] = useState<string>("");
 
   useEffect(() => {
     setTitle("User Management");
@@ -98,7 +99,6 @@ export default function Users() {
       header: () => <span className="text-center">Actions</span>,
       enableHiding: false,
       cell: ({ row }) => {
-        console.log({ row });
         return (
           <div className="flex justify-center">
             <div className="px-2 flex items-center gap-2">
@@ -113,6 +113,10 @@ export default function Users() {
                 className="text-muted-foreground hover:text-primary hover:border-primary"
                 variant={"outline"}
                 size={"icon"}
+                onClick={() => {
+                  setIsAddUserModalOpen(true);
+                  setUserToEditId(row.original.id);
+                }}
               >
                 <SquarePen className="duration-150" />
               </Button>
@@ -140,7 +144,12 @@ export default function Users() {
           </span>
         </h1>
 
-        <Button onClick={() => setIsAddUserModalOpen(true)}>
+        <Button
+          onClick={() => {
+            setIsAddUserModalOpen(true);
+            setUserToEditId("");
+          }}
+        >
           <Plus />
           <span>Add User</span>
         </Button>
@@ -185,9 +194,12 @@ export default function Users() {
       <DialogWrapper
         isOpen={isAddUserModalOpen}
         onOpenChange={setIsAddUserModalOpen}
-        title="Add New User"
+        title={userToEditId ? "Edit User" : "Add New User"}
       >
-        <AddUserForm onClose={() => setIsAddUserModalOpen(false)} />
+        <AddUserForm
+          onClose={() => setIsAddUserModalOpen(false)}
+          userId={userToEditId ? userToEditId : undefined}
+        />
       </DialogWrapper>
     </section>
   );

@@ -7,6 +7,11 @@ export const userApi = {
     return response.data;
   },
 
+  getSingleUser: async (id: string) => {
+    const response = await apiClient.get(`/users/${id}`);
+    return response.data;
+  },
+
   updateProfile: async (userData: Partial<TUser>) => {
     const response = await apiClient.put("/users/:id", userData);
     return response.data;
