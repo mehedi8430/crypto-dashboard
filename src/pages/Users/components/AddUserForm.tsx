@@ -1,3 +1,5 @@
+// crypto-dashboard/src/pages/Users/components/AddUserForm.tsx
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -225,6 +227,30 @@ export default function AddUserForm({
                 <SelectContent>
                   <SelectItem value="USER">User</SelectItem>
                   <SelectItem value="ADMIN">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="allocation"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-lg">Allocation</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select an allocation" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="A">A</SelectItem>
+                  <SelectItem value="B">B</SelectItem>
+                  <SelectItem value="C">C</SelectItem>
+                  <SelectItem value="D">D</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
