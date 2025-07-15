@@ -2,13 +2,18 @@ import { apiClient } from "@/api";
 import type { TUser } from "@/types";
 
 export const userApi = {
-  getProfile: async () => {
-    const response = await apiClient.get("/auth/me");
+  getSingleUser: async (id: string) => {
+    const response = await apiClient.get(`/users/${id}`);
     return response.data;
   },
 
-  getSingleUser: async (id: string) => {
-    const response = await apiClient.get(`/users/${id}`);
+  updateUser: async (userData: Partial<TUser>, id: string) => {
+    const response = await apiClient.put(`/users/${id}`, userData);
+    return response.data;
+  },
+
+  getProfile: async () => {
+    const response = await apiClient.get("/auth/me");
     return response.data;
   },
 

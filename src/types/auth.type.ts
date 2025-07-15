@@ -1,28 +1,22 @@
+export type UserRole = "ADMIN" | "USER";
+
 export type TUser = {
   email: string;
   password: string;
   fullName: string;
-  role: "ADMIN" | "USER";
-  isDeleted?: boolean;
+  role: UserRole;
+  isStatus?: boolean;
+  img?: string;
 };
 
 export type TAuthStore = {
-  user: User | null;
+  user: TUser | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: TUser, token: string) => void;
   logout: () => void;
-  updateUser: (user: Partial<User>) => void;
+  updateUser: (user: Partial<TUser>) => void;
 };
-
-type User = {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-};
-
-type UserRole = "ADMIN" | "USER";
 
 export type TTokenPayload = {
   id: string;

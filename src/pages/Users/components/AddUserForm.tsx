@@ -22,6 +22,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRegister } from "@/queries/authQueries";
 import { useState } from "react";
 import { useSingleUser } from "@/queries/userQueries";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const userImages = [
   "https://i.ibb.co/jPWwK4hG/5864188-1.png",
@@ -42,6 +44,7 @@ const formSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["USER", "ADMIN"]),
   img: z.string().min(1, "Image is required"),
+  status: z.boolean(),
 });
 
 export default function AddUserForm({
@@ -66,6 +69,7 @@ export default function AddUserForm({
       password: user?.data?.password || "",
       role: user?.data?.role || "USER",
       img: user?.data?.img || userImages[0],
+      status: user?.data?.isStatus || true,
     },
   });
 
@@ -89,8 +93,8 @@ export default function AddUserForm({
             <FormItem>
               <FormLabel className="text-lg">Avatar</FormLabel>
               <FormControl>
-                <div className="flex items-center gap-4">
-                  <div className="w-[40%] flex items-center justify-center">
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                  <div className="w-full md:w-[40%] flex items-center justify-center">
                     <div className="h-34 w-34 rounded-full border border-border flex items-center justify-center">
                       {field.value && (
                         <img
@@ -102,7 +106,7 @@ export default function AddUserForm({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-6 gap-4 w-[60%]">
+                  <div className="grid grid-cols-6 gap-4 w-full md:w-[60%]">
                     {userImages.map((image) => (
                       <img
                         key={image}
@@ -202,6 +206,34 @@ export default function AddUserForm({
                   <SelectItem value="ADMIN">Admin</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Status */}
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-lg">Status</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={(value) => field.onChange(value === "true")}
+                  value={field.value ? "true" : "false"}
+                  className="flex items-center gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="true" id="r1" />
+                    <Label htmlFor="r1">Active</Label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="false" id="r2" />
+                    <Label htmlFor="r2">Inactive</Label>
+                  </div>
+                </RadioGroup>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
