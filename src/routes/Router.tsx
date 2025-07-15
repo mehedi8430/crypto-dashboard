@@ -6,7 +6,7 @@ import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
 import LoginPage from "@/pages/Login";
-import RegisterPage from "@/pages/Register";
+// import RegisterPage from "@/pages/Register";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Users from "@/pages/Users";
 
@@ -20,10 +20,10 @@ export const routes = createBrowserRouter([
     path: "/login",
     element: <LoginPage />,
   },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
+  // {
+  //   path: "/register",
+  //   element: <RegisterPage />,
+  // },
   // Dashboard
   {
     path: "/dashboard",

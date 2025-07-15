@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { userApi } from "@/services/userApi";
 import { authStore } from "@/stores/authStore";
@@ -25,6 +24,13 @@ export const useProfile = () => {
   });
 };
 
+export const useSingleUser = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.user.list(id),
+    queryFn: () => userApi.getSingleUser(id),
+  });
+};
+
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
@@ -32,7 +38,7 @@ export const useUpdateProfile = () => {
     mutationFn: userApi.updateProfile,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.user.profile() });
-      toast.success("Profile updated successfully");
+      toast.success(data.message || "Profile updated successfully");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Update failed");
@@ -48,16 +54,5 @@ export const useUsers = (params?: {
   return useQuery({
     queryKey: queryKeys.user.list(params),
     queryFn: () => userApi.getUsers(params),
-  });
-};
-
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: userApi.createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.user.list() });
-    },
   });
 };
