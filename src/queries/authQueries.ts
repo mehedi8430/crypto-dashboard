@@ -36,13 +36,13 @@ export const useLogin = () => {
 };
 
 export const useRegister = () => {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      toast.success(data.message || "Registration successful! Welcome!");
-      navigate("/login");
+      toast.success(data.message || "User created successfully!");
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Registartion failed");
