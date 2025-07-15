@@ -31,4 +31,5 @@ export type TTokenPayload = {
   role: UserRole;
   iat?: number;
   exp?: number;
+  img?: string;
 };

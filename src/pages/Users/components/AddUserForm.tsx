@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,11 +10,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCreateUser } from '@/queries/userQueries';
 import { X } from 'lucide-react';
 
+const userImages = [
+    "https://i.ibb.co/jPWwK4hG/5864188-1.png",
+    "https://i.ibb.co/fYYnTXR0/5864188.png",
+    "https://i.ibb.co/vvqCyX6Y/5864188-4.png",
+    "https://i.ibb.co/jkKtDKWJ/5864188-3.png",
+    "https://i.ibb.co/nqxx12G2/5864188-2.png",
+    "https://i.ibb.co/RkrCphLx/photo-2022-02-28-00-35-30-1024x1024.png",
+    "https://i.ibb.co/1DszX8q/0x0-1.png",
+    "https://i.ibb.co/7x3kcfvF/cute-detective-bear-cartoon-character-138676-2911.png",
+    "https://i.ibb.co/3gKgdkV/cdb7d8e432b1742585aa24c498e65ecc.png",
+    "https://i.ibb.co/3mqH2LWM/1-23-3-17-16-2-13m.png"
+];
+
 const formSchema = z.object({
     fullName: z.string().min(1, "Full name is required"),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     role: z.enum(['USER', 'ADMIN']),
+    img: z.string().min(1, "Image is required"),
 });
 
 export default function AddUserForm({ onClose }: { onClose: () => void }) {
@@ -28,6 +41,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
             email: '',
             password: '',
             role: 'USER',
+            img: userImages[0],
         },
     });
 
@@ -91,11 +105,11 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
                             control={form.control}
                             name="role"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="w-full">
                                     <FormLabel>Role</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select a role" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -104,6 +118,29 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
                                             <SelectItem value="ADMIN">Admin</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="img"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Avatar</FormLabel>
+                                    <FormControl>
+                                        <div className="flex items-center gap-2 overflow-x-scroll">
+                                            {userImages.map((image) => (
+                                                <img
+                                                    key={image}
+                                                    src={image}
+                                                    alt="user avatar"
+                                                    className={`h-12 w-12 cursor-pointer rounded-full object-cover ring-2 ${field.value === image ? 'ring-primary' : 'ring-transparent'}`}
+                                                    onClick={() => field.onChange(image)}
+                                                />
+                                            ))}
+                                        </div>
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}

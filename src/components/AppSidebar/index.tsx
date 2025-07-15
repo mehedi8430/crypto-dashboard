@@ -9,12 +9,12 @@ import {
 import { type Sidebar } from "@/components/ui/sidebar";
 import NavSidebar from "./navSidebar";
 import type { NavItem } from "@/types";
-import { useAuth } from "@/hooks/useAuth"; // Import useAuth hook
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const currentUser = useAuth(); // Get the current user data
+  const currentUser = useAuth();
 
   const items: NavItem[] = [
     {
@@ -54,7 +54,7 @@ export default function AppSidebar({
     },
   ];
 
-  // Conditionally add User Management if the user is an ADMIN
+  
   if (currentUser?.role === "ADMIN") {
     items.push({
       title: "User Management",
@@ -70,7 +70,7 @@ export default function AppSidebar({
     });
   }
 
-  // Optional: Handle unauthorized users if needed, though ProtectedRoute usually manages this
+
   if (!currentUser) {
     items.push({ title: "Not Authorized User", icon: <ShieldBan /> });
   }
