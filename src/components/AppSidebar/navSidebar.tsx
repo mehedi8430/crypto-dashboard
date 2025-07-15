@@ -28,11 +28,11 @@ export default function NavSidebar(
       <SidebarContent>
         <div className="pb-8 pt-3 flex items-center justify-center">
           {state === "collapsed" ? (
-            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center mr-3 mt-1 rounded-full  text-white">
+            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center mr-3 mt-1 rounded-full  text-white flex justify-center items-center">
               <img className="w-[30px]" src={logo} alt="" />
             </h1>
           ) : (
-            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary flex ">
+            <h1 className="lg:w-[180px] text-[24px] font-bold lg:text-center text-primary flex justify-center items-center ">
               Vault<img className="w-[30px]" src={logo} alt="" />
             </h1>
           )}

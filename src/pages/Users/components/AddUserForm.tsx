@@ -1,3 +1,5 @@
+// crypto-dashboard/src/pages/Users/components/AddUserForm.tsx
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -45,6 +47,8 @@ const formSchema = z.object({
   role: z.enum(["USER", "ADMIN"]),
   img: z.string().min(1, "Image is required"),
   status: z.boolean(),
+  allocation: z.enum(["A", "B", "C", "D"]),
+  overrideStatus: z.boolean(),
 });
 
 export default function AddUserForm({
@@ -70,6 +74,8 @@ export default function AddUserForm({
       role: user?.data?.role || "USER",
       img: user?.data?.img || userImages[0],
       status: user?.data?.isStatus || true,
+      allocation: user?.data?.allocation || "A",
+      overrideStatus: user?.data?.overrideStatus || false,
     },
   });
 
@@ -211,6 +217,30 @@ export default function AddUserForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="allocation"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-lg">Allocation</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select an allocation" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="A">A</SelectItem>
+                  <SelectItem value="B">B</SelectItem>
+                  <SelectItem value="C">C</SelectItem>
+                  <SelectItem value="D">D</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Status */}
         <FormField
           control={form.control}
@@ -239,9 +269,45 @@ export default function AddUserForm({
           )}
         />
 
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Adding User..." : "Add User"}
-        </Button>
+        {/* Override Status */}
+        <FormField
+          control={form.control}
+          name="overrideStatus"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-lg">Override Status</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={(value) => field.onChange(value === "true")}
+                  value={field.value ? "true" : "false"}
+                  className="flex items-center gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="true" id="os1" />
+                    <Label htmlFor="os1">Active</Label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="false" id="os2" />
+                    <Label htmlFor="os2">Inactive</Label>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="flex gap-4">
+            <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? (userId ? "Updating User..." : "Adding User...") : (userId ? "Update User" : "Add User")}
+            </Button>
+            {userId && (
+            <Button type="button" variant="outline" className="w-full" onClick={() => alert("Password reset!")}>
+                Reset Password
+            </Button>
+            )}
+        </div>
+
       </form>
     </FormProvider>
   );
