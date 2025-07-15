@@ -1,17 +1,23 @@
 import { useLogin } from "@/queries/authQueries";
-import React from "react";
+import React, { useState } from "react";
 import sideImage from "@/assets/image/login-side-image.gif";
 
 import "./LoginForm.css";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const login = useLogin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login.mutate({ email, password });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   return (
@@ -36,14 +42,28 @@ export function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <input
-                type="password"
-                required
-                className="login-input"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="login-input pr-10"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -78,8 +98,7 @@ export function LoginForm() {
             </div>
           </form>
           <div className="social-login"></div>
-          <div className="register-link">
-          </div>
+          <div className="register-link"></div>
         </div>
       </div>
       <div className="login-image-wrapper">

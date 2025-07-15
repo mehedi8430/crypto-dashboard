@@ -9,12 +9,15 @@ import { Eye, Plus, SquarePen, Trash } from "lucide-react";
 import AddUserForm from "./components/AddUserForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DialogWrapper } from "@/components/DialogWrapper";
 
 type TUserData = {
   id: string;
   email: string;
   fullName: string;
   createdAt: string;
+  role: "ADMIN" | "USER";
+  img: string;
 };
 
 export default function Users() {
@@ -83,17 +86,13 @@ export default function Users() {
         </div>
       ),
     },
-    // {
-    //   accessorKey: "role",
-    //   header: () => <div className="text-center">Role</div>,
-    //   enableHiding: true,
-    //   size: 180,
-    //   cell: ({ row }) => (
-    //     <div className="text-center">
-    //       {format(new Date(row.original.role), "PPP")}
-    //     </div>
-    //   ),
-    // },
+    {
+      accessorKey: "role",
+      header: () => <div className="text-center">Role</div>,
+      enableHiding: true,
+      size: 180,
+      cell: ({ row }) => <div className="text-center">{row.original.role}</div>,
+    },
     {
       id: "actions",
       header: () => <span className="text-center">Actions</span>,
@@ -181,9 +180,15 @@ export default function Users() {
           />
         </div>
       </ScrollArea>
-      {isAddUserModalOpen && (
+
+      {/* Create User Modal */}
+      <DialogWrapper
+        isOpen={isAddUserModalOpen}
+        onOpenChange={setIsAddUserModalOpen}
+        title="Add New User"
+      >
         <AddUserForm onClose={() => setIsAddUserModalOpen(false)} />
-      )}
+      </DialogWrapper>
     </section>
   );
 }
