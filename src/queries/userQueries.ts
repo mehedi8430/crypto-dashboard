@@ -14,6 +14,43 @@ export const queryKeys = {
   },
 } as const;
 
+export const useSingleUser = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.user.list(id),
+    queryFn: () => userApi.getSingleUser(id),
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.updateUser,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
+      toast.success(data.message || "Profile updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Update failed");
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.deleteUser,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
+      toast.success(data.message || "User deleted successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Delete failed");
+    },
+  });
+};
+
 export const useProfile = () => {
   const { token } = authStore();
 
@@ -21,13 +58,6 @@ export const useProfile = () => {
     queryKey: queryKeys.user.profile(),
     queryFn: userApi.getProfile,
     enabled: !!token,
-  });
-};
-
-export const useSingleUser = (id: string) => {
-  return useQuery({
-    queryKey: queryKeys.user.list(id),
-    queryFn: () => userApi.getSingleUser(id),
   });
 };
 

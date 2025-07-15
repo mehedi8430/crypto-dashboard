@@ -1,4 +1,4 @@
-import { useUsers } from "@/queries/userQueries";
+import { useDeleteUser, useUsers } from "@/queries/userQueries";
 import { useTitleStore } from "@/stores/titleStore";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/DataTable/dataTable";
@@ -10,6 +10,8 @@ import AddUserForm from "./components/AddUserForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DialogWrapper } from "@/components/DialogWrapper";
+import { AlertDialogModal } from "@/components/AlertDialogModal";
+import UserDetails from "./components/UserDetails";
 
 type TUserData = {
   id: string;
@@ -28,8 +30,16 @@ export default function Users() {
     page,
     limit,
   });
+
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  const [isViewUserModalOpen, setIsViewUserModalOpen] = useState(false);
+
   const [userToEditId, setUserToEditId] = useState<string>("");
+  const [userToDeleteId, setUserToDeleteId] = useState<string>("");
+  const [userToViewId, setUserToViewId] = useState<string>("");
+
+  const { mutate: deleteUser } = useDeleteUser();
 
   useEffect(() => {
     setTitle("User Management");
@@ -106,6 +116,10 @@ export default function Users() {
                 variant={"outline"}
                 size={"icon"}
                 className="text-muted-foreground hover:text-primary hover:border-primary"
+                onClick={() => {
+                  setIsViewUserModalOpen(true);
+                  setUserToViewId(row.original.id);
+                }}
               >
                 <Eye className="duration-150" />
               </Button>
@@ -124,6 +138,10 @@ export default function Users() {
                 variant={"outline"}
                 size={"icon"}
                 className="text-muted-foreground hover:text-red-600 hover:border-red-600"
+                onClick={() => {
+                  setIsDeleteUserModalOpen(true);
+                  setUserToDeleteId(row.original.id);
+                }}
               >
                 <Trash className="duration-150" />
               </Button>
@@ -201,6 +219,25 @@ export default function Users() {
           userId={userToEditId ? userToEditId : undefined}
         />
       </DialogWrapper>
+
+      {/* Delete User Modal */}
+      <AlertDialogModal
+        isOpen={isDeleteUserModalOpen}
+        onOpenChange={setIsDeleteUserModalOpen}
+        title="Delete User"
+        description="Are you sure you want to delete this user?"
+        onConfirm={() => {
+          deleteUser(userToDeleteId);
+          setIsDeleteUserModalOpen(false);
+        }}
+      />
+
+      {/* View User Details */}
+      <UserDetails
+        isOpen={isViewUserModalOpen}
+        onOpenChange={setIsViewUserModalOpen}
+        userId={userToViewId}
+      />
     </section>
   );
 }

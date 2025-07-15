@@ -7,8 +7,13 @@ export const userApi = {
     return response.data;
   },
 
-  updateUser: async (userData: Partial<TUser>, id: string) => {
-    const response = await apiClient.put(`/users/${id}`, userData);
+  updateUser: async ({ data, id }: { data: Partial<TUser>; id: string }) => {
+    const response = await apiClient.put(`/users/${id}`, data);
+    return response.data;
+  },
+
+  deleteUser: async (id: string) => {
+    const response = await apiClient.delete(`/users/${id}`);
     return response.data;
   },
 

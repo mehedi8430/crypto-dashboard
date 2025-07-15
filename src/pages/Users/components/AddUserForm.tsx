@@ -21,7 +21,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useRegister } from "@/queries/authQueries";
 import { useState } from "react";
-import { useSingleUser } from "@/queries/userQueries";
+import { useSingleUser, useUpdateUser } from "@/queries/userQueries";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -44,7 +44,7 @@ const formSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["USER", "ADMIN"]),
   img: z.string().min(1, "Image is required"),
-  status: z.boolean(),
+  isStatus: z.boolean(),
 });
 
 export default function AddUserForm({
@@ -60,6 +60,7 @@ export default function AddUserForm({
   console.log({ userId });
   const { data: user } = useSingleUser(userId ?? "");
   console.log({ user });
+  const { mutate: updateUser } = useUpdateUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,13 +70,28 @@ export default function AddUserForm({
       password: user?.data?.password || "",
       role: user?.data?.role || "USER",
       img: user?.data?.img || userImages[0],
-      status: user?.data?.isStatus || true,
+      isStatus: user?.data?.isStatus || true,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    createUser(values);
-    onClose();
+    console.log({ values });
+    const editPayload = {
+      fullName: values.fullName,
+      email: values.email,
+      role: values.role,
+      img: values.img,
+      isStatus: values.isStatus,
+    };
+    console.log({ editPayload });
+
+    if (userId) {
+      updateUser({ data: editPayload, id: userId });
+      onClose();
+    } else {
+      createUser(values);
+      onClose();
+    }
   }
 
   const togglePasswordVisibility = () => {
@@ -159,35 +175,40 @@ export default function AddUserForm({
           )}
         />
         {/* Password */}
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-lg">Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} {...field} />
-                  <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!userId && (
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-lg">Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -214,7 +235,7 @@ export default function AddUserForm({
         {/* Status */}
         <FormField
           control={form.control}
-          name="status"
+          name="isStatus"
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-lg">Status</FormLabel>
@@ -240,7 +261,7 @@ export default function AddUserForm({
         />
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Adding User..." : "Add User"}
+          {userId ? "Update User" : "Add User"}
         </Button>
       </form>
     </FormProvider>
