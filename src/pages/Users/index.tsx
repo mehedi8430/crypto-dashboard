@@ -5,7 +5,7 @@ import { DataTable } from "@/components/DataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Eye, Plus, SquarePen, Trash, DollarSign } from "lucide-react";
+import { Eye, Plus, SquarePen, Trash } from "lucide-react";
 import AddUserForm from "./components/AddUserForm";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,8 +20,7 @@ type TUserData = {
   createdAt: string;
   role: "ADMIN" | "USER";
   img: string;
-  allocation: "A" | "B" | "C" | "D";
-  overrideStatus: boolean;
+  isStatus: boolean;
 };
 
 export default function Users() {
@@ -74,30 +73,6 @@ export default function Users() {
       size: 200,
       cell: ({ row }) => (
         <div className="text-center">{row.original.email}</div>
-      ),
-    },
-    {
-      accessorKey: "allocation",
-      header: () => <div className="text-center">Allocation</div>,
-      enableHiding: true,
-      size: 150,
-      cell: ({ row }) => (
-        <div className="text-center">{row.original.allocation}</div>
-      ),
-    },
-    {
-      accessorKey: "overrideStatus",
-      header: () => <div className="text-center">Override Status</div>,
-      enableHiding: true,
-      size: 150,
-      cell: ({ row }) => (
-        <div className="text-center">
-          <Badge
-            variant={row.original.overrideStatus ? "default" : "destructive"}
-          >
-            {row.original.overrideStatus ? "Active" : "Inactive"}
-          </Badge>
-        </div>
       ),
     },
     {
@@ -170,16 +145,6 @@ export default function Users() {
                 }}
               >
                 <Trash className="duration-150" />
-              </Button>
-              <Button
-                variant={"outline"}
-                size={"icon"}
-                className="text-muted-foreground hover:text-green-600 hover:border-green-600"
-                onClick={() =>
-                  alert(`Override payout for ${row.original.fullName}!`)
-                }
-              >
-                <DollarSign className="duration-150" />
               </Button>
             </div>
           </div>

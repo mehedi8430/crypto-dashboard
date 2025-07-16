@@ -2,7 +2,7 @@ export type UserRole = "ADMIN" | "USER";
 
 export type TUser = {
   email: string;
-  password: string;
+  password?: string;
   fullName: string;
   role: UserRole;
   isStatus?: boolean;

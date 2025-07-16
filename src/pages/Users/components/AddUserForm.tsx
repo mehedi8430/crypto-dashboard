@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
 import { useRegister } from "@/queries/authQueries";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSingleUser, useUpdateUser } from "@/queries/userQueries";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -41,7 +41,10 @@ const userImages = [
 const formSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .optional(),
   role: z.enum(["USER", "ADMIN"]),
   img: z.string().min(1, "Image is required"),
   isStatus: z.boolean(),
@@ -54,25 +57,41 @@ export default function AddUserForm({
   onClose: () => void;
   userId?: string;
 }) {
-  const { mutate: createUser, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
 
-  console.log({ userId });
+  const { mutate: createUser, isPending } = useRegister();
   const { data: user } = useSingleUser(userId ?? "");
-  console.log({ user });
   const { mutate: updateUser } = useUpdateUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: user?.data?.fullName || "",
-      email: user?.data?.email || "",
-      password: user?.data?.password || "",
-      role: user?.data?.role || "USER",
-      img: user?.data?.img || userImages[0],
-      isStatus: user?.data?.isStatus || true,
+      fullName: "",
+      email: "",
+      password: "",
+      role: "USER",
+      img: userImages[0],
+      isStatus: true,
     },
   });
+
+  const { errors } = form.formState;
+  console.log("Form errors:", errors);
+
+  // Update form values when user data is loaded
+  useEffect(() => {
+    if (user?.data && userId) {
+      console.log("User data loaded:", user.data);
+      form.reset({
+        fullName: user.data.fullName || "",
+        email: user.data.email || "",
+        password: undefined,
+        role: user.data.role || "USER",
+        img: user.data.img || userImages[0],
+        isStatus: user.data.isStatus ?? true,
+      });
+    }
+  }, [user, userId, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log({ values });
@@ -83,7 +102,6 @@ export default function AddUserForm({
       img: values.img,
       isStatus: values.isStatus,
     };
-    console.log({ editPayload });
 
     if (userId) {
       updateUser({ data: editPayload, id: userId });
