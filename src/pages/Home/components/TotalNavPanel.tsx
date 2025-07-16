@@ -1,6 +1,10 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 import { useState } from "react";
+import { useNavChartData } from "@/queries/cryptoQueries";
+import Loader from "@/components/Loader";
+import type { TNavChartData } from "@/types";
+import { cn } from "@/lib/utils";
 
 const monthOptions: SelectOption[] = [
   { value: "january", label: "January" },
@@ -21,10 +25,39 @@ export default function TotalNavPanel() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
 
+  const {
+    data: navChartData,
+    isPending,
+    error,
+  } = useNavChartData({
+    period: "30d",
+  });
+
+  const totalNav = navChartData?.data.reduce(
+    (total: number, item: TNavChartData) => {
+      return total + item.endingNav;
+    },
+    0
+  );
+
+  const totalGrowth = navChartData?.data.reduce(
+    (total: number, item: TNavChartData) => {
+      return total + item.growthPercent;
+    },
+    0
+  );
+
+  const isUp = totalGrowth > 0;
+
   const handleMonthChange = (value: string) => {
     console.log("Selected month:", value);
     setSelected(value);
   };
+
+  if (isPending) return <Loader />;
+  if (error) return <div>Error loading chart data: {error.message}</div>;
+  if (!navChartData || navChartData.length === 0)
+    return <div>No chart data available</div>;
 
   return (
     <section className="section-container p-0">
@@ -32,18 +65,21 @@ export default function TotalNavPanel() {
         <h3 className="text-foreground/80 text-xs">
           Total NAV
           <span className="text-foreground text-[16px] font-bold ml-1">
-            $35,00.00
+            {`$${totalNav?.toFixed(2)}`}
           </span>
         </h3>
 
         <div className="flex flex-wrap items-center gap-4 md:gap-5">
           <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
-            <p className="text-foreground/70 text-[10px]">Total growth</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
+            <p
+              className={cn("text-xs", {
+                "text-green-500": isUp,
+                "text-red-500": !isUp,
+              })}
+            >
+              {isUp ? "+" : "-"}
+              {`${totalGrowth?.toFixed(2)}%`}
+            </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>
           </div>
 

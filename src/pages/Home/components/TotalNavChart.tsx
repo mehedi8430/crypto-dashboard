@@ -1,12 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { useEffect, useState } from 'react';
-import { mockData } from "@/data/mockData";
+import { useEffect, useState } from "react";
+import { useNavChartData } from "@/queries/cryptoQueries";
+import type { TNavChartData } from "@/types";
+import Loader from "@/components/Loader";
 
 const chartConfig = {
   total_nav: {
@@ -21,28 +30,45 @@ export default function TotalNavChart() {
   const [maxValue, setMaxValue] = useState(1000);
   const [dynamicTicks, setDynamicTicks] = useState<number[]>([]);
 
+  const {
+    data: navChartData,
+    isPending,
+    error,
+  } = useNavChartData({
+    period: "30d",
+  });
+
   useEffect(() => {
-    const navChartData = mockData.nav.chartData.map((d: any) => ({ ...d, total_nav: d.nav }));
-    setChartData(navChartData);
+    if (navChartData) {
+      const formattedData = navChartData?.data.map((d: TNavChartData) => ({
+        date: d.date,
+        total_nav: d.endingNav,
+        time: new Date(d.datetime).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      }));
+      setChartData(formattedData);
 
-    const values = navChartData.map((d: any) => d.total_nav);
-    const dataMin = Math.min(...values);
-    const dataMax = Math.max(...values);
+      const values = formattedData.map((d: any) => d.total_nav);
+      const dataMin = Math.min(...values);
+      const dataMax = Math.max(...values);
 
-    const padding = (dataMax - dataMin) * 0.1;
-    const newMinValue = Math.floor(dataMin - padding);
-    const newMaxValue = Math.ceil(dataMax + padding);
-    setMinValue(newMinValue);
-    setMaxValue(newMaxValue);
+      const padding = (dataMax - dataMin) * 0.1;
+      const newMinValue = Math.floor(dataMin - padding);
+      const newMaxValue = Math.ceil(dataMax + padding);
+      setMinValue(newMinValue);
+      setMaxValue(newMaxValue);
 
-    const tickCount = 5;
-    const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
-    const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-      Math.round(newMinValue + tickStep * i)
-    );
-    setDynamicTicks(newDynamicTicks);
-  }, []);
-
+      const tickCount = 5;
+      const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
+      const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
+        Math.round(newMinValue + tickStep * i)
+      );
+      setDynamicTicks(newDynamicTicks);
+    }
+  }, [navChartData]);
 
   const CustomTooltipCursor = (props: any) => {
     const { points, height, payload } = props;
@@ -96,8 +122,12 @@ export default function TotalNavChart() {
           <div className="flex items-center gap-2 mt-1">
             <div className="w-2 h-2 rounded-full bg-foreground" />
             <span className="text-[10px] text-foreground/70">
-              {new Date(label).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}{" "}
-              {payload[0].payload.time.split('.')[0]},{" "}
+              {new Date(label).toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              })}{" "}
+              {payload[0].payload.time.split(".")[0]},{" "}
               {new Date(label).getFullYear()}
             </span>
           </div>
@@ -106,6 +136,11 @@ export default function TotalNavChart() {
     }
     return null;
   };
+
+  if (isPending) return <Loader />;
+  if (error) return <div>Error loading chart data: {error.message}</div>;
+  if (!navChartData || navChartData.length === 0)
+    return <div>No chart data available</div>;
 
   return (
     <ChartContainer
@@ -146,10 +181,10 @@ export default function TotalNavChart() {
             height={40}
             tickFormatter={(value) => {
               const date = new Date(value);
-              return date.toLocaleDateString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: '2-digit'
+              return date.toLocaleDateString("en-US", {
+                month: "2-digit",
+                day: "2-digit",
+                year: "2-digit",
               });
             }}
             axisLine={false}
