@@ -35,17 +35,17 @@ export default function HomePage() {
           <AllocationBreakdown />
         </div>
 
-        {/* Allocation (A), (B), (C) */}
+        {/* Allocation (A), (B), (C). (D) */}
         <AllAllocationCard />
-
-        {/* Daily Report - spans 2 rows */}
-        <div className="col-span-4 lg:col-span-1 row-span-2">
-          <DailyReport />
-        </div>
 
         {/* Asset Performance Panel */}
         <div className="col-span-4 lg:col-span-3">
           <AssetPerformancePanel />
+        </div>
+
+        {/* Daily Report - spans 2 rows */}
+        <div className="col-span-4 lg:col-span-1">
+          <DailyReport />
         </div>
 
         {/* System Status */}

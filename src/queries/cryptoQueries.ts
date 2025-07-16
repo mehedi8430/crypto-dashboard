@@ -15,3 +15,10 @@ export const useNavChartData = (params?: { period?: string }) => {
     queryFn: () => cryptoApi.getNavChartData(params),
   });
 };
+
+export const useAllocationByKey = (key: string) => {
+  return useQuery({
+    queryKey: cryptoQueryKeys.crypto,
+    queryFn: () => cryptoApi.getAllocationByKey(key),
+  });
+};

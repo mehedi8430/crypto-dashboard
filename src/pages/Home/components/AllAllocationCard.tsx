@@ -9,6 +9,7 @@ const allocationColors: { [key: string]: string } = {
   A: "#0867ED",
   B: "#12BE73",
   C: "#F2C916",
+  D: "#FF69B4",
 };
 
 type AllocationData = {
@@ -18,13 +19,14 @@ type AllocationData = {
   gainPercent: number;
   chartData: { day: string; value: number }[];
   chartConfig: ChartConfig;
+  allocationKey: string;
 };
 
 export default function AllAllocationCard() {
   const [allocationData, setAllocationData] = useState<AllocationData[]>([]);
 
   useEffect(() => {
-    const { D: _D, ...allocationsToShow } = mockData.allocations;
+    const allocationsToShow = mockData.allocations;
 
     const formattedAllocationData = Object.keys(allocationsToShow).map(
       (key) => {
@@ -35,13 +37,16 @@ export default function AllAllocationCard() {
           startingBalance: allocation.startingBalance,
           endingBalance: allocation.endingBalance,
           gainPercent: allocation.dailyGainPercent,
-          chartData: allocation.chartData.map((d: { date: string; balance: number }) => ({
-            ...d,
-            day: new Date(d.date).toLocaleDateString("en-US", {
-              weekday: "short",
-            }),
-            value: d.balance,
-          })),
+          chartData: allocation.chartData.map(
+            (d: { date: string; balance: number }) => ({
+              ...d,
+              day: new Date(d.date).toLocaleDateString("en-US", {
+                weekday: "short",
+              }),
+              value: d.balance,
+            })
+          ),
+          allocationKey: key,
           chartConfig: {
             desktop: {
               label: "value",
@@ -69,6 +74,7 @@ export default function AllAllocationCard() {
             gainPercent={item.gainPercent}
             chartData={item.chartData}
             chartConfig={item.chartConfig}
+            allocationKey={item.allocationKey}
           />
         </Link>
       ))}

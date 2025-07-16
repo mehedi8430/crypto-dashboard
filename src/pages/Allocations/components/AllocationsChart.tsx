@@ -8,15 +8,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { mockData } from "@/data/mockData";
-
 
 const allocationColors = {
   a: "#0867ED", // Blue
@@ -32,11 +26,21 @@ interface CustomTooltipProps {
   color?: string;
 }
 
-const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  color,
+}: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background/80 backdrop-blur-sm p-3 border border-border rounded-lg shadow-xl">
-        <p className="text-sm font-bold text-foreground">{new Date(label ?? "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+        <p className="text-sm font-bold text-foreground">
+          {new Date(label ?? "").toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })}
+        </p>
         <p className="text-sm" style={{ color: color || "var(--chart-blue)" }}>
           Performance:{" "}
           {new Intl.NumberFormat("en-US", {
@@ -52,7 +56,11 @@ const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) =>
   return null;
 };
 
-export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | "d" | null }) {
+export default function AllocationsChart({
+  allocation,
+}: {
+  allocation: "a" | "b" | "c" | "d" | null;
+}) {
   const [chartData, setChartData] = useState<any[]>([]);
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(1000);
@@ -60,11 +68,17 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
   useEffect(() => {
     if (!allocation) return;
 
-    const allocationData = mockData.allocations[allocation.toUpperCase() as keyof typeof mockData.allocations];
-    
+    const allocationData =
+      mockData.allocations[
+        allocation.toUpperCase() as keyof typeof mockData.allocations
+      ];
+
     if (allocationData) {
-        const allocationChartData = allocationData.chartData.map((d: any) => ({ ...d, performance: d.balance }));
-        if (allocationChartData) {
+      const allocationChartData = allocationData.chartData.map((d: any) => ({
+        ...d,
+        performance: d.balance,
+      }));
+      if (allocationChartData) {
         setChartData(allocationChartData);
 
         const values = allocationChartData.map((d: any) => d.performance);
@@ -76,10 +90,9 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
         const newMaxValue = Math.ceil(dataMax + padding);
         setMinValue(newMinValue);
         setMaxValue(newMaxValue);
-        }
+      }
     }
   }, [allocation]);
-
 
   if (!allocation) {
     return null; // Or a fallback UI
@@ -89,13 +102,13 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
   const gradientId = `fillPerformance-${allocation}`;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-0 p-0">
       <CardHeader>
         <CardTitle>30-day performance Trends</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full h-[250px] md:h-[300px]">
-          <ResponsiveContainer width="100%" height="100%" >
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
               margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
@@ -118,7 +131,12 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
-                tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                tickFormatter={(value) =>
+                  new Date(value).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                }
                 tick={{ fill: "var(--muted-foreground)" }}
                 // Responsive ticks
                 interval="preserveStartEnd"

@@ -7,4 +7,9 @@ export const cryptoApi = {
     });
     return response.data;
   },
+
+  getAllocationByKey: async (key: string) => {
+    const response = await apiClient.get(`/allocation/${key}`);
+    return response.data;
+  },
 };

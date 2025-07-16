@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import AllocationAreaChart from "./AllocationAreaChart";
 import { type ChartConfig } from "@/components/ui/chart";
+import { useAllocationByKey } from "@/queries/cryptoQueries";
+import type { TAllocationHistory } from "@/types";
 
 type AllocationProps = {
   label: string;
@@ -9,6 +11,7 @@ type AllocationProps = {
   gainPercent: number;
   chartData: { day: string; value: number }[];
   chartConfig: ChartConfig;
+  allocationKey: string;
 };
 
 export default function Allocation({
@@ -16,9 +19,24 @@ export default function Allocation({
   startingBalance,
   endingBalance,
   gainPercent,
-  chartData,
+  // chartData,
   chartConfig,
+  allocationKey,
 }: AllocationProps) {
+  console.log({ allocationKey });
+  const { data } = useAllocationByKey(allocationKey);
+
+  const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
+    day: new Date(d?.createdAt).toLocaleDateString("en-US", {
+      weekday: "short",
+    }),
+    time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    value: d.ending_balance,
+  }));
+
   return (
     <section className="section-container-no-padding border rounded-md hover:border hover:border-primary">
       <div className="flex items-start justify-between px-6 pt-6">
@@ -73,7 +91,8 @@ export default function Allocation({
       </div>
 
       <AllocationAreaChart
-        chartData={chartData}
+        // chartData={chartData}
+        chartData={formattedData || []}
         chartConfig={chartConfig}
         idSuffix={label}
       />
