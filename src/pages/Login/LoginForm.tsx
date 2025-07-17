@@ -1,3 +1,4 @@
+// crypto-dashboard/src/pages/Login/LoginForm.tsx
 import { useLogin } from "@/queries/authQueries";
 import React, { useState } from "react";
 
@@ -72,7 +73,7 @@ export function LoginForm() {
         </div>
         <div className="text-sm">
           <Link
-            to="#"
+            to="/forgot-password"
             className="font-medium text-blue-500 hover:text-blue-400"
           >
             Forgot your password?

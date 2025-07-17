@@ -1,3 +1,4 @@
+// crypto-dashboard/src/routes/Router.tsx
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
 import HomePage from "@/pages/Home";
@@ -6,10 +7,12 @@ import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
 import LoginPage from "@/pages/Login";
+import ForgotPasswordPage from "@/pages/ForgotPassword";
+import ResetPasswordPage from "@/pages/ResetPassword";
 // import RegisterPage from "@/pages/Register";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Users from "@/pages/Users";
-
+import AddAllocationPage from "@/pages/AddAllocation";
 export const routes = createBrowserRouter([
   {
     path: "/",
@@ -19,6 +22,14 @@ export const routes = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
   },
   // {
   //   path: "/register",
@@ -99,6 +110,15 @@ export const routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "add-allocation",
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <AddAllocationPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);
+ 

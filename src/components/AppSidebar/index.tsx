@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   ShieldBan,
   Users,
+  PlusCircle, // Import the PlusCircle icon
 } from "lucide-react";
 import { type Sidebar } from "@/components/ui/sidebar";
 import NavSidebar from "./navSidebar";
@@ -54,7 +55,6 @@ export default function AppSidebar({
     },
   ];
 
-  
   if (currentUser?.role === "ADMIN") {
     items.push({
       title: "User Management",
@@ -66,6 +66,13 @@ export default function AppSidebar({
       title: "Data Forms",
       url: "/dashboard/create-data-forms",
       icon: <Clipboard />,
+      end: true,
+    });
+    // Add the new "Add Allocation" button for admins
+    items.push({
+      title: "Add Allocation",
+      url: "/dashboard/add-allocation",
+      icon: <PlusCircle />,
       end: true,
     });
   }

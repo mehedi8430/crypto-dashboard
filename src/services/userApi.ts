@@ -1,3 +1,4 @@
+// crypto-dashboard/src/services/userApi.ts
 import { apiClient } from "@/api";
 import type { TUser } from "@/types";
 
@@ -33,6 +34,11 @@ export const userApi = {
     search?: string;
   }) => {
     const response = await apiClient.get("/users", { params });
+    return response.data;
+  },
+
+  register: async (userData: TUser) => {
+    const response = await apiClient.post("/users", userData);
     return response.data;
   },
 };

@@ -1,3 +1,4 @@
+// crypto-dashboard/src/pages/Users/components/AddUserForm.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { useRegister } from "@/queries/authQueries";
 import { useEffect, useState } from "react";
@@ -38,6 +40,8 @@ const userImages = [
   "https://i.ibb.co/3mqH2LWM/1-23-3-17-16-2-13m.png",
 ];
 
+const allocations = ["A", "B", "C", "D"];
+
 const formSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
@@ -48,6 +52,9 @@ const formSchema = z.object({
   role: z.enum(["USER", "ADMIN"]),
   img: z.string().min(1, "Image is required"),
   isStatus: z.boolean(),
+  allocations: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
 });
 
 export default function AddUserForm({
@@ -72,6 +79,7 @@ export default function AddUserForm({
       role: "USER",
       img: userImages[0],
       isStatus: true,
+      allocations: [],
     },
   });
 
@@ -89,6 +97,7 @@ export default function AddUserForm({
         role: user.data.role || "USER",
         img: user.data.img || userImages[0],
         isStatus: user.data.isStatus ?? true,
+        allocations: user.data.allocations || [],
       });
     }
   }, [user, userId, form]);
@@ -101,6 +110,7 @@ export default function AddUserForm({
       role: values.role,
       img: values.img,
       isStatus: values.isStatus,
+      allocations: values.allocations,
     };
 
     if (userId) {
@@ -245,6 +255,55 @@ export default function AddUserForm({
                   <SelectItem value="ADMIN">Admin</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="allocations"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-lg">Allocations</FormLabel>
+              </div>
+              <div className="flex items-center space-x-4">
+                {allocations.map((item) => (
+                  <FormField
+                    key={item}
+                    control={form.control}
+                    name="allocations"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={item}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                            className="border-white"
+                              checked={field.value?.includes(item)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, item])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item
+                                      )
+                                    );
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Allocation {item}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              </div>
               <FormMessage />
             </FormItem>
           )}

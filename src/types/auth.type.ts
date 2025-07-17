@@ -1,3 +1,4 @@
+// crypto-dashboard/src/types/auth.type.ts
 export type UserRole = "ADMIN" | "USER";
 
 export type TUser = {
@@ -7,6 +8,7 @@ export type TUser = {
   role: UserRole;
   isStatus?: boolean;
   img?: string;
+  allocations?: string[];
 };
 
 export type TAuthStore = {
@@ -26,4 +28,5 @@ export type TTokenPayload = {
   iat?: number;
   exp?: number;
   img?: string;
+  allocations?: string[];
 };
