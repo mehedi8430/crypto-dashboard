@@ -1,7 +1,9 @@
+import { Skeleton } from "../ui/skeleton";
+
 export default function Loader() {
   return (
     <section>
-      <div>Loading...</div>
+      <Skeleton className="h-full w-full" />
     </section>
   );
 }
