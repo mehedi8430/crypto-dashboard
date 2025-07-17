@@ -1,0 +1,8 @@
+{
+  "id": "user-001",
+  "fullName": "John Doe",
+  "email": "user@gmail.com",
+  "role": "USER",
+  "img": "https://i.ibb.co/jPWwK4hG/5864188-1.png",
+  "allocations": ["A", "B"]
+}
