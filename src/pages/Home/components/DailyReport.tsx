@@ -12,34 +12,36 @@ export default function DailyReport() {
 
   useEffect(() => {
     const report = mockData;
-    const formattedReports = [{
+    const formattedReports = [
+      {
         date: new Date(report.reportDate).toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         }),
         deception: report.dailyReportText,
         startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
         endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
         growthRate: {
-            value: report.nav.growthPercent,
-            sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
-            color: (report.nav.growthPercent >= 0 ? "green" : "red") as
-                | "green"
-                | "red",
-            formatted: `${
-                report.nav.growthPercent >= 0 ? "+" : ""
-            }${Math.abs(report.nav.growthPercent)}%`,
+          value: report.nav.growthPercent,
+          sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
+          color: (report.nav.growthPercent >= 0 ? "green" : "red") as
+            | "green"
+            | "red",
+          formatted: `${report.nav.growthPercent >= 0 ? "+" : ""}${Math.abs(
+            report.nav.growthPercent
+          )}%`,
         },
-    }];
+      },
+    ];
     setPerformanceReportCards(formattedReports);
   }, []);
 
   return (
     <section className="section-container h-full">
       <div className="flex items-center justify-between">
-        <h1 className="font-bold">Daily Report</h1>
+        <h3 className="">Daily Report</h3>
         <Link to="/dashboard/report">
           <Button variant="link">View All</Button>
         </Link>

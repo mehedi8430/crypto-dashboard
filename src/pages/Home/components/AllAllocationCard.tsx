@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Link } from "react-router";
 import Allocation from "./Allocation";
 import { useEffect, useState } from "react";
@@ -32,6 +31,7 @@ export default function AllAllocationCard() {
       (key) => {
         const allocation =
           allocationsToShow[key as keyof typeof allocationsToShow];
+
         return {
           label: key,
           startingBalance: allocation.startingBalance,

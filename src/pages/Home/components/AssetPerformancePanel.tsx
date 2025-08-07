@@ -14,6 +14,7 @@ import T from "@/assets/icons/coins/Group (2).png";
 import D from "@/assets/icons/coins/Group (3).png";
 import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png";
 import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png";
+import { usePortfolioLatestData } from "@/queries/cryptoQueries";
 
 const coinImages: { [key: string]: string } = {
   ETH,
@@ -29,25 +30,36 @@ export default function AssetPerformancePanel(): React.ReactNode {
   const [limit, setLimit] = useState<number>(15);
   const [coins, setCoins] = useState<TCoinData[]>([]);
 
+  const {
+    data: portfolioLatestData,
+    isPending,
+    error,
+  } = usePortfolioLatestData();
+  console.log({ portfolioLatestData });
+
+  const assetsPerformanceData = Object.values(
+    portfolioLatestData?.data?.asset_performance || {}
+  );
+  console.log({ assetsPerformanceData });
+
   useEffect(() => {
     const assetPerformanceData = mockData.assetPerformance;
 
-    const formattedCoinsData = Object.keys(assetPerformanceData).map(
-      (key) => {
-        const coin = assetPerformanceData[key as keyof typeof assetPerformanceData];
-        return {
-          image: coinImages[key],
-          name: key,
-          symbol: coin.symbol,
-          open: `+${coin.open}`,
-          close: `+${coin.close}%`,
-          change: `+${coin.changePercent}`,
-          volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
-          volumeTrend:
-            coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
-        };
-      }
-    );
+    const formattedCoinsData = Object.keys(assetPerformanceData).map((key) => {
+      const coin =
+        assetPerformanceData[key as keyof typeof assetPerformanceData];
+      return {
+        image: coinImages[key],
+        name: key,
+        symbol: coin.symbol,
+        open: `+${coin.open}`,
+        close: `+${coin.close}%`,
+        change: `+${coin.changePercent}`,
+        volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
+        volumeTrend:
+          coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
+      };
+    });
     setCoins(formattedCoinsData);
   }, []);
 
@@ -98,10 +110,11 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div
           className={`
           flex items-center justify-center
-          ${row.original.volumeTrend === "up"
+          ${
+            row.original.volumeTrend === "up"
               ? "text-green-500"
               : "text-red-500"
-            }
+          }
         `}
         >
           <p>{row.original.volume}</p>

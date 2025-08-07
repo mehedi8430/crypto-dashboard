@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import AllocationAreaChart from "./AllocationAreaChart";
 import { type ChartConfig } from "@/components/ui/chart";
-// import { useAllocationByKey } from "@/queries/cryptoQueries";
-// import type { TAllocationHistory } from "@/types";
+import { useAllocationByKey } from "@/queries/cryptoQueries";
+import type { TAllocationHistory } from "@/types";
 
 type AllocationProps = {
   label: string;
@@ -19,22 +19,23 @@ export default function Allocation({
   startingBalance,
   endingBalance,
   gainPercent,
-  chartData,
+  // chartData,
   chartConfig,
-}: // allocationKey,
-AllocationProps) {
-  // const { data } = useAllocationByKey(allocationKey);
+  allocationKey,
+}: AllocationProps) {
+  console.log({ allocationKey });
+  const { data } = useAllocationByKey(allocationKey);
 
-  // const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
-  //   day: new Date(d?.createdAt).toLocaleDateString("en-US", {
-  //     weekday: "short",
-  //   }),
-  //   time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   }),
-  //   value: d.ending_balance,
-  // }));
+  const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
+    day: new Date(d?.createdAt).toLocaleDateString("en-US", {
+      weekday: "short",
+    }),
+    time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    value: d.ending_balance,
+  }));
 
   return (
     <section className="section-container-no-padding border rounded-md hover:border hover:border-primary">
@@ -90,8 +91,8 @@ AllocationProps) {
       </div>
 
       <AllocationAreaChart
-        chartData={chartData}
-        // chartData={formattedData || []}
+        // chartData={chartData}
+        chartData={formattedData || []}
         chartConfig={chartConfig}
         idSuffix={label}
       />
