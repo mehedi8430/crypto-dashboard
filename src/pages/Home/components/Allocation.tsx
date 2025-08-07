@@ -23,7 +23,6 @@ export default function Allocation({
   chartConfig,
   allocationKey,
 }: AllocationProps) {
-  console.log({ allocationKey });
   const { data } = useAllocationByKey(allocationKey);
 
   const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
@@ -34,7 +33,7 @@ export default function Allocation({
       hour: "2-digit",
       minute: "2-digit",
     }),
-    value: d.ending_balance,
+    value: d.ending_balance - d.starting_balance,
   }));
 
   return (

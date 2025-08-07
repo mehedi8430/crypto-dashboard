@@ -126,45 +126,14 @@ export default function TotalNavChart() {
 
       const tickCount = 5;
       const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
+
       const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
         Math.round(newMinValue + tickStep * i)
       );
+
       setDynamicTicks(newDynamicTicks);
     }
   }, [navChartData]);
-
-  // mock data
-  // useEffect(() => {
-  //   if (navChartData) {
-  //     const formattedData = navChartData?.data.map((d: TChart) => ({
-  //       date: d.date,
-  //       total_nav: d.endingNav,
-  //       time: new Date(d.datetime).toLocaleTimeString("en-US", {
-  //         hour: "2-digit",
-  //         minute: "2-digit",
-  //         second: "2-digit",
-  //       }),
-  //     }));
-  //     setChartData(formattedData);
-
-  //     const values = formattedData.map((d: any) => d.total_nav);
-  //     const dataMin = Math.min(...values);
-  //     const dataMax = Math.max(...values);
-
-  //     const padding = (dataMax - dataMin) * 0.1;
-  //     const newMinValue = Math.floor(dataMin - padding);
-  //     const newMaxValue = Math.ceil(dataMax + padding);
-  //     setMinValue(newMinValue);
-  //     setMaxValue(newMaxValue);
-
-  //     const tickCount = 5;
-  //     const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
-  //     const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-  //       Math.round(newMinValue + tickStep * i)
-  //     );
-  //     setDynamicTicks(newDynamicTicks);
-  //   }
-  // }, []);
 
   const CustomTooltipCursor = (props: any) => {
     const { points, height, payload } = props;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Area,
   AreaChart,
@@ -10,7 +9,8 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { mockData } from "@/data/mockData";
+import { useAllocationByKey } from "@/queries/cryptoQueries";
+import type { TAllocationKeyData } from "@/types";
 
 const allocationColors = {
   a: "#0867ED", // Blue
@@ -61,27 +61,36 @@ export default function AllocationsChart({
 }: {
   allocation: "a" | "b" | "c" | "d" | null;
 }) {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<
+    { date: string; performance: number }[]
+  >([]);
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(1000);
+
+  const { data } = useAllocationByKey(allocation?.toUpperCase() || "");
 
   useEffect(() => {
     if (!allocation) return;
 
-    const allocationData =
-      mockData.allocations[
-        allocation.toUpperCase() as keyof typeof mockData.allocations
-      ];
+    const allocationData = data?.data?.history;
 
     if (allocationData) {
-      const allocationChartData = allocationData.chartData.map((d: any) => ({
-        ...d,
-        performance: d.balance,
-      }));
+      const allocationChartData = allocationData.map(
+        (d: TAllocationKeyData) => ({
+          date: new Date(d?.createdAt).toLocaleDateString("en-US", {
+            weekday: "short",
+          }),
+          performance: d.ending_balance - d.starting_balance,
+        })
+      );
+      console.log({ allocationChartData });
+
       if (allocationChartData) {
         setChartData(allocationChartData);
 
-        const values = allocationChartData.map((d: any) => d.performance);
+        const values = allocationChartData.map(
+          (d: { performance: number }) => d.performance
+        );
         const dataMin = Math.min(...values);
         const dataMax = Math.max(...values);
 
@@ -92,7 +101,7 @@ export default function AllocationsChart({
         setMaxValue(newMaxValue);
       }
     }
-  }, [allocation]);
+  }, [allocation, data?.data?.history]);
 
   if (!allocation) {
     return null; // Or a fallback UI
