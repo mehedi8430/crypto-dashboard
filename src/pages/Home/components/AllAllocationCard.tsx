@@ -13,10 +13,6 @@ const allocationColors: { [key: string]: string } = {
 
 type AllocationData = {
   label: string;
-  startingBalance: number;
-  endingBalance: number;
-  gainPercent: number;
-  chartData: { day: string; value: number }[];
   chartConfig: ChartConfig;
   allocationKey: string;
 };
@@ -29,23 +25,8 @@ export default function AllAllocationCard() {
 
     const formattedAllocationData = Object.keys(allocationsToShow).map(
       (key) => {
-        const allocation =
-          allocationsToShow[key as keyof typeof allocationsToShow];
-
         return {
           label: key,
-          startingBalance: allocation.startingBalance,
-          endingBalance: allocation.endingBalance,
-          gainPercent: allocation.dailyGainPercent,
-          chartData: allocation.chartData.map(
-            (d: { date: string; balance: number }) => ({
-              ...d,
-              day: new Date(d.date).toLocaleDateString("en-US", {
-                weekday: "short",
-              }),
-              value: d.balance,
-            })
-          ),
           allocationKey: key,
           chartConfig: {
             desktop: {
@@ -69,10 +50,6 @@ export default function AllAllocationCard() {
         >
           <Allocation
             label={item.label}
-            startingBalance={item.startingBalance}
-            endingBalance={item.endingBalance}
-            gainPercent={item.gainPercent}
-            chartData={item.chartData}
             chartConfig={item.chartConfig}
             allocationKey={item.allocationKey}
           />

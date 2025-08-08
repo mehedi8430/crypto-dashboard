@@ -9,6 +9,14 @@ export const cryptoApi = {
     return response.data;
   },
 
+  // Gets the nav history data for the given days.
+  getNavHistoryData: async (params?: { days?: string }) => {
+    const response = await apiClient.get("/crypto/portfolio/nav-history", {
+      params,
+    });
+    return response.data;
+  },
+
   // Gets the allocation data for the given key
   getAllocationByKey: async (key: string) => {
     const response = await apiClient.get(`/allocation/${key}`);

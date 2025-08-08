@@ -1,7 +1,7 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 import { useState } from "react";
-import { useNavChartData } from "@/queries/cryptoQueries";
+import { useNavHistoryData } from "@/queries/cryptoQueries";
 import Loader from "@/components/Loader";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
@@ -29,8 +29,8 @@ export default function TotalNavPanel() {
     data: navChartData,
     isPending,
     error,
-  } = useNavChartData({
-    period: "30d",
+  } = useNavHistoryData({
+    days: "30",
   });
 
   const totalNav = navChartData?.data.reduce(
@@ -48,13 +48,6 @@ export default function TotalNavPanel() {
   );
 
   const isUp = totalGrowth > 0;
-
-  // mock data
-  // const totalNav = 1000000;
-  // const isPending = false;
-
-  // const totalGrowth = 10;
-  // const isUp = true;
 
   const handleMonthChange = (value: string) => {
     console.log("Selected month:", value);

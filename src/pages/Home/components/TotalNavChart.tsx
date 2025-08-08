@@ -13,7 +13,7 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import { useNavChartData } from "@/queries/cryptoQueries";
+import { useNavHistoryData } from "@/queries/cryptoQueries";
 import type { TNavChartData } from "@/types";
 import Loader from "@/components/Loader";
 
@@ -23,69 +23,6 @@ const chartConfig = {
     color: "var(--color-chart-1)",
   },
 } satisfies ChartConfig;
-
-// type TChart = {
-//   date: string;
-//   time: string;
-//   nav: number;
-//   endingNav: number;
-//   datetime: string;
-// };
-
-// mock data
-// const navChartData: { data: TChart[] } = {
-//   data: [
-//     {
-//       date: "2024-07-01",
-//       time: "09:00",
-//       nav: 100000,
-//       endingNav: 103000,
-//       datetime: "2024-07-01T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-02",
-//       time: "09:00",
-//       nav: 101000,
-//       endingNav: 108000,
-//       datetime: "2024-07-02T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-03",
-//       time: "09:00",
-//       nav: 102000,
-//       endingNav: 107000,
-//       datetime: "2024-07-03T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-04",
-//       time: "09:00",
-//       nav: 101500,
-//       endingNav: 106000,
-//       datetime: "2024-07-04T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-05",
-//       time: "09:00",
-//       nav: 103000,
-//       endingNav: 109000,
-//       datetime: "2024-07-05T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-06",
-//       time: "09:00",
-//       nav: 104000,
-//       endingNav: 110000,
-//       datetime: "2024-07-06T09:00:00.000Z",
-//     },
-//     {
-//       date: "2024-07-07",
-//       time: "09:00",
-//       nav: 105000,
-//       endingNav: 114000,
-//       datetime: "2024-07-07T09:00:00.000Z",
-//     },
-//   ],
-// };
 
 export default function TotalNavChart() {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -97,15 +34,15 @@ export default function TotalNavChart() {
     data: navChartData,
     isPending,
     error,
-  } = useNavChartData({
-    period: "30d",
+  } = useNavHistoryData({
+    days: "30",
   });
 
   useEffect(() => {
     if (navChartData) {
       const formattedData = navChartData?.data.map((d: TNavChartData) => ({
         date: d.date,
-        total_nav: d.endingNav,
+        total_nav: d.endingNav - d.startingNav,
         time: new Date(d.datetime).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
@@ -181,7 +118,7 @@ export default function TotalNavChart() {
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-primary" />
             <span className="text-sm font-bold text-foreground">
-              ${payload[0].value}
+              ${payload[0].value.toFixed(2)}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-1">

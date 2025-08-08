@@ -19,6 +19,14 @@ export const useNavChartData = (params?: { period?: string }) => {
   });
 };
 
+// Fetches the nav history data for the given days.
+export const useNavHistoryData = (params?: { days?: string }) => {
+  return useQuery({
+    queryKey: cryptoQueryKeys.chartData(params),
+    queryFn: () => cryptoApi.getNavHistoryData(params),
+  });
+};
+
 // Fetches the allocation data for the given key
 export const useAllocationByKey = (key: string) => {
   return useQuery({

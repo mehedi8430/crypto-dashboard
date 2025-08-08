@@ -77,9 +77,7 @@ export default function AllocationsChart({
     if (allocationData) {
       const allocationChartData = allocationData.map(
         (d: TAllocationKeyData) => ({
-          date: new Date(d?.createdAt).toLocaleDateString("en-US", {
-            weekday: "short",
-          }),
+          date: d?.createdAt,
           performance: d.ending_balance - d.starting_balance,
         })
       );
@@ -95,7 +93,9 @@ export default function AllocationsChart({
         const dataMax = Math.max(...values);
 
         const padding = (dataMax - dataMin) * 0.1;
-        const newMinValue = Math.floor(dataMin - padding);
+        // const newMinValue = Math.floor(dataMin - padding);
+        const newMinValue = Math.max(0, Math.floor(dataMin - padding)); // Ensure min value is not negative
+        console.log({ newMinValue });
         const newMaxValue = Math.ceil(dataMax + padding);
         setMinValue(newMinValue);
         setMaxValue(newMaxValue);
@@ -128,13 +128,11 @@ export default function AllocationsChart({
                   <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-
               <CartesianGrid
                 vertical={false}
                 stroke="var(--border)"
                 strokeOpacity={0.5}
               />
-
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -151,7 +149,6 @@ export default function AllocationsChart({
                 interval="preserveStartEnd"
                 minTickGap={40}
               />
-
               <YAxis
                 domain={[minValue, maxValue]}
                 axisLine={false}
@@ -167,7 +164,6 @@ export default function AllocationsChart({
                   }).format(value)
                 }
               />
-
               <Tooltip
                 cursor={{
                   stroke: chartColor,
@@ -177,7 +173,7 @@ export default function AllocationsChart({
                 }}
                 content={<CustomTooltip color={chartColor} />}
               />
-
+              {/* Area for positive values with gradient */}
               <Area
                 type="monotone"
                 dataKey="performance"
@@ -190,6 +186,10 @@ export default function AllocationsChart({
                   stroke: "var(--card)",
                   strokeWidth: 2,
                 }}
+                data={chartData.map((d) => ({
+                  ...d,
+                  performance: d.performance >= 0 ? d.performance : 0,
+                }))}
               />
             </AreaChart>
           </ResponsiveContainer>

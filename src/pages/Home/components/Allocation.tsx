@@ -6,35 +6,47 @@ import type { TAllocationHistory } from "@/types";
 
 type AllocationProps = {
   label: string;
-  startingBalance: number;
-  endingBalance: number;
-  gainPercent: number;
-  chartData: { day: string; value: number }[];
   chartConfig: ChartConfig;
   allocationKey: string;
 };
 
 export default function Allocation({
   label,
-  startingBalance,
-  endingBalance,
-  gainPercent,
-  // chartData,
   chartConfig,
   allocationKey,
 }: AllocationProps) {
   const { data } = useAllocationByKey(allocationKey);
 
   const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
-    day: new Date(d?.createdAt).toLocaleDateString("en-US", {
-      weekday: "short",
-    }),
+    day: d.createdAt,
     time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     }),
     value: d.ending_balance - d.starting_balance,
   }));
+
+  // Calculate gainPercent
+  let gainPercent = 0;
+  if (data?.data?.history && data.data.history.length > 0) {
+    // Sort by createdAt to ensure correct order
+    const sortedHistory = [...data.data.history].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    const earliest = sortedHistory[0];
+    const latest = sortedHistory[sortedHistory.length - 1];
+    const startingBalance = earliest.starting_balance;
+    const endingBalance = latest.ending_balance;
+    if (startingBalance !== 0) {
+      gainPercent = ((endingBalance - startingBalance) / startingBalance) * 100;
+    }
+  }
+
+  // Use ending_balance of the earliest record and starting_balance of the latest for display
+  const startingBalance =
+    data?.data?.history[data?.data?.history.length - 1]?.ending_balance || 0;
+  const endingBalance = data?.data?.history[0]?.starting_balance || 0;
 
   return (
     <section className="section-container-no-padding border rounded-md hover:border hover:border-primary">
