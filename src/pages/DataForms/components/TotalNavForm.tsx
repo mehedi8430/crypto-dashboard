@@ -11,6 +11,8 @@ import {
   FormMessage,
   FormField,
 } from "@/components/ui/form";
+import DatePicker from "@/components/DatePicker";
+import { TimePicker } from "@/components/TimePicker";
 
 const totalNavSchema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -50,7 +52,10 @@ export default function TotalNavForm() {
               <FormItem>
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <DatePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -63,7 +68,10 @@ export default function TotalNavForm() {
               <FormItem>
                 <FormLabel>Time</FormLabel>
                 <FormControl>
-                  <Input type="time" {...field} />
+                  <TimePicker
+                    {...field}
+                    onChange={(value) => field.onChange(value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
