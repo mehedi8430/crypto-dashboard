@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import DatePicker from "@/components/DatePicker";
 import { TimePicker } from "@/components/TimePicker";
+import { DateTimePicker } from "@/components/DateTimePicker";
 
 const allocationSchema = z.object({
   allocation: z.string().min(1, "Allocation is required"),
@@ -150,7 +151,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Last Payout Event</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,7 +167,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Next Unlock Epoch</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

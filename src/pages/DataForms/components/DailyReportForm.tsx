@@ -12,6 +12,7 @@ import {
   FormField,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import DatePicker from "@/components/DatePicker";
 
 const dailyReportSchema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -52,7 +53,10 @@ export default function DailyReportForm() {
             <FormItem>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input type="date" {...field} />
+                <DatePicker
+                  {...field}
+                  onChange={(date) => field.onChange(date)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
