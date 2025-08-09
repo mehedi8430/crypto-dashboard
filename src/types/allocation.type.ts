@@ -15,8 +15,17 @@ export interface TAllocation {
 }
 
 export type TAllocationKeyData = {
+  minuteKey: string;
   starting_balance: number;
+  minute_gain: number;
+  minute_gain_percent: number;
   ending_balance: number;
   notes: string;
   createdAt: string;
+};
+
+export type TAllocationData = {
+  name: string;
+  current_balance: number;
+  history: TAllocationKeyData[];
 };

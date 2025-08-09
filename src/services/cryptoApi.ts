@@ -34,4 +34,10 @@ export const cryptoApi = {
     const response = await apiClient.get("/crypto/portfolio/latest");
     return response.data;
   },
+
+  // Get the system status data
+  getSystemStatus: async () => {
+    const response = await apiClient.get("/crypto/system/status");
+    return response.data;
+  },
 };

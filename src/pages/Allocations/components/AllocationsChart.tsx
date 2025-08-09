@@ -93,9 +93,7 @@ export default function AllocationsChart({
         const dataMax = Math.max(...values);
 
         const padding = (dataMax - dataMin) * 0.1;
-        // const newMinValue = Math.floor(dataMin - padding);
-        const newMinValue = Math.max(0, Math.floor(dataMin - padding)); // Ensure min value is not negative
-        console.log({ newMinValue });
+        const newMinValue = Math.floor(dataMin - padding);
         const newMaxValue = Math.ceil(dataMax + padding);
         setMinValue(newMinValue);
         setMaxValue(newMaxValue);
@@ -186,10 +184,6 @@ export default function AllocationsChart({
                   stroke: "var(--card)",
                   strokeWidth: 2,
                 }}
-                data={chartData.map((d) => ({
-                  ...d,
-                  performance: d.performance >= 0 ? d.performance : 0,
-                }))}
               />
             </AreaChart>
           </ResponsiveContainer>
