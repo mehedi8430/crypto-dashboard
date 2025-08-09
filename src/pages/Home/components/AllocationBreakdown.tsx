@@ -1,7 +1,7 @@
-import type { Allocation } from "@/types/allocation.type";
+import type { Allocation, TAllocation } from "@/types/allocation.type";
 import AllocationPieChart from "./AllocationPieChart";
 import { useState, useEffect } from "react";
-import { mockData } from "@/data/mockData";
+import { useAllocations } from "@/queries/cryptoQueries";
 
 const allocationColors: { [key: string]: string } = {
   A: "#FFC107",
@@ -11,35 +11,27 @@ const allocationColors: { [key: string]: string } = {
 };
 
 export default function AllocationBreakdown() {
+  const { data } = useAllocations();
   const [chartData, setChartData] = useState<Allocation[]>([]);
 
   useEffect(() => {
-    const allocationData = mockData.allocationBreakdown;
+    if (data?.data) {
+      // Calculate total balance
+      const totalBalance = data.data.reduce(
+        (sum: number, item: TAllocation) => sum + item.currentBalance,
+        0
+      );
 
-    const formattedChartData = [
-      {
-        name: "A",
-        value: allocationData.A_percent,
-        fill: allocationColors.A,
-      },
-      {
-        name: "B",
-        value: allocationData.B_percent,
-        fill: allocationColors.B,
-      },
-      {
-        name: "C",
-        value: allocationData.C_percent,
-        fill: allocationColors.C,
-      },
-      {
-        name: "D",
-        value: allocationData.D_percent,
-        fill: allocationColors.D,
-      },
-    ];
-    setChartData(formattedChartData);
-  }, []);
+      // Format data for chart
+      const formattedChartData = data.data.map((item: TAllocation) => ({
+        name: item.key,
+        value: Number(((item.currentBalance / totalBalance) * 100).toFixed(2)),
+        fill: allocationColors[item.key],
+      }));
+
+      setChartData(formattedChartData);
+    }
+  }, [data]);
 
   return (
     <section className="section-container h-full">

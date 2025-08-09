@@ -140,7 +140,12 @@ export default function TotalNavChart() {
   };
 
   if (isPending) return <Loader />;
-  if (error) return <div>Error loading chart data: {error.message}</div>;
+  if (error)
+    return (
+      <div className="text-red-500 text-center">
+        Error loading chart data: {error.message}
+      </div>
+    );
   if (!navChartData || navChartData.length === 0)
     return <div>No chart data available</div>;
 

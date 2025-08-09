@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 // Query Keys
 export const cryptoQueryKeys = {
   crypto: ["crypto"] as const,
+  allocation: ["allocation"] as const,
   chartData: (params?: any) =>
     [...cryptoQueryKeys.crypto, "chartData", params] as const,
   portfolio: (params?: any) =>
@@ -24,6 +25,14 @@ export const useNavHistoryData = (params?: { days?: string }) => {
   return useQuery({
     queryKey: cryptoQueryKeys.chartData(params),
     queryFn: () => cryptoApi.getNavHistoryData(params),
+  });
+};
+
+// Fetches the allocations data
+export const useAllocations = () => {
+  return useQuery({
+    queryKey: cryptoQueryKeys.allocation,
+    queryFn: () => cryptoApi.getAllocations(),
   });
 };
 

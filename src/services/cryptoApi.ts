@@ -17,6 +17,12 @@ export const cryptoApi = {
     return response.data;
   },
 
+  // Gets allocations daat
+  getAllocations: async () => {
+    const response = await apiClient.get("/allocation");
+    return response.data;
+  },
+
   // Gets the allocation data for the given key
   getAllocationByKey: async (key: string) => {
     const response = await apiClient.get(`/allocation/${key}`);

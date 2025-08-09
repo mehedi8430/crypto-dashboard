@@ -2,7 +2,6 @@ import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 import { useState } from "react";
 import { useNavHistoryData } from "@/queries/cryptoQueries";
-import Loader from "@/components/Loader";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -25,11 +24,7 @@ export default function TotalNavPanel() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
 
-  const {
-    data: navChartData,
-    isPending,
-    error,
-  } = useNavHistoryData({
+  const { data: navChartData } = useNavHistoryData({
     days: "30",
   });
 
@@ -47,25 +42,20 @@ export default function TotalNavPanel() {
     0
   );
 
-  const isUp = totalGrowth > 0;
+  const isUp = totalGrowth ? totalGrowth > 0 : true;
 
   const handleMonthChange = (value: string) => {
     console.log("Selected month:", value);
     setSelected(value);
   };
 
-  if (isPending) return <Loader />;
-  if (error) return <div>Error loading chart data: {error.message}</div>;
-  if (!navChartData || navChartData.length === 0)
-    return <div>No chart data available</div>;
-
   return (
-    <section className="section-container p-0">
+    <section className="section-container p-0 h-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6">
         <h3>
           Total NAV
           <p className="text-foreground text-[16px] font-bold ml-1">
-            {`$${totalNav?.toFixed(2)}`}
+            {totalNav?.toFixed(2) || 1400000}
           </p>
         </h3>
 
@@ -78,7 +68,7 @@ export default function TotalNavPanel() {
               })}
             >
               {isUp ? "+" : "-"}
-              {`${totalGrowth?.toFixed(2)}%`}
+              {totalGrowth?.toFixed(2) || 0}%
             </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>
           </div>
