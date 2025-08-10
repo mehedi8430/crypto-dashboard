@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Pen } from "lucide-react";
+import { Pen, X } from "lucide-react";
 import TotalNavPanel from "@/pages/Home/components/TotalNavPanel";
 import AllocationBreakdown from "@/pages/Home/components/AllocationBreakdown";
 import AllAllocationCard from "@/pages/Home/components/AllAllocationCard";
@@ -26,7 +26,11 @@ export default function DataForms() {
             size="icon"
             variant="outline"
           >
-            <Pen className="h-4 w-4" />
+            {!isEditing ? (
+              <Pen className="h-4 w-4" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
           </Button>
         </div>
 
