@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useNavHistoryData } from "@/queries/cryptoQueries";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
+import { io } from "socket.io-client";
+import { useAuth } from "@/hooks/useAuth";
 
 const monthOptions: SelectOption[] = [
   { value: "january", label: "January" },
@@ -23,6 +25,35 @@ const monthOptions: SelectOption[] = [
 export default function TotalNavPanel() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
+
+  const userData = useAuth();
+  const encodedToken = localStorage.getItem("auth-storage");
+  const parsedToken = encodedToken ? JSON.parse(encodedToken) : null;
+  const token = parsedToken?.state?.token?.data;
+  const [socketData, setSocketData] = useState<any>(null);
+  console.log({ socketData });
+
+  // Frontend socket connection example
+  const socket = io("http://172.16.100.26:5050");
+
+  // Authenticate if needed
+  socket.emit("auth", { token: token, userId: userData?.id });
+
+  // Subscribe to crypto updates after authentication
+  socket.on("auth_success", () => {
+    socket.emit("subscribe_crypto_updates");
+  });
+
+  // Listen for crypto data updates
+  socket.on("crypto_data_update", (data) => {
+    // Update your UI with the new data
+    setSocketData(data);
+  });
+
+  // Handle subscription confirmation
+  socket.on("subscribed_crypto_updates", (data) => {
+    console.log(data.message);
+  });
 
   const { data: navChartData } = useNavHistoryData({
     days: "30",
