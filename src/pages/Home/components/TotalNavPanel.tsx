@@ -27,7 +27,7 @@ export default function TotalNavPanel() {
   const {
     data: navChartData,
     // loading: navLoading,
-    // error: navError,
+    error: navError,
     // isConnected: navConnected,
   } = useCryptoChartData("http://172.16.100.26:5050");
   console.log({ navChartData });
@@ -35,19 +35,24 @@ export default function TotalNavPanel() {
   const totalNav =
     navChartData &&
     navChartData.reduce((total: number, item: TNavChartData) => {
-      return total + item.endingNav;
+      return total + item?.nav;
     }, 0);
 
-  const totalGrowth =
-    navChartData &&
-    navChartData.reduce((total: number, item: TNavChartData) => {
-      return total + item.growthPercent;
+  const lastTwo = navChartData && navChartData?.slice(-2);
+
+  const lastTwoNavDiff =
+    lastTwo &&
+    lastTwo.reduce((total: number, item: TNavChartData) => {
+      return item?.nav - total;
     }, 0);
 
-  const isUp = totalGrowth ? totalGrowth > 0 : true;
+  const growthPercent = lastTwoNavDiff
+    ? ((lastTwoNavDiff / lastTwo[0]?.nav) * 100).toFixed(4)
+    : 0;
+
+  const isUp = Number(growthPercent) > 0 ? true : false;
 
   const handleMonthChange = (value: string) => {
-    console.log("Selected month:", value);
     setSelected(value);
   };
 
@@ -70,7 +75,7 @@ export default function TotalNavPanel() {
               })}
             >
               {isUp ? "+" : "-"}
-              {totalGrowth?.toFixed(2) || 0}%
+              {growthPercent || 0}%
             </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>
           </div>
@@ -85,9 +90,30 @@ export default function TotalNavPanel() {
         </div>
       </div>
 
+      {/* Optional: Error display */}
+      {navError && (
+        <div className="px-6 pb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <span className="block sm:inline">{navError}</span>
+            <button
+              onClick={() => {
+                // You could add reconnect logic here if needed
+                console.log("Reconnecting...");
+              }}
+              className="float-right font-bold text-red-500 hover:text-red-800"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Chart */}
       <div className="pr-6">
-        <TotalNavChart />
+        <TotalNavChart
+          selectedMonth={selected}
+          onMonthChange={handleMonthChange}
+        />
       </div>
     </section>
   );
