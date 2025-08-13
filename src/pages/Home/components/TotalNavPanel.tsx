@@ -1,11 +1,9 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 import { useState } from "react";
-import { useNavHistoryData } from "@/queries/cryptoQueries";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
-import { io } from "socket.io-client";
-import { useAuth } from "@/hooks/useAuth";
+import { useCryptoChartData } from "@/pages/hooks";
 
 const monthOptions: SelectOption[] = [
   { value: "january", label: "January" },
@@ -26,52 +24,25 @@ export default function TotalNavPanel() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
 
-  const userData = useAuth();
-  const encodedToken = localStorage.getItem("auth-storage");
-  const parsedToken = encodedToken ? JSON.parse(encodedToken) : null;
-  const token = parsedToken?.state?.token?.data;
-  const [socketData, setSocketData] = useState<any>(null);
-  console.log({ socketData });
+  const {
+    data: navChartData,
+    // loading: navLoading,
+    // error: navError,
+    // isConnected: navConnected,
+  } = useCryptoChartData("http://172.16.100.26:5050");
+  console.log({ navChartData });
 
-  // Frontend socket connection example
-  const socket = io("http://172.16.100.26:5050");
-
-  // Authenticate if needed
-  socket.emit("auth", { token: token, userId: userData?.id });
-
-  // Subscribe to crypto updates after authentication
-  socket.on("auth_success", () => {
-    socket.emit("subscribe_crypto_updates");
-  });
-
-  // Listen for crypto data updates
-  socket.on("crypto_data_update", (data) => {
-    // Update your UI with the new data
-    setSocketData(data);
-  });
-
-  // Handle subscription confirmation
-  socket.on("subscribed_crypto_updates", (data) => {
-    console.log(data.message);
-  });
-
-  const { data: navChartData } = useNavHistoryData({
-    days: "30",
-  });
-
-  const totalNav = navChartData?.data.reduce(
-    (total: number, item: TNavChartData) => {
+  const totalNav =
+    navChartData &&
+    navChartData.reduce((total: number, item: TNavChartData) => {
       return total + item.endingNav;
-    },
-    0
-  );
+    }, 0);
 
-  const totalGrowth = navChartData?.data.reduce(
-    (total: number, item: TNavChartData) => {
+  const totalGrowth =
+    navChartData &&
+    navChartData.reduce((total: number, item: TNavChartData) => {
       return total + item.growthPercent;
-    },
-    0
-  );
+    }, 0);
 
   const isUp = totalGrowth ? totalGrowth > 0 : true;
 
