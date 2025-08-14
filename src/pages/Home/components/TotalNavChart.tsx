@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Area,
   AreaChart,
@@ -13,9 +12,9 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-// import { useNavChartData } from "@/queries/cryptoQueries";
-// import type { TNavChartData } from "@/types";
-// import Loader from "@/components/Loader";
+import Loader from "@/components/Loader";
+import { useCryptoChartData } from "@/pages/hooks";
+import type { TNavChartData } from "@/types";
 
 const chartConfig = {
   total_nav: {
@@ -24,152 +23,135 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-type TChart = {
+interface TotalNavChartProps {
+  selectedMonth?: string;
+  onMonthChange?: (month: string) => void;
+}
+
+type TFormattedNavChartData = {
   date: string;
+  total_nav: number;
   time: string;
-  nav: number;
-  endingNav: number;
-  datetime: string;
+  day: number;
 };
 
-const navChartData: { data: TChart[] } = {
-  data: [
-    {
-      date: "2024-07-01",
-      time: "09:00",
-      nav: 100000,
-      endingNav: 103000,
-      datetime: "2024-07-01T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-02",
-      time: "09:00",
-      nav: 101000,
-      endingNav: 108000,
-      datetime: "2024-07-02T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-03",
-      time: "09:00",
-      nav: 102000,
-      endingNav: 107000,
-      datetime: "2024-07-03T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-04",
-      time: "09:00",
-      nav: 101500,
-      endingNav: 106000,
-      datetime: "2024-07-04T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-05",
-      time: "09:00",
-      nav: 103000,
-      endingNav: 109000,
-      datetime: "2024-07-05T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-06",
-      time: "09:00",
-      nav: 104000,
-      endingNav: 110000,
-      datetime: "2024-07-06T09:00:00.000Z",
-    },
-    {
-      date: "2024-07-07",
-      time: "09:00",
-      nav: 105000,
-      endingNav: 114000,
-      datetime: "2024-07-07T09:00:00.000Z",
-    },
-  ],
-};
-
-export default function TotalNavChart() {
-  const [chartData, setChartData] = useState<any[]>([]);
+export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
+  const [chartData, setChartData] = useState<TFormattedNavChartData[]>([]);
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(1000);
   const [dynamicTicks, setDynamicTicks] = useState<number[]>([]);
 
-  // const {
-  //   data: navChartData,
-  //   isPending,
-  //   error,
-  // } = useNavChartData({
-  //   period: "30d",
-  // });
+  const currentMonth = new Date()
+    .toLocaleString("default", { month: "long" })
+    .toLowerCase();
+  const activeMonth = selectedMonth || currentMonth;
 
-  // useEffect(() => {
-  //   if (navChartData) {
-  //     const formattedData = navChartData?.data.map((d: TNavChartData) => ({
-  //       date: d.date,
-  //       total_nav: d.endingNav,
-  //       time: new Date(d.datetime).toLocaleTimeString("en-US", {
-  //         hour: "2-digit",
-  //         minute: "2-digit",
-  //         second: "2-digit",
-  //       }),
-  //     }));
-  //     setChartData(formattedData);
+  const {
+    data: navChartData,
+    loading: isPending,
+    error,
+    emit,
+    isConnected,
+  } = useCryptoChartData("http://172.16.100.26:5050");
 
-  //     const values = formattedData.map((d: any) => d.total_nav);
-  //     const dataMin = Math.min(...values);
-  //     const dataMax = Math.max(...values);
+  console.log({ navChartData, activeMonth });
 
-  //     const padding = (dataMax - dataMin) * 0.1;
-  //     const newMinValue = Math.floor(dataMin - padding);
-  //     const newMaxValue = Math.ceil(dataMax + padding);
-  //     setMinValue(newMinValue);
-  //     setMaxValue(newMaxValue);
-
-  //     const tickCount = 5;
-  //     const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
-  //     const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-  //       Math.round(newMinValue + tickStep * i)
-  //     );
-  //     setDynamicTicks(newDynamicTicks);
-  //   }
-  // }, [navChartData]);
-
+  // Request data when month changes or component mounts
   useEffect(() => {
-    if (navChartData) {
-      const formattedData = navChartData?.data.map((d: TChart) => ({
-        date: d.date,
-        total_nav: d.endingNav,
-        time: new Date(d.datetime).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      }));
+    if (isConnected) {
+      const requestData = {
+        month: activeMonth,
+        year: new Date().getFullYear(),
+      };
+
+      console.log("Requesting chart data for:", requestData);
+      emit("request_chart_data", requestData);
+    }
+  }, [activeMonth, isConnected, emit]);
+
+  // Process chart data
+  useEffect(() => {
+    if (
+      navChartData &&
+      Array.isArray(navChartData) &&
+      navChartData.length > 0
+    ) {
+      const formattedData = navChartData
+        .map((d: TNavChartData) => {
+          const dateField = d.datetime;
+          const navField = d.nav;
+
+          if (!dateField || navField === undefined || navField === null) {
+            console.warn("Invalid data item:", d);
+            return null;
+          }
+
+          return {
+            date: dateField,
+            total_nav: navField,
+            time: new Date(dateField).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }),
+            day: new Date(dateField).getDate(),
+          };
+        })
+        .filter((item) => item !== null); // Remove null items
+
+      if (formattedData.length === 0) {
+        console.warn("No valid data after formatting");
+        setChartData([]);
+        return;
+      }
+
       setChartData(formattedData);
 
-      const values = formattedData.map((d: any) => d.total_nav);
+      // Calculate min/max values
+      const values = formattedData.map(
+        (d: TFormattedNavChartData) => d.total_nav
+      );
       const dataMin = Math.min(...values);
       const dataMax = Math.max(...values);
 
-      const padding = (dataMax - dataMin) * 0.1;
+      // Add padding to the range
+      const range = dataMax - dataMin;
+      const padding = range > 0 ? range * 0.1 : dataMin * 0.1; // Handle case where all values are the same
+
       const newMinValue = Math.floor(dataMin - padding);
       const newMaxValue = Math.ceil(dataMax + padding);
-      setMinValue(newMinValue);
-      setMaxValue(newMaxValue);
 
+      // Ensure we have a valid range
+      const finalMinValue = newMinValue;
+      const finalMaxValue =
+        newMaxValue > newMinValue ? newMaxValue : newMinValue + 100;
+
+      setMinValue(finalMinValue);
+      setMaxValue(finalMaxValue);
+
+      // Generate dynamic ticks
       const tickCount = 5;
-      const tickStep = (newMaxValue - newMinValue) / (tickCount - 1);
-      const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
-        Math.round(newMinValue + tickStep * i)
-      );
-      setDynamicTicks(newDynamicTicks);
-    }
-  }, []);
+      const tickStep = (finalMaxValue - finalMinValue) / (tickCount - 1);
 
+      const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
+        Math.round(finalMinValue + tickStep * i)
+      );
+
+      setDynamicTicks(newDynamicTicks);
+    } else {
+      console.warn("Invalid navChartData:", navChartData);
+    }
+  }, [navChartData, activeMonth]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipCursor = (props: any) => {
     const { points, height, payload } = props;
 
     if (points && points.length > 0) {
       const { x } = points[0];
       const value = payload[0]?.value;
+
+      if (value === undefined || maxValue === minValue) return null;
 
       const normalizedValue = (value - minValue) / (maxValue - minValue);
       const yPosition = height - normalizedValue * height;
@@ -203,14 +185,22 @@ export default function TotalNavChart() {
     return null;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltipContent = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const value = payload[0]?.value;
+      if (value === undefined || value === null) return null;
+
       return (
         <div className="bg-border px-4 py-2 rounded-lg shadow-lg">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-primary" />
             <span className="text-sm font-bold text-foreground">
-              ${payload[0].value}
+              $
+              {value.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-1">
@@ -221,8 +211,9 @@ export default function TotalNavChart() {
                 month: "short",
                 day: "numeric",
               })}{" "}
-              {payload[0].payload.time.split(".")[0]},{" "}
-              {new Date(label).getFullYear()}
+              {payload[0]?.payload?.time ||
+                new Date(label).toLocaleTimeString()}
+              , {new Date(label).getFullYear()}
             </span>
           </div>
         </div>
@@ -231,80 +222,164 @@ export default function TotalNavChart() {
     return null;
   };
 
-  // if (isPending) return <Loader />;
-  // if (error) return <div>Error loading chart data: {error.message}</div>;
-  // if (!navChartData || navChartData.length === 0)
-  //   return <div>No chart data available</div>;
+  // Custom X-axis tick formatter for better month view
+  const formatXAxisTick = (value: string) => {
+    const date = new Date(value);
+
+    // For monthly view, show day of month
+    if (chartData.length <= 31) {
+      return date.getDate().toString();
+    }
+
+    // For larger datasets, show month/day
+    return date.toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  if (isPending) {
+    return (
+      <div className="h-[230px] flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center p-4 h-[230px] flex items-center justify-center">
+        <div>
+          <p>Error loading chart data: {error}</p>
+          <button
+            onClick={() =>
+              emit("request_chart_data", {
+                month: activeMonth,
+                year: new Date().getFullYear(),
+              })
+            }
+            className="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!navChartData || navChartData.length === 0) {
+    return (
+      <div className="text-center p-4 h-[230px] flex items-center justify-center">
+        <div>
+          <p>No chart data available</p>
+          <button
+            onClick={() =>
+              emit("request_chart_data", {
+                month: activeMonth,
+                year: new Date().getFullYear(),
+              })
+            }
+            className="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+          >
+            Load Data
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="text-center p-4 h-[230px] flex items-center justify-center">
+        <div>
+          <p>
+            No data available for{" "}
+            {activeMonth.charAt(0).toUpperCase() + activeMonth.slice(1)}
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Try selecting a different month
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="aspect-auto h-[230px] w-full"
-      style={{ pointerEvents: "all" }}
-    >
-      <ResponsiveContainer>
-        <AreaChart
-          accessibilityLayer
-          data={chartData}
-          margin={{
-            left: 12,
-            right: 12,
-          }}
-        >
-          <defs>
-            <linearGradient id="fillTotalNav" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="var(--color-chart-1)"
-                stopOpacity={0.5}
-              />
-              <stop
-                offset="95%"
-                stopColor="var(--color-chart-1)"
-                stopOpacity={0.1}
-              />
-            </linearGradient>
-          </defs>
-
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="date"
-            tickLine={false}
-            interval="preserveStartEnd"
-            tickMargin={8}
-            height={40}
-            tickFormatter={(value) => {
-              const date = new Date(value);
-              return date.toLocaleDateString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-                year: "2-digit",
-              });
+    <div className="w-full">
+      <ChartContainer
+        config={chartConfig}
+        className="aspect-auto h-[230px] w-full"
+        style={{ pointerEvents: "all" }}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={chartData}
+            margin={{
+              left: 12,
+              right: 12,
+              top: 12,
+              bottom: 12,
             }}
-            axisLine={false}
-          />
-          <YAxis
-            ticks={dynamicTicks}
-            domain={[minValue, maxValue]}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "var(--color-chart-1-foreground)" }}
-            tickMargin={5}
-            tickFormatter={(value) => `$${value.toFixed(1)}`}
-          />
-          <ChartTooltip
-            content={<CustomTooltipContent />}
-            cursor={<CustomTooltipCursor />}
-          />
-          <Area
-            dataKey="total_nav"
-            type="monotone"
-            fill="url(#fillTotalNav)"
-            fillOpacity={0.4}
-            stroke="var(--color-chart-1)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+          >
+            <defs>
+              <linearGradient id="fillTotalNav" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-chart-1)"
+                  stopOpacity={0.5}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-chart-1)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              opacity={0.3}
+            />
+
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              height={40}
+              tick={{ fontSize: 12 }}
+              tickFormatter={formatXAxisTick}
+              interval="preserveStartEnd"
+            />
+
+            <YAxis
+              domain={[minValue, maxValue]}
+              ticks={dynamicTicks}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12 }}
+              tickMargin={8}
+              width={80}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
+            />
+
+            <ChartTooltip
+              content={<CustomTooltipContent />}
+              cursor={<CustomTooltipCursor />}
+            />
+
+            <Area
+              dataKey="total_nav"
+              type="monotone"
+              fill="url(#fillTotalNav)"
+              fillOpacity={0.4}
+              stroke="var(--color-chart-1)"
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </div>
   );
 }

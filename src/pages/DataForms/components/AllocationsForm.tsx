@@ -18,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DatePicker from "@/components/DatePicker";
+import { TimePicker } from "@/components/TimePicker";
+import { DateTimePicker } from "@/components/DateTimePicker";
 
 const allocationSchema = z.object({
   allocation: z.string().min(1, "Allocation is required"),
@@ -86,7 +89,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Date</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <DatePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,7 +105,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Time</FormLabel>
                 <FormControl>
-                  <Input type="time" {...field} />
+                  <TimePicker
+                    {...field}
+                    onChange={(value) => field.onChange(value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,7 +151,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Last Payout Event</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -155,7 +167,10 @@ export default function AllocationsForm() {
               <FormItem>
                 <FormLabel>Next Unlock Epoch</FormLabel>
                 <FormControl>
-                  <Input type="datetime-local" {...field} />
+                  <DateTimePicker
+                    {...field}
+                    onChange={(date) => field.onChange(date)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

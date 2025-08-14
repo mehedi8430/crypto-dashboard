@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataTable } from "@/components/DataTable/dataTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import type { TCoinData } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
-import { mockData } from "@/data/mockData";
+import { useState } from "react";
+import { usePortfolioLatestData } from "@/queries/cryptoQueries";
 
 // coins images
 import ETH from "@/assets/icons/coins/Ethereum ETH.png";
@@ -27,31 +26,30 @@ const coinImages: { [key: string]: string } = {
 export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
-  const [coins, setCoins] = useState<TCoinData[]>([]);
 
-  useEffect(() => {
-    const assetPerformanceData = mockData.assetPerformance;
+  const { data: portfolioLatestData, isPending } = usePortfolioLatestData();
 
-    const formattedCoinsData = Object.keys(assetPerformanceData).map(
-      (key) => {
-        const coin = assetPerformanceData[key as keyof typeof assetPerformanceData];
-        return {
-          image: coinImages[key],
-          name: key,
-          symbol: coin.symbol,
-          open: `+${coin.open}`,
-          close: `+${coin.close}%`,
-          change: `+${coin.changePercent}`,
-          volume: `${(coin.volumeUsd / 1000000).toFixed(2)}M`,
-          volumeTrend:
-            coin.changePercent >= 0 ? ("up" as const) : ("down" as const),
-        };
-      }
-    );
-    setCoins(formattedCoinsData);
-  }, []);
+  const assetsPerformanceData =
+    portfolioLatestData?.data?.asset_performance || {};
 
-  const columns: ColumnDef<TCoinData>[] = [
+  const formattedAssetPerformance = Object.keys(assetsPerformanceData).map(
+    (key) => {
+      const coin = assetsPerformanceData[key];
+      return {
+        image: coinImages[key],
+        name: key,
+        symbol: coin.symbol,
+        open: coin.open,
+        close: coin.close,
+        change: coin.change_percent,
+        volume: coin.volume_usd,
+        volumeTrend:
+          coin.change_percent >= 0 ? ("up" as const) : ("down" as const),
+      };
+    }
+  );
+
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: "name",
       header: "Name",
@@ -79,16 +77,19 @@ export default function AssetPerformancePanel(): React.ReactNode {
       accessorKey: "open",
       header: "Open",
       enableHiding: true,
+      cell: ({ row }) => <p>{`+${row.original.open}`}</p>,
     },
     {
       accessorKey: "close",
       header: "Close",
       enableHiding: true,
+      cell: ({ row }) => <p>{`+${row.original.close}%`}</p>,
     },
     {
       accessorKey: "change",
       header: "Change",
       enableHiding: true,
+      cell: ({ row }) => <p>{`+${row.original.change}`}</p>,
     },
     {
       accessorKey: "volume",
@@ -98,13 +99,14 @@ export default function AssetPerformancePanel(): React.ReactNode {
         <div
           className={`
           flex items-center justify-center
-          ${row.original.volumeTrend === "up"
+          ${
+            row.original.volumeTrend === "up"
               ? "text-green-500"
               : "text-red-500"
-            }
+          }
         `}
         >
-          <p>{row.original.volume}</p>
+          <p>{`${(row.original.volume / 1000000).toFixed(2)}M`}</p>
           <div>
             {row.original.volumeTrend === "up" ? <ArrowUp /> : <ArrowDown />}
           </div>
@@ -117,13 +119,13 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container">
       <h3 className="font-bold">Asset Performance Panel</h3>
       <div>
-        <DataTable<TCoinData>
-          data={coins}
+        <DataTable<any>
+          data={formattedAssetPerformance}
           columns={columns}
-          isLoading={!coins.length}
+          isLoading={isPending}
           page={page}
           limit={limit}
-          total={coins.length}
+          total={Object.keys(assetsPerformanceData).length}
           onPageChange={setPage}
           onLimitChange={setLimit}
           isPagination={false}
