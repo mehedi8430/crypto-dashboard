@@ -10,7 +10,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DialogWrapper } from "@/components/DialogWrapper";
 import { AlertDialogModal } from "@/components/AlertDialogModal";
 import { useAllocations, useDeleteAllocation } from "@/queries/cryptoQueries";
-// import AllocationDetails from "./AllocationDetails";
 
 type TAllocationData = {
   id: string;

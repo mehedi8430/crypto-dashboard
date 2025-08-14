@@ -73,7 +73,7 @@ export default function TotalNavPanel() {
   };
 
   return (
-    <section className="section-container p-0 h-full">
+    <section className="section-container p-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6">
         <h3>
           Total NAV

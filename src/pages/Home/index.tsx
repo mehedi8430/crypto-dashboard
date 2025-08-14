@@ -24,42 +24,48 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-4 max-lg:py-2">
+      <div className="max-lg:py-2 space-y-4">
         {/* Total NAV Panel Section */}
-        <div className="col-span-4 lg:col-span-3">
-          <TotalNavPanel />
-        </div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="col-span-4 lg:col-span-3">
+            <TotalNavPanel />
+          </div>
 
-        {/* Allocation Breakdown */}
-        <div className="col-span-4 lg:col-span-1">
-          <AllocationBreakdown />
+          {/* Allocation Breakdown */}
+          <div className="col-span-4 lg:col-span-1">
+            <AllocationBreakdown />
+          </div>
         </div>
 
         {/* Allocation (A), (B), (C). (D) */}
-        <AllAllocationCard />
-
-        {/* Asset Performance Panel */}
-        <div className="col-span-4 lg:col-span-3">
-          <AssetPerformancePanel />
+        <div className="flex flex-col md:flex-row gap-4 flex-wrap">
+          <AllAllocationCard />
         </div>
 
-        {/* Daily Report - spans 2 rows */}
-        <div className="col-span-4 lg:col-span-1">
-          <DailyReport />
-        </div>
+        <div className="grid grid-cols-4 gap-4">
+          {/* Asset Performance Panel */}
+          <div className="col-span-4 lg:col-span-3">
+            <AssetPerformancePanel />
+          </div>
 
-        {/* System Status */}
-        <div className="col-span-4 lg:col-span-3">
-          <Card className="h-full">
-            <CardContent>
-              <SystemStatus />
-            </CardContent>
-          </Card>
-        </div>
+          {/* Daily Report - spans 2 rows */}
+          <div className="col-span-4 lg:col-span-1">
+            <DailyReport />
+          </div>
 
-        {/* From the news */}
-        <div className="col-span-4 lg:col-span-1">
-          <FromTheNews />
+          {/* System Status */}
+          <div className="col-span-4 lg:col-span-3">
+            <Card className="h-full">
+              <CardContent>
+                <SystemStatus />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* From the news */}
+          <div className="col-span-4 lg:col-span-1">
+            <FromTheNews />
+          </div>
         </div>
       </div>
     </section>
