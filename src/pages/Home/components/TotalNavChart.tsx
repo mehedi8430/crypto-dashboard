@@ -52,9 +52,9 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
     error,
     emit,
     isConnected,
-  } = useCryptoChartData("http://172.16.100.26:5050");
+  } = useCryptoChartData();
 
-  console.log({ navChartData, activeMonth });
+  // console.log({ navChartData, activeMonth });
 
   // Request data when month changes or component mounts
   useEffect(() => {

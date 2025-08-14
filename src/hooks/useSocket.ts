@@ -4,7 +4,6 @@ import { io, Socket } from "socket.io-client";
 
 // Types
 export interface SocketConfig {
-  url?: string;
   options?: {
     autoConnect?: boolean;
     reconnection?: boolean;
@@ -51,8 +50,7 @@ export function useSocket<T = any>(
   const socketRef = useRef<Socket | null>(null);
 
   // Memoize the socket URL and config to prevent unnecessary re-renders
-  const socketUrl = config.url || import.meta.env.REACT_APP_SOCKET_URL;
-  console.log({ socketUrl });
+  const socketUrl = import.meta.env.VITE_APP_SOCKET_URL;
 
   const socketOptions = useRef({
     autoConnect: true,

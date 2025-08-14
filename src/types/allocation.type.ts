@@ -4,7 +4,7 @@ export type Allocation = {
   fill: string;
 };
 
-export interface TAllocation {
+export type TAllocation = {
   id: string;
   name: string;
   key: string;
@@ -12,7 +12,7 @@ export interface TAllocation {
   currentBalance: number;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type TAllocationKeyData = {
   minuteKey: string;

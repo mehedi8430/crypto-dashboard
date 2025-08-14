@@ -1,6 +1,6 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
 import { useCryptoChartData } from "@/pages/hooks";
@@ -28,9 +28,25 @@ export default function TotalNavPanel() {
     data: navChartData,
     // loading: navLoading,
     error: navError,
-    // isConnected: navConnected,
-  } = useCryptoChartData("http://172.16.100.26:5050");
-  console.log({ navChartData });
+    isConnected,
+    emit,
+  } = useCryptoChartData();
+  // console.log({ navChartData });
+
+  const activeMonth = selected || currentMonth;
+
+  // Request data when month changes or component mounts
+  useEffect(() => {
+    if (isConnected) {
+      const requestData = {
+        month: activeMonth,
+        year: new Date().getFullYear(),
+      };
+
+      console.log("Requesting chart data for:", requestData);
+      emit("request_chart_data", requestData);
+    }
+  }, [activeMonth, isConnected, emit]);
 
   const totalNav =
     navChartData &&

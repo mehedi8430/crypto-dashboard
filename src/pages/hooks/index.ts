@@ -3,10 +3,10 @@
 import { useSocket } from "@/hooks/useSocket";
 import { useCallback, useEffect } from "react";
 
-export function useCryptoNavHistory(url?: string) {
+// Enhanced crypto nav history hook
+export function useCryptoNavHistory() {
   return useSocket<any[]>(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -21,10 +21,10 @@ export function useCryptoNavHistory(url?: string) {
   );
 }
 
-export function useCryptoPortfolio(url?: string) {
+// Enhanced crypto portfolio hook
+export function useCryptoPortfolio() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -39,10 +39,10 @@ export function useCryptoPortfolio(url?: string) {
   );
 }
 
-export function useCryptoAssetPerformance(url?: string) {
+// Enhanced crypto asset performance hook
+export function useCryptoAssetPerformance() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -58,10 +58,9 @@ export function useCryptoAssetPerformance(url?: string) {
 }
 
 // Enhanced crypto chart data hook with month support
-export function useCryptoChartData(url?: string) {
+export function useCryptoChartData() {
   const hook = useSocket<any[]>(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -132,10 +131,10 @@ export function useCryptoChartData(url?: string) {
 //   );
 // }
 
-export function useCryptoSystemStatus(url?: string) {
+// Enhanced crypto system status hook
+export function useCryptoSystemStatus() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -150,10 +149,10 @@ export function useCryptoSystemStatus(url?: string) {
   );
 }
 
-export function useCryptoCurrentPrices(url?: string) {
+// Enhanced crypto current prices hook
+export function useCryptoCurrentPrices() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -168,10 +167,10 @@ export function useCryptoCurrentPrices(url?: string) {
   );
 }
 
-export function useCryptoPortfolioSummary(url?: string) {
+// Enhanced crypto portfolio summary hook
+export function useCryptoPortfolioSummary() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
@@ -186,10 +185,10 @@ export function useCryptoPortfolioSummary(url?: string) {
   );
 }
 
-export function useCryptoHealthCheck(url?: string) {
+// Enhanced crypto health check hook
+export function useCryptoHealthCheck() {
   return useSocket(
     {
-      url: url || import.meta.env.REACT_APP_SOCKET_URL,
       options: {
         autoConnect: true,
         reconnection: true,
