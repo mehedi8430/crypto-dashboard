@@ -30,6 +30,24 @@ export const cryptoApi = {
     return response.data;
   },
 
+  // Update an allocation
+  updateAllocation: async ({
+    key,
+    data,
+  }: {
+    key: string;
+    data: TAllocationPayload;
+  }) => {
+    const response = await apiClient.put(`/allocation/${key}`, data);
+    return response.data;
+  },
+
+  // Delete an allocation
+  deleteAllocation: async (key: string) => {
+    const response = await apiClient.delete(`/allocation/${key}`);
+    return response.data;
+  },
+
   // Gets the allocation data for the given key
   getAllocationByKey: async (key: string) => {
     const response = await apiClient.get(`/allocation/${key}`);

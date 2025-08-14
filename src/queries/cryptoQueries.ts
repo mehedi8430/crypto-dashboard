@@ -55,6 +55,38 @@ export const useCreateAllocation = () => {
   });
 };
 
+// updates an allocation
+export const useUpdateAllocation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.updateAllocation,
+    onSuccess: (data) => {
+      toast.success(data.message || "Allocation updated successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.allocation });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Allocation Update failed");
+    },
+  });
+};
+
+// deletes an allocation
+export const useDeleteAllocation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.deleteAllocation,
+    onSuccess: (data) => {
+      toast.success(data.message || "Allocation deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.allocation });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Allocation Delete failed");
+    },
+  });
+};
+
 // Fetches the allocation data for the given key
 export const useAllocationByKey = (key: string) => {
   return useQuery({

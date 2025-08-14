@@ -63,8 +63,8 @@ export default function AppSidebar({
     });
     // Add the new "Add Allocation" button for admins
     items.push({
-      title: "Add Allocation",
-      url: "/dashboard/add-allocation",
+      title: "Allocation Management",
+      url: "/dashboard/allocation-management",
       icon: <PlusCircle />,
       end: true,
     });
@@ -77,6 +77,7 @@ export default function AppSidebar({
   if (items.length === 0) {
     return null;
   }
+
   return (
     <section>
       <NavSidebar navItems={items} props={props} />

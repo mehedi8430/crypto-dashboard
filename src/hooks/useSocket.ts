@@ -93,6 +93,7 @@ export function useSocket<T = any>(
         setData(responseData?.data || responseData);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [eventConfig.event, eventConfig.onData]
   );
 
@@ -111,6 +112,7 @@ export function useSocket<T = any>(
         setError(errorMessage);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [eventConfig.event, eventConfig.onError]
   );
 
