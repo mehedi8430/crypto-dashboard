@@ -26,6 +26,12 @@ export type TAllocationKeyData = {
 
 export type TAllocationData = {
   name: string;
-  current_balance: number;
+  currentBalance: number;
   history: TAllocationKeyData[];
+};
+
+export type TAllocationPayload = {
+  key: string;
+  name: string;
+  initialBalance: number;
 };

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cryptoApi } from "@/services/cryptoApi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Query Keys
 export const cryptoQueryKeys = {
@@ -33,6 +34,24 @@ export const useAllocations = () => {
   return useQuery({
     queryKey: cryptoQueryKeys.allocation,
     queryFn: () => cryptoApi.getAllocations(),
+  });
+};
+
+// creates a new allocation
+export const useCreateAllocation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.createAllocation,
+    onSuccess: (data) => {
+      toast.success(data.message || "Allocation created successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.allocation });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Allocation Creation failed"
+      );
+    },
   });
 };
 
