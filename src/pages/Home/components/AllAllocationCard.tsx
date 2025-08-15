@@ -19,6 +19,7 @@ type AllocationData = {
   label: string;
   chartConfig: ChartConfig;
   allocationKey: string;
+  name: string;
 };
 
 export default function AllAllocationCard({
@@ -41,57 +42,58 @@ export default function AllAllocationCard({
             color: allocationColors[item.key as keyof typeof allocationColors],
           },
         },
+        name: item?.name,
       };
     });
 
     setAllocationData(formattedAllocationData);
   }, [data?.data]);
+  console.log({ allocationData });
 
   return (
     <div>
-      {fromDataForms && (
-        <>
-          {data?.data.length > 0 &&
-            data?.data.map((item: TAllocation) => (
-              <div className="flex items-center justify-between mb-2">
-                <h4>{item?.name}</h4>
-                <Button
-                  variant={"outline"}
-                  onClick={() => setIsEditingAllocations(!isEditingAllocations)}
-                >
-                  {isEditingAllocations ? (
-                    <>
-                      <X className="h-4 w-4 mr-1" />
-                      Cancel
-                    </>
-                  ) : (
-                    <>
-                      <Pen className="h-4 w-4 mr-1" />
-                      Edit
-                    </>
-                  )}
-                </Button>
-              </div>
-            ))}
-        </>
-      )}
-
       {isEditingAllocations ? (
         <AllocationsForm />
       ) : (
-        <>
+        <div className="flex flex-col md:flex-row gap-4 flex-wrap">
           {allocationData?.length > 0 ? (
-            allocationData.map((item) => (
-              <Link
-                to={`/dashboard/allocations/${item.label.toLowerCase()}`}
-                key={item.label}
-              >
-                <Allocation
-                  label={item.label}
-                  chartConfig={item.chartConfig}
-                  allocationKey={item.allocationKey}
-                />
-              </Link>
+            allocationData.map((item: AllocationData) => (
+              <div className="flex flex-col">
+                {fromDataForms && (
+                  <div className="flex items-center justify-between mb-2">
+                    <h4>{item?.name}</h4>
+                    <Button
+                      variant={"outline"}
+                      onClick={() =>
+                        setIsEditingAllocations(!isEditingAllocations)
+                      }
+                    >
+                      {isEditingAllocations ? (
+                        <>
+                          <X className="h-4 w-4 mr-1" />
+                          Cancel
+                        </>
+                      ) : (
+                        <>
+                          <Pen className="h-4 w-4 mr-1" />
+                          Edit
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                <Link
+                  to={`/dashboard/allocations/${item.label.toLowerCase()}`}
+                  key={item.label}
+                >
+                  <Allocation
+                    label={item.label}
+                    chartConfig={item.chartConfig}
+                    allocationKey={item.allocationKey}
+                  />
+                </Link>
+              </div>
             ))
           ) : (
             <section className="">
@@ -100,7 +102,7 @@ export default function AllAllocationCard({
               </div>
             </section>
           )}
-        </>
+        </div>
       )}
     </div>
   );
