@@ -39,21 +39,25 @@ export default function AllocationBreakdown() {
         <h3 className="font-bold">Allocation Breakdown</h3>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="flex flex-col gap-4 mb-4 md:mb-0">
-          {chartData.map((item) => (
-            <div key={item.name} className="flex items-center gap-4">
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: item.fill }}
-              />
-              <div className="font-bold">{item.name}</div>
-              <div className="font-bold">{item.value}%</div>
-            </div>
-          ))}
+      {data?.data?.length > 0 ? (
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex flex-col gap-4 mb-4 md:mb-0">
+            {chartData.map((item) => (
+              <div key={item.name} className="flex items-center gap-4">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <div className="font-bold">{item.name}</div>
+                <div className="font-bold">{item.value}%</div>
+              </div>
+            ))}
+          </div>
+          <AllocationPieChart data={chartData} />
         </div>
-        <AllocationPieChart data={chartData} />
-      </div>
+      ) : (
+        <div className="m-auto">No data available</div>
+      )}
     </section>
   );
 }
