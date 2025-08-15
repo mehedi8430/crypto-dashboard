@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import type { TPerformanceReportCard } from "@/types";
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { mockData } from "@/data/mockData";
 
 export default function DailyReport() {
   const [performanceReportCards, setPerformanceReportCards] = useState<
@@ -12,54 +10,37 @@ export default function DailyReport() {
   >([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, "vaultReports");
-
-    onValue(
-      vaultReportsRef,
-      (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const reports = Object.values(data) as any[];
-          const formattedReports = reports
-            .map((report) => ({
-              date: new Date(report.reportDate).toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }),
-              deception: report.dailyReportText,
-              startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
-              endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
-              growthRate: {
-                value: report.nav.growthPercent,
-                sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
-                color: (report.nav.growthPercent >= 0 ? "green" : "red") as
-                  | "green"
-                  | "red",
-                formatted: `${
-                  report.nav.growthPercent >= 0 ? "+" : ""
-                }${Math.abs(report.nav.growthPercent)}%`,
-              },
-            }))
-            .slice(0, 10); // Limiting to 10 for the dashboard view
-          setPerformanceReportCards(formattedReports);
-        }
+    const report = mockData;
+    const formattedReports = [
+      {
+        date: new Date(report.reportDate).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        deception: report.dailyReportText,
+        startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
+        endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
+        growthRate: {
+          value: report.nav.growthPercent,
+          sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
+          color: (report.nav.growthPercent >= 0 ? "green" : "red") as
+            | "green"
+            | "red",
+          formatted: `${report.nav.growthPercent >= 0 ? "+" : ""}${Math.abs(
+            report.nav.growthPercent
+          )}%`,
+        },
       },
-      (error) => {
-        console.error("Firebase data fetch error:", error);
-      }
-    );
-
-    return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
-    };
+    ];
+    setPerformanceReportCards(formattedReports);
   }, []);
 
   return (
     <section className="section-container h-full">
       <div className="flex items-center justify-between">
-        <h1 className="font-bold">Daily Report</h1>
+        <h3 className="">Daily Report</h3>
         <Link to="/dashboard/report">
           <Button variant="link">View All</Button>
         </Link>

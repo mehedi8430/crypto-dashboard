@@ -1,3 +1,4 @@
+// crypto-dashboard/src/routes/Router.tsx
 import App from "@/App";
 import DashboardLayout from "@/layout/DashboardLayout";
 import HomePage from "@/pages/Home";
@@ -6,18 +7,42 @@ import DailyReport from "@/pages/DailyReport/index";
 import DataForms from "@/pages/DataForms";
 import Allocations from "@/pages/Allocations";
 import LoginPage from "@/pages/Login";
-import RegisterPage from "@/pages/Register";
-
+import ForgotPasswordPage from "@/pages/ForgotPassword";
+import ResetPasswordPage from "@/pages/ResetPassword";
+// import RegisterPage from "@/pages/Register";
+import { ProtectedRoute } from "./ProtectedRoute";
+import Users from "@/pages/Users";
+import AddAllocationPage from "@/pages/AddAllocation";
 export const routes = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <div>Error occurred</div>,
   },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
+  },
+  // {
+  //   path: "/register",
+  //   element: <RegisterPage />,
+  // },
   // Dashboard
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute roles={["ADMIN", "USER"]}>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <div>Error occurred</div>,
     children: [
       {
@@ -26,44 +51,74 @@ export const routes = createBrowserRouter([
       },
       {
         path: "report",
-        element: <DailyReport />,
+        element: (
+          <ProtectedRoute roles={["ADMIN", "USER"]}>
+            <DailyReport />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "allocations",
         children: [
           {
             path: "a",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "b",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "c",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "d",
-            element: <Allocations />,
+            element: (
+              <ProtectedRoute roles={["ADMIN", "USER"]}>
+                <Allocations />
+              </ProtectedRoute>
+            ),
           },
         ],
       },
       {
+        path: "users",
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <Users />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "create-data-forms",
-        element: <DataForms />,
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <DataForms />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "add-allocation",
+        element: (
+          <ProtectedRoute roles={["ADMIN"]}>
+            <AddAllocationPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
-  // Authentication
-  {
-    path: "/login",
-    element: <LoginPage />,
-    errorElement: <div>Error occurred</div>,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-    errorElement: <div>Error occurred</div>,
-  },
 ]);
+ 

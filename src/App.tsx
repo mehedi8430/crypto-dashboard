@@ -1,19 +1,18 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "./hooks/useAuth";
-// import useCurrentUser from "./hooks/useCurrentUser";
 
 export default function App() {
   const navigate = useNavigate();
-  const currentUser = useAuth();
+  const userData = useAuth();
 
   useEffect(() => {
-    if (currentUser?.isAuthenticated) {
+    if (userData?.id) {
       navigate("/dashboard", { replace: true });
     } else {
       navigate("/login", { replace: true });
     }
-  }, [currentUser, navigate]);
+  }, [userData, navigate]);
 
   return null;
 }

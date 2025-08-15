@@ -1,0 +1,8 @@
+{
+  "id": "admin-001",
+  "fullName": "Admin User",
+  "email": "admin@gmail.com",
+  "role": "ADMIN",
+  "img": "https://i.ibb.co/RkrCphLx/photo-2022-02-28-00-35-30-1024x1024.png",
+  "allocations": ["A", "B", "C", "D"]
+}

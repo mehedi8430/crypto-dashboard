@@ -1,6 +1,9 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
 import { useState } from "react";
+import type { TNavChartData } from "@/types";
+import { cn } from "@/lib/utils";
+import { useCryptoChartData } from "@/pages/hooks";
 
 const monthOptions: SelectOption[] = [
   { value: "january", label: "January" },
@@ -21,29 +24,59 @@ export default function TotalNavPanel() {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [selected, setSelected] = useState<string>(currentMonth.toLowerCase());
 
+  const {
+    data: navChartData,
+    // loading: navLoading,
+    error: navError,
+    // isConnected: navConnected,
+  } = useCryptoChartData("http://172.16.100.26:5050");
+  console.log({ navChartData });
+
+  const totalNav =
+    navChartData &&
+    navChartData.reduce((total: number, item: TNavChartData) => {
+      return total + item?.nav;
+    }, 0);
+
+  const lastTwo = navChartData && navChartData?.slice(-2);
+
+  const lastTwoNavDiff =
+    lastTwo &&
+    lastTwo.reduce((total: number, item: TNavChartData) => {
+      return item?.nav - total;
+    }, 0);
+
+  const growthPercent = lastTwoNavDiff
+    ? ((lastTwoNavDiff / lastTwo[0]?.nav) * 100).toFixed(4)
+    : 0;
+
+  const isUp = Number(growthPercent) > 0 ? true : false;
+
   const handleMonthChange = (value: string) => {
-    console.log("Selected month:", value);
     setSelected(value);
   };
 
   return (
-    <section className="section-container p-0">
+    <section className="section-container p-0 h-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6">
-        <h3 className="text-foreground/80 text-xs">
+        <h3>
           Total NAV
-          <span className="text-foreground text-[16px] font-bold ml-1">
-            $35,00.00
-          </span>
+          <p className="text-foreground text-[16px] font-bold ml-1">
+            {totalNav?.toFixed(2) || 1400000}
+          </p>
         </h3>
 
         <div className="flex flex-wrap items-center gap-4 md:gap-5">
           <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
-            <p className="text-foreground/70 text-[10px]">Total growth</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-primary text-xs">+0.68%</p>
+            <p
+              className={cn("text-xs", {
+                "text-green-500": isUp,
+                "text-red-500": !isUp,
+              })}
+            >
+              {isUp ? "+" : "-"}
+              {growthPercent || 0}%
+            </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>
           </div>
 
@@ -57,9 +90,30 @@ export default function TotalNavPanel() {
         </div>
       </div>
 
+      {/* Optional: Error display */}
+      {navError && (
+        <div className="px-6 pb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <span className="block sm:inline">{navError}</span>
+            <button
+              onClick={() => {
+                // You could add reconnect logic here if needed
+                console.log("Reconnecting...");
+              }}
+              className="float-right font-bold text-red-500 hover:text-red-800"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Chart */}
       <div className="pr-6">
-        <TotalNavChart />
+        <TotalNavChart
+          selectedMonth={selected}
+          onMonthChange={handleMonthChange}
+        />
       </div>
     </section>
   );

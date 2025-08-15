@@ -1,10 +1,9 @@
-import type { Allocation } from "@/types/allocation.type";
+import type { Allocation, TAllocation } from "@/types/allocation.type";
 import AllocationPieChart from "./AllocationPieChart";
 import { useState, useEffect } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { useAllocations } from "@/queries/cryptoQueries";
 
-const allocationColors = {
+const allocationColors: { [key: string]: string } = {
   A: "#FFC107",
   B: "#007BFF",
   C: "#28A745",
@@ -12,51 +11,27 @@ const allocationColors = {
 };
 
 export default function AllocationBreakdown() {
+  const { data } = useAllocations();
   const [chartData, setChartData] = useState<Allocation[]>([]);
 
   useEffect(() => {
-    const vaultReportsRef = ref(database, "vaultReports");
+    if (data?.data) {
+      // Calculate total balance
+      const totalBalance = data.data.reduce(
+        (sum: number, item: TAllocation) => sum + item.currentBalance,
+        0
+      );
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocationData = latestReport.allocationBreakdown;
+      // Format data for chart
+      const formattedChartData = data.data.map((item: TAllocation) => ({
+        name: item.key,
+        value: Number(((item.currentBalance / totalBalance) * 100).toFixed(2)),
+        fill: allocationColors[item.key],
+      }));
 
-          const formattedChartData = [
-            {
-              name: "A",
-              value: allocationData.A_percent,
-              fill: allocationColors.A,
-            },
-            {
-              name: "B",
-              value: allocationData.B_percent,
-              fill: allocationColors.B,
-            },
-            {
-              name: "C",
-              value: allocationData.C_percent,
-              fill: allocationColors.C,
-            },
-            {
-              name: "D",
-              value: allocationData.D_percent,
-              fill: allocationColors.D,
-            },
-          ];
-          setChartData(formattedChartData);
-        }
-      }
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => {}); // Detach listener
-    };
-  }, []);
+      setChartData(formattedChartData);
+    }
+  }, [data]);
 
   return (
     <section className="section-container h-full">
@@ -78,7 +53,6 @@ export default function AllocationBreakdown() {
           ))}
         </div>
         <AllocationPieChart data={chartData} />
-        {/* <p className="font-bold md:max-w-[80px] max-md:mt-4">Audit 90% PAC</p> */}
       </div>
     </section>
   );

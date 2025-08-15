@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Area,
   AreaChart,
@@ -8,15 +7,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "@/Firebase/Firebase";
+import { useAllocationByKey } from "@/queries/cryptoQueries";
+import type { TAllocationKeyData } from "@/types";
 
 const allocationColors = {
   a: "#0867ED", // Blue
@@ -32,11 +26,21 @@ interface CustomTooltipProps {
   color?: string;
 }
 
-const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  color,
+}: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background/80 backdrop-blur-sm p-3 border border-border rounded-lg shadow-xl">
-        <p className="text-sm font-bold text-foreground">{new Date(label ?? "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+        <p className="text-sm font-bold text-foreground">
+          {new Date(label ?? "").toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })}
+        </p>
         <p className="text-sm" style={{ color: color || "var(--chart-blue)" }}>
           Performance:{" "}
           {new Intl.NumberFormat("en-US", {
@@ -52,47 +56,50 @@ const CustomTooltip = ({ active, payload, label, color }: CustomTooltipProps) =>
   return null;
 };
 
-export default function AllocationsChart({ allocation }: { allocation: "a" | "b" | "c" | "d" | null }) {
-  const [chartData, setChartData] = useState<any[]>([]);
+export default function AllocationsChart({
+  allocation,
+}: {
+  allocation: "a" | "b" | "c" | "d" | null;
+}) {
+  const [chartData, setChartData] = useState<
+    { date: string; performance: number }[]
+  >([]);
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(1000);
+
+  const { data } = useAllocationByKey(allocation?.toUpperCase() || "");
 
   useEffect(() => {
     if (!allocation) return;
 
-    const vaultReportsRef = ref(database, 'vaultReports');
+    const allocationData = data?.data?.history;
 
-    onValue(vaultReportsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const reports = Object.values(data) as any[];
-        if (reports.length > 0) {
-          const latestReport = reports[reports.length - 1];
-          const allocationChartData = latestReport.allocations[allocation.toUpperCase()]?.chartData.map((d: any) => ({ ...d, performance: d.balance }));
-          if (allocationChartData) {
-            setChartData(allocationChartData);
+    if (allocationData) {
+      const allocationChartData = allocationData.map(
+        (d: TAllocationKeyData) => ({
+          date: d?.createdAt,
+          performance: d.ending_balance - d.starting_balance,
+        })
+      );
+      console.log({ allocationChartData });
 
-            const values = allocationChartData.map((d: any) => d.performance);
-            const dataMin = Math.min(...values);
-            const dataMax = Math.max(...values);
+      if (allocationChartData) {
+        setChartData(allocationChartData);
 
-            const padding = (dataMax - dataMin) * 0.1;
-            const newMinValue = Math.floor(dataMin - padding);
-            const newMaxValue = Math.ceil(dataMax + padding);
-            setMinValue(newMinValue);
-            setMaxValue(newMaxValue);
-          }
-        }
+        const values = allocationChartData.map(
+          (d: { performance: number }) => d.performance
+        );
+        const dataMin = Math.min(...values);
+        const dataMax = Math.max(...values);
+
+        const padding = (dataMax - dataMin) * 0.1;
+        const newMinValue = Math.floor(dataMin - padding);
+        const newMaxValue = Math.ceil(dataMax + padding);
+        setMinValue(newMinValue);
+        setMaxValue(newMaxValue);
       }
-    }, (error) => {
-      console.error('Error fetching vaultReports:', error);
-    });
-
-    return () => {
-      onValue(vaultReportsRef, () => { }); // Detach listener
-    };
-  }, [allocation]);
-
+    }
+  }, [allocation, data?.data?.history]);
 
   if (!allocation) {
     return null; // Or a fallback UI
@@ -102,13 +109,13 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
   const gradientId = `fillPerformance-${allocation}`;
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-0 p-0">
       <CardHeader>
         <CardTitle>30-day performance Trends</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="w-full h-[250px] md:h-[300px]">
-          <ResponsiveContainer width="100%" height="100%" >
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
               margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
@@ -119,25 +126,27 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
                   <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-
               <CartesianGrid
                 vertical={false}
                 stroke="var(--border)"
                 strokeOpacity={0.5}
               />
-
               <XAxis
                 dataKey="date"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={10}
-                tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                tickFormatter={(value) =>
+                  new Date(value).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                }
                 tick={{ fill: "var(--muted-foreground)" }}
                 // Responsive ticks
                 interval="preserveStartEnd"
                 minTickGap={40}
               />
-
               <YAxis
                 domain={[minValue, maxValue]}
                 axisLine={false}
@@ -153,7 +162,6 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
                   }).format(value)
                 }
               />
-
               <Tooltip
                 cursor={{
                   stroke: chartColor,
@@ -163,7 +171,7 @@ export default function AllocationsChart({ allocation }: { allocation: "a" | "b"
                 }}
                 content={<CustomTooltip color={chartColor} />}
               />
-
+              {/* Area for positive values with gradient */}
               <Area
                 type="monotone"
                 dataKey="performance"
