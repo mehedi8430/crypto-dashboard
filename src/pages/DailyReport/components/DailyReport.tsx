@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CalendarDays } from "lucide-react";
 import type { TPerformanceReportCard } from "@/types";
 import {
@@ -12,20 +11,31 @@ import { useEffect, useState } from "react";
 import { mockData } from "@/data/mockData";
 
 export default function DailyReport() {
-  const [performanceReportCards, setPerformanceReportCards] = useState<TPerformanceReportCard[]>([]);
+  const [performanceReportCards, setPerformanceReportCards] = useState<
+    TPerformanceReportCard[]
+  >([]);
 
   useEffect(() => {
-    const formattedReports = [mockData].map(report => ({
-        date: new Date(report.reportDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-        deception: report.dailyReportText,
-        startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
-        endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
-        growthRate: {
+    const formattedReports = [mockData].map((report) => ({
+      date: new Date(report.reportDate).toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      deception: report.dailyReportText,
+      startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
+      endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
+      growthRate: {
         value: report.nav.growthPercent,
         sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
-        color: (report.nav.growthPercent >= 0 ? "green" : "red") as "green" | "red",
-        formatted: `${report.nav.growthPercent >= 0 ? '+' : '-'}${Math.abs(report.nav.growthPercent)}%`,
-        },
+        color: (report.nav.growthPercent >= 0 ? "green" : "red") as
+          | "green"
+          | "red",
+        formatted: `${report.nav.growthPercent >= 0 ? "+" : "-"}${Math.abs(
+          report.nav.growthPercent
+        )}%`,
+      },
     }));
     setPerformanceReportCards(formattedReports);
   }, []);
@@ -69,7 +79,9 @@ export default function DailyReport() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">ENDING NAV</p>
+                      <p className="text-xs text-muted-foreground">
+                        ENDING NAV
+                      </p>
                       <p className="font-medium text-foreground">
                         {report.endingNAV}
                       </p>
@@ -79,10 +91,11 @@ export default function DailyReport() {
                         GROWTH RATE
                       </p>
                       <p
-                        className={`font-medium text-right ${report.growthRate.sign === "+"
+                        className={`font-medium text-right ${
+                          report.growthRate.sign === "+"
                             ? "text-green-500"
                             : "text-red-500"
-                          }`}
+                        }`}
                       >
                         {report.growthRate.formatted}
                       </p>
