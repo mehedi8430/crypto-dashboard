@@ -14,6 +14,7 @@ export function LoginForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log({ email, password });
     login.mutate({ email, password });
   };
 

@@ -51,11 +51,11 @@ export default function AllAllocationCard({
   console.log({ allocationData });
 
   return (
-    <div>
+    <div className="w-full">
       {isEditingAllocations ? (
         <AllocationsForm />
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 flex-wrap">
+        <div className="flex flex-col md:flex-row gap-4 flex-wrap w-full">
           {allocationData?.length > 0 ? (
             allocationData.map((item: AllocationData) => (
               <div className="flex flex-col">
@@ -86,6 +86,7 @@ export default function AllAllocationCard({
                 <Link
                   to={`/dashboard/allocations/${item.label.toLowerCase()}`}
                   key={item.label}
+                  className="w-full"
                 >
                   <Allocation
                     label={item.label}

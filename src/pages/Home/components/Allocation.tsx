@@ -49,7 +49,7 @@ export default function Allocation({
   const endingBalance = data?.data?.history[0]?.starting_balance || 0;
 
   return (
-    <section className="section-container-no-padding border rounded-md hover:border hover:border-primary">
+    <section className="section-container-no-padding border rounded-md hover:border hover:border-primary w-full">
       <div className="flex items-start justify-between px-6 pt-6">
         <h3 className="font-bold">
           Allocation (
