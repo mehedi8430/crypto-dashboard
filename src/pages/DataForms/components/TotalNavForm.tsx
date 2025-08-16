@@ -16,9 +16,8 @@ import { TimePicker } from "@/components/TimePicker";
 
 const totalNavSchema = z.object({
   date: z.string().min(1, "Date is required"),
-  time: z.string().min(1, "Time is required"),
+  time: z.string().min(1, "Time is required").optional(),
   value: z.number().min(0, "Value must be a positive number"),
-  timer: z.string().min(1, "Timer is required"),
 });
 
 export default function TotalNavForm() {
@@ -28,7 +27,6 @@ export default function TotalNavForm() {
       date: "",
       time: "",
       value: 0,
-      timer: "",
     },
   });
 
@@ -89,19 +87,6 @@ export default function TotalNavForm() {
                     {...field}
                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="timer"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Timer (e.g., 5m, 1h)</FormLabel>
-                <FormControl>
-                  <Input type="text" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -23,6 +23,7 @@ import {
   useUpdateAllocation,
 } from "@/queries/cryptoQueries";
 import { useEffect } from "react";
+import { allocationOptions } from "./allocationOptions";
 
 const allocationSchema = z.object({
   key: z.string().min(1, "Allocation is required"),
@@ -84,35 +85,6 @@ export default function AddAllocationForm({
       onClose?.();
     }
   }
-
-  const allocationOptions = [
-    { value: "A", label: "Allocation A" },
-    { value: "B", label: "Allocation B" },
-    { value: "C", label: "Allocation C" },
-    { value: "D", label: "Allocation D" },
-    { value: "E", label: "Allocation E" },
-    { value: "F", label: "Allocation F" },
-    { value: "G", label: "Allocation G" },
-    { value: "H", label: "Allocation H" },
-    { value: "I", label: "Allocation I" },
-    { value: "J", label: "Allocation J" },
-    { value: "K", label: "Allocation K" },
-    { value: "L", label: "Allocation L" },
-    { value: "M", label: "Allocation M" },
-    { value: "N", label: "Allocation N" },
-    { value: "O", label: "Allocation O" },
-    { value: "P", label: "Allocation P" },
-    { value: "Q", label: "Allocation Q" },
-    { value: "R", label: "Allocation R" },
-    { value: "S", label: "Allocation S" },
-    { value: "T", label: "Allocation T" },
-    { value: "U", label: "Allocation U" },
-    { value: "V", label: "Allocation V" },
-    { value: "W", label: "Allocation W" },
-    { value: "X", label: "Allocation X" },
-    { value: "Y", label: "Allocation Y" },
-    { value: "Z", label: "Allocation Z" },
-  ];
 
   return (
     <FormProvider {...form}>

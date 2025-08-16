@@ -17,14 +17,16 @@ export default function Allocation({
 }: AllocationProps) {
   const { data } = useAllocationByKey(allocationKey);
 
-  const formattedData = data?.data?.history.map((d: TAllocationHistory) => ({
-    day: d.createdAt,
-    time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    value: Math.abs(d.ending_balance - d.starting_balance),
-  }));
+  const formattedData =
+    data?.data?.history &&
+    data?.data?.history.map((d: TAllocationHistory) => ({
+      day: d.createdAt,
+      time: new Date(d?.createdAt).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      value: Math.abs(d.ending_balance - d.starting_balance),
+    }));
 
   // Calculate gainPercent
   let gainPercent = 0;
@@ -45,21 +47,17 @@ export default function Allocation({
 
   // Use ending_balance of the earliest record and starting_balance of the latest for display
   const startingBalance =
-    data?.data?.history[data?.data?.history.length - 1]?.ending_balance || 0;
-  const endingBalance = data?.data?.history[0]?.starting_balance || 0;
+    (data?.data?.history &&
+      data?.data?.history[data?.data?.history.length - 1]?.ending_balance) ||
+    0;
+  const endingBalance =
+    (data?.data?.history && data?.data?.history[0]?.starting_balance) || 0;
 
   return (
     <section className="section-container-no-padding border rounded-md hover:border hover:border-primary w-full">
       <div className="flex items-start justify-between px-6 pt-6">
         <h3 className="font-bold">
-          Allocation (
-          <span
-            className="font-bold"
-            style={{ color: chartConfig.desktop.color }}
-          >
-            {label}
-          </span>
-          )
+          {data?.data?.name ? data.data.name : label}
         </h3>
         <div className="text-right">
           <p className="font-semibold">
