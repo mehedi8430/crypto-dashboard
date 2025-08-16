@@ -190,6 +190,7 @@ export default function AllocationsManagementPage() {
       >
         <AddAllocationForm
           allocationKey={allocationToEditKey ? allocationToEditKey : undefined}
+          onClose={() => setIsAddAllocationModalOpen(false)}
         />
       </DialogWrapper>
 

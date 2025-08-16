@@ -11,6 +11,7 @@ export const cryptoQueryKeys = {
     [...cryptoQueryKeys.crypto, "chartData", params] as const,
   portfolio: (params?: any) =>
     [...cryptoQueryKeys.crypto, "portfolio", params] as const,
+  dailyReport: ["dailyReport"] as const,
 } as const;
 
 // Fetches the chart data for the given period.
@@ -26,6 +27,22 @@ export const useNavHistoryData = (params?: { days?: string }) => {
   return useQuery({
     queryKey: cryptoQueryKeys.chartData(params),
     queryFn: () => cryptoApi.getNavHistoryData(params),
+  });
+};
+
+// Update crypto data
+export const useUpdateCryptoData = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.updateCryptoData,
+    onSuccess: (data) => {
+      toast.success(data.message || "Crypto data updated successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.crypto });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Update failed");
+    },
   });
 };
 
@@ -108,5 +125,13 @@ export const useSystemStatus = () => {
   return useQuery({
     queryKey: cryptoQueryKeys.portfolio(),
     queryFn: () => cryptoApi.getSystemStatus(),
+  });
+};
+
+// Fetches the all report data
+export const useReports = () => {
+  return useQuery({
+    queryKey: cryptoQueryKeys.dailyReport,
+    queryFn: () => cryptoApi.getDailyReports(),
   });
 };

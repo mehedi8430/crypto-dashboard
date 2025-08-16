@@ -23,6 +23,7 @@ import {
   useUpdateAllocation,
 } from "@/queries/cryptoQueries";
 import { useEffect } from "react";
+import { allocationOptions } from "./allocationOptions";
 
 const allocationSchema = z.object({
   key: z.string().min(1, "Allocation is required"),
@@ -32,8 +33,10 @@ const allocationSchema = z.object({
 
 export default function AddAllocationForm({
   allocationKey,
+  onClose,
 }: {
   allocationKey: string | undefined;
+  onClose?: () => void;
 }) {
   const form = useForm<z.infer<typeof allocationSchema>>({
     resolver: zodResolver(allocationSchema),
@@ -50,11 +53,18 @@ export default function AddAllocationForm({
   const { data: allocationData } = useAllocationByKey(allocationKey || "");
 
   useEffect(() => {
-    if (allocationData) {
+    if (allocationData && allocationKey) {
       form.reset({
         key: allocationKey,
         name: allocationData?.data?.name,
         initialBalance: allocationData?.data?.current_balance,
+      });
+    } else if (!allocationKey) {
+      // Reset to default values for new allocations
+      form.reset({
+        key: "A",
+        name: "",
+        initialBalance: 0,
       });
     }
   }, [allocationData, form, allocationKey]);
@@ -69,8 +79,10 @@ export default function AddAllocationForm({
 
     if (allocationKey) {
       updateAllocation.mutate({ key: allocationKey, data: payload });
+      onClose?.();
     } else {
       createAllocation.mutate(payload);
+      onClose?.();
     }
   }
 
@@ -87,17 +99,18 @@ export default function AddAllocationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Allocation</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl className="w-full">
                   <SelectTrigger>
                     <SelectValue placeholder="Select an allocation" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="A">Allocation A</SelectItem>
-                  <SelectItem value="B">Allocation B</SelectItem>
-                  <SelectItem value="C">Allocation C</SelectItem>
-                  <SelectItem value="D">Allocation D</SelectItem>
+                  {allocationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

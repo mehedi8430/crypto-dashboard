@@ -23,7 +23,7 @@ export default function AppSidebar({
   const allocations =
     data &&
     data?.data.map((item: TAllocation) => ({
-      title: `Allocation ${item.key.toUpperCase()}`,
+      title: item?.name,
       url: `/dashboard/allocations/${item.key.toLowerCase()}`,
     }));
 

@@ -37,8 +37,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Allocation (A), (B), (C). (D) */}
-        <div className="flex flex-col md:flex-row gap-4 flex-wrap">
+        {/* All Allocations Card */}
+        <div className="flex flex-col md:flex-row gap-4 flex-wrap w-full">
           <AllAllocationCard />
         </div>
 

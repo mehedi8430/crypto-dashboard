@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  import.meta.env.REACT_APP_API_URL || "http://172.16.100.26:5050/api/v1";
+  import.meta.env.VITE_APP_API_URL || "http://172.16.100.26:5050/api/v1";
+console.log({ API_BASE_URL });
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -19,9 +20,13 @@ apiClient.interceptors.request.use(
     const token = storageData ? JSON.parse(storageData).state.token.data : null;
     console.log({ token });
 
-    if (token) {
+    const isPublicEndpoint =
+      config.url === "/auth/login" && config.method === "post";
+
+    if (token && !isPublicEndpoint) {
       config.headers.Authorization = token;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -31,9 +36,12 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (
+      error.response?.status === 401 &&
+      !error.config.url?.includes("/auth/login")
+    ) {
       // Handle unauthorized access
-      localStorage.removeItem("token");
+      localStorage.removeItem("auth-storage");
       window.location.href = "/login";
     }
     return Promise.reject(error);

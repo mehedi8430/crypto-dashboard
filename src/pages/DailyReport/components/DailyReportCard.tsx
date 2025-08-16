@@ -1,5 +1,8 @@
 import { CalendarDays } from "lucide-react";
-import type { TPerformanceReportCard } from "@/types";
+import type {
+  TPerformanceReportApiResponse,
+  TPerformanceReportCard,
+} from "@/types";
 import {
   Accordion,
   AccordionContent,
@@ -8,37 +11,77 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
-import { mockData } from "@/data/mockData";
+import { useReports } from "@/queries/cryptoQueries";
 
-export default function DailyReport() {
+export default function DailyReportCard() {
   const [performanceReportCards, setPerformanceReportCards] = useState<
     TPerformanceReportCard[]
   >([]);
 
+  const { data } = useReports();
+
   useEffect(() => {
-    const formattedReports = [mockData].map((report) => ({
-      date: new Date(report.reportDate).toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      deception: report.dailyReportText,
-      startingNAV: `$${report.nav.startingNav.toLocaleString()}`,
-      endingNAV: `$${report.nav.endingNav.toLocaleString()}`,
-      growthRate: {
-        value: report.nav.growthPercent,
-        sign: (report.nav.growthPercent >= 0 ? "+" : "-") as "+" | "-",
-        color: (report.nav.growthPercent >= 0 ? "green" : "red") as
-          | "green"
-          | "red",
-        formatted: `${report.nav.growthPercent >= 0 ? "+" : "-"}${Math.abs(
-          report.nav.growthPercent
-        )}%`,
-      },
-    }));
-    setPerformanceReportCards(formattedReports);
-  }, []);
+    if (data && data.data) {
+      const formattedReports = data.data.map(
+        (item: TPerformanceReportApiResponse) => {
+          // Handle case where growthRate might already be an object, number, or string
+          let growthValue: number;
+          if (typeof item.growthRate === "object" && item.growthRate !== null) {
+            // If it's already an object with a value property
+            growthValue = (item.growthRate as { value: number }).value;
+          } else if (typeof item.growthRate === "number") {
+            // If it's already a number
+            growthValue = item.growthRate;
+          } else {
+            // If it's a string from the API
+            growthValue = parseFloat(item.growthRate || "0");
+          }
+
+          const noteLines = item.note.split("\n");
+          const reportTextIndex = noteLines.findIndex((line: string) =>
+            line.startsWith("- Daily Report Text:")
+          );
+          let description = item.note;
+          if (reportTextIndex !== -1) {
+            description = noteLines[reportTextIndex].substring(
+              "- Daily Report Text: ".length
+            );
+          }
+
+          // Safe date parsing
+          let dateStr = "Invalid Date";
+          if (item.createdAt) {
+            try {
+              dateStr = new Date(item.createdAt).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+            } catch (e) {
+              console.error("Error parsing date:", e);
+            }
+          }
+
+          return {
+            date: dateStr,
+            description,
+            startingNAV: `$${parseFloat(item.starting).toLocaleString()}`,
+            endingNAV: `$${parseFloat(item.ending).toLocaleString()}`,
+            growthRate: {
+              value: growthValue,
+              sign: growthValue >= 0 ? "+" : "-",
+              color: growthValue >= 0 ? "green" : "red",
+              formatted: `${growthValue >= 0 ? "+" : ""}${Math.abs(
+                growthValue
+              ).toFixed(6)}%`,
+            },
+          };
+        }
+      );
+      setPerformanceReportCards(formattedReports);
+    }
+  }, [data]);
 
   return (
     <section className="flex flex-col gap-4">
@@ -103,7 +146,7 @@ export default function DailyReport() {
                   </div>
                 </div>
                 <AccordionContent className="bg-card text-card-foreground border-t rounded-b-lg py-4 px-10">
-                  <p>{report.deception}</p>
+                  <p>{report.description}</p>
                 </AccordionContent>
               </div>
             </AccordionItem>

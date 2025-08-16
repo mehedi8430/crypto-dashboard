@@ -23,3 +23,7 @@ export type TAllocationHistory = {
   notes: string;
   createdAt: string;
 };
+
+export type TCryptoDataUpdatePayload = {
+  [key: string]: unknown;
+};
