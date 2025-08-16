@@ -30,6 +30,22 @@ export const useNavHistoryData = (params?: { days?: string }) => {
   });
 };
 
+// Update crypto data
+export const useUpdateCryptoData = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.updateCryptoData,
+    onSuccess: (data) => {
+      toast.success(data.message || "Crypto data updated successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.crypto });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Update failed");
+    },
+  });
+};
+
 // Fetches the allocations data
 export const useAllocations = () => {
   return useQuery({

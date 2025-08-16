@@ -1,5 +1,6 @@
 import { apiClient } from "@/api";
 import type { TAllocationPayload } from "@/types";
+import type { TCryptoDataUpdatePayload } from "@/types/crypto.type";
 
 export const cryptoApi = {
   //  Gets the chart data for the given period.
@@ -15,6 +16,12 @@ export const cryptoApi = {
     const response = await apiClient.get("/crypto/portfolio/nav-history", {
       params,
     });
+    return response.data;
+  },
+
+  // Update crypto data
+  updateCryptoData: async (data: TCryptoDataUpdatePayload) => {
+    const response = await apiClient.post("/crypto/data/update", data);
     return response.data;
   },
 
