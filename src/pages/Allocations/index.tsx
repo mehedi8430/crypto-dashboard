@@ -49,7 +49,7 @@ export default function Allocations() {
   useEffect(() => {
     if (!allocation || !allocationDataByKey?.data) return;
 
-    const { history, current_balance } =
+    const { history, currentBalance } =
       allocationDataByKey.data as TAllocationData;
 
     // Group history by date (ignoring time)
@@ -128,7 +128,7 @@ export default function Allocations() {
       },
       {
         title: "Current Balance",
-        total: `$${current_balance.toLocaleString()}`,
+        total: `$${currentBalance.toLocaleString()}`,
       },
       {
         title: "Daily Performance",
