@@ -11,6 +11,7 @@ export const cryptoQueryKeys = {
     [...cryptoQueryKeys.crypto, "chartData", params] as const,
   portfolio: (params?: any) =>
     [...cryptoQueryKeys.crypto, "portfolio", params] as const,
+  dailyReport: ["dailyReport"] as const,
 } as const;
 
 // Fetches the chart data for the given period.
@@ -108,5 +109,13 @@ export const useSystemStatus = () => {
   return useQuery({
     queryKey: cryptoQueryKeys.portfolio(),
     queryFn: () => cryptoApi.getSystemStatus(),
+  });
+};
+
+// Fetches the all report data
+export const useReports = () => {
+  return useQuery({
+    queryKey: cryptoQueryKeys.dailyReport,
+    queryFn: () => cryptoApi.getDailyReports(),
   });
 };

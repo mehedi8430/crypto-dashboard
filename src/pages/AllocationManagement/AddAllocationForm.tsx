@@ -32,8 +32,10 @@ const allocationSchema = z.object({
 
 export default function AddAllocationForm({
   allocationKey,
+  onClose,
 }: {
   allocationKey: string | undefined;
+  onClose?: () => void;
 }) {
   const form = useForm<z.infer<typeof allocationSchema>>({
     resolver: zodResolver(allocationSchema),
@@ -50,11 +52,18 @@ export default function AddAllocationForm({
   const { data: allocationData } = useAllocationByKey(allocationKey || "");
 
   useEffect(() => {
-    if (allocationData) {
+    if (allocationData && allocationKey) {
       form.reset({
         key: allocationKey,
         name: allocationData?.data?.name,
         initialBalance: allocationData?.data?.current_balance,
+      });
+    } else if (!allocationKey) {
+      // Reset to default values for new allocations
+      form.reset({
+        key: "A",
+        name: "",
+        initialBalance: 0,
       });
     }
   }, [allocationData, form, allocationKey]);
@@ -69,10 +78,41 @@ export default function AddAllocationForm({
 
     if (allocationKey) {
       updateAllocation.mutate({ key: allocationKey, data: payload });
+      onClose?.();
     } else {
       createAllocation.mutate(payload);
+      onClose?.();
     }
   }
+
+  const allocationOptions = [
+    { value: "A", label: "Allocation A" },
+    { value: "B", label: "Allocation B" },
+    { value: "C", label: "Allocation C" },
+    { value: "D", label: "Allocation D" },
+    { value: "E", label: "Allocation E" },
+    { value: "F", label: "Allocation F" },
+    { value: "G", label: "Allocation G" },
+    { value: "H", label: "Allocation H" },
+    { value: "I", label: "Allocation I" },
+    { value: "J", label: "Allocation J" },
+    { value: "K", label: "Allocation K" },
+    { value: "L", label: "Allocation L" },
+    { value: "M", label: "Allocation M" },
+    { value: "N", label: "Allocation N" },
+    { value: "O", label: "Allocation O" },
+    { value: "P", label: "Allocation P" },
+    { value: "Q", label: "Allocation Q" },
+    { value: "R", label: "Allocation R" },
+    { value: "S", label: "Allocation S" },
+    { value: "T", label: "Allocation T" },
+    { value: "U", label: "Allocation U" },
+    { value: "V", label: "Allocation V" },
+    { value: "W", label: "Allocation W" },
+    { value: "X", label: "Allocation X" },
+    { value: "Y", label: "Allocation Y" },
+    { value: "Z", label: "Allocation Z" },
+  ];
 
   return (
     <FormProvider {...form}>
@@ -87,17 +127,18 @@ export default function AddAllocationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Allocation</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl className="w-full">
                   <SelectTrigger>
                     <SelectValue placeholder="Select an allocation" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="A">Allocation A</SelectItem>
-                  <SelectItem value="B">Allocation B</SelectItem>
-                  <SelectItem value="C">Allocation C</SelectItem>
-                  <SelectItem value="D">Allocation D</SelectItem>
+                  {allocationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

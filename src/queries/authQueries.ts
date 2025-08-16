@@ -24,13 +24,17 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (token: string) => {
+      console.log({ token });
       login(token);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       toast.success("Login successful");
       navigate("/dashboard");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Login failed");
+      console.error("Login error:", error);
+      toast.error(
+        error.response?.data?.message || error.message || "Login failed"
+      );
     },
   });
 };

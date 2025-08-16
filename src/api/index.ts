@@ -20,9 +20,13 @@ apiClient.interceptors.request.use(
     const token = storageData ? JSON.parse(storageData).state.token.data : null;
     console.log({ token });
 
-    if (token) {
+    const isPublicEndpoint =
+      config.url === "/auth/login" && config.method === "post";
+
+    if (token && !isPublicEndpoint) {
       config.headers.Authorization = token;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -32,9 +36,12 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (
+      error.response?.status === 401 &&
+      !error.config.url?.includes("/auth/login")
+    ) {
       // Handle unauthorized access
-      localStorage.removeItem("token");
+      localStorage.removeItem("auth-storage");
       window.location.href = "/login";
     }
     return Promise.reject(error);
