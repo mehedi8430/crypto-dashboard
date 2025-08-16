@@ -23,7 +23,7 @@ export default function Allocation({
       hour: "2-digit",
       minute: "2-digit",
     }),
-    value: d.ending_balance - d.starting_balance,
+    value: Math.abs(d.ending_balance - d.starting_balance),
   }));
 
   // Calculate gainPercent
