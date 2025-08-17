@@ -1,6 +1,6 @@
 import SelectInput, { type SelectOption } from "@/components/SelectInput";
 import TotalNavChart from "./TotalNavChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TNavChartData } from "@/types";
 import { cn } from "@/lib/utils";
 import { useCryptoChartData } from "@/pages/hooks";
@@ -28,9 +28,25 @@ export default function TotalNavPanel() {
     data: navChartData,
     // loading: navLoading,
     error: navError,
-    // isConnected: navConnected,
-  } = useCryptoChartData("http://172.16.100.26:5050");
-  console.log({ navChartData });
+    isConnected,
+    emit,
+  } = useCryptoChartData();
+  // console.log({ navChartData });
+
+  const activeMonth = selected || currentMonth;
+
+  // Request data when month changes or component mounts
+  useEffect(() => {
+    if (isConnected) {
+      const requestData = {
+        month: activeMonth,
+        year: new Date().getFullYear(),
+      };
+
+      console.log("Requesting chart data for:", requestData);
+      emit("request_chart_data", requestData);
+    }
+  }, [activeMonth, isConnected, emit]);
 
   const totalNav =
     navChartData &&
@@ -57,7 +73,7 @@ export default function TotalNavPanel() {
   };
 
   return (
-    <section className="section-container p-0 h-full">
+    <section className="section-container p-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6">
         <h3>
           Total NAV
@@ -74,7 +90,7 @@ export default function TotalNavPanel() {
                 "text-red-500": !isUp,
               })}
             >
-              {isUp ? "+" : "-"}
+              {isUp ? "+" : ""}
               {growthPercent || 0}%
             </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>

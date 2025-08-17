@@ -41,4 +41,28 @@ export const userApi = {
     const response = await apiClient.post("/users", userData);
     return response.data;
   },
+
+  // assign user to allocation
+  assignUserToAllocation: async (data: {
+    userId: string;
+    allocationId: string;
+  }) => {
+    const response = await apiClient.post("/user-allocation/assign", data);
+    return response.data;
+  },
+
+  // unassign user from allocation
+  unassignUserFromAllocation: async (data: {
+    userId: string;
+    allocationId: string;
+  }) => {
+    const response = await apiClient.post("/user-allocation/unassign", data);
+    return response.data;
+  },
+
+  // get allocations for a user
+  getUserAllocations: async (userId: string) => {
+    const response = await apiClient.get(`/user-allocation/user/${userId}`);
+    return response.data;
+  },
 };

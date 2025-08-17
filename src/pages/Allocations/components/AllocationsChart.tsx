@@ -78,7 +78,7 @@ export default function AllocationsChart({
       const allocationChartData = allocationData.map(
         (d: TAllocationKeyData) => ({
           date: d?.createdAt,
-          performance: d.ending_balance - d.starting_balance,
+          performance: Math.abs(d.ending_balance - d.starting_balance),
         })
       );
       console.log({ allocationChartData });
