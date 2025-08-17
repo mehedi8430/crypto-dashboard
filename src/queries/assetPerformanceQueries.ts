@@ -1,5 +1,6 @@
 import { assetPerformanceApi } from "@/services/assetPerformanceApi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Query Keys
 export const assetPerformanceQueryKeys = {
@@ -11,5 +12,26 @@ export const useAssetPerformanceData = (minutes: number) => {
   return useQuery({
     queryKey: assetPerformanceQueryKeys.assetPerformance,
     queryFn: () => assetPerformanceApi.getAssetPerformance(minutes),
+  });
+};
+
+// Creates a new assetPerformance.
+export const useCreateAssetPerformance = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: assetPerformanceApi.createAssetPerformance,
+    onSuccess: (data) => {
+      toast.success(data?.message || "Asset Performance created successfully!");
+      queryClient.invalidateQueries({
+        queryKey: assetPerformanceQueryKeys.assetPerformance,
+      });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Asset Performance Creation failed"
+      );
+    },
   });
 };

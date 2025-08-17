@@ -25,15 +25,13 @@ export default function Allocations() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(20);
 
-  const allocation = pathname.endsWith("/a")
-    ? "a"
-    : pathname.endsWith("/b")
-    ? "b"
-    : pathname.endsWith("/c")
-    ? "c"
-    : pathname.endsWith("/d")
-    ? "d"
-    : null;
+  const allocationSegment = pathname.split("/").pop()?.toLowerCase();
+  const allocation =
+    allocationSegment &&
+    allocationSegment.length === 1 &&
+    /[a-z]/.test(allocationSegment)
+      ? allocationSegment
+      : null;
 
   useEffect(() => {
     setTitle(
@@ -128,7 +126,7 @@ export default function Allocations() {
       },
       {
         title: "Current Balance",
-        total: `$${currentBalance.toLocaleString()}`,
+        total: `$${currentBalance}`,
       },
       {
         title: "Daily Performance",

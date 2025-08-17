@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { useAllocations } from "@/queries/cryptoQueries";
 import type { TAllocation } from "@/types";
-
-const allocationColors: { [key: string]: string } = {
-  A: "#0867ED",
-  B: "#12BE73",
-  C: "#F2C916",
-  D: "#FF69B4",
-};
+import { allocationColors } from "@/pages/Allocations/allocationsColor";
 
 type AllocationData = {
   label: string;
@@ -31,7 +25,10 @@ export default function AllAllocationCard() {
         chartConfig: {
           desktop: {
             label: "value",
-            color: allocationColors[item.key as keyof typeof allocationColors],
+            color:
+              allocationColors[
+                item.key.toLocaleLowerCase() as keyof typeof allocationColors
+              ],
           },
         },
         name: item?.name,
