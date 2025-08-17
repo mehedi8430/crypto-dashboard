@@ -33,6 +33,6 @@ export type TDailyReportPayload = {
   starting: string;
   ending: string;
   growthRate: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

@@ -1,7 +1,6 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +12,12 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "@/components/DatePicker";
+import {
+  useCreateReport,
+  useReportByDate,
+  useUpdateReport,
+} from "@/queries/cryptoQueries";
+import { useEffect } from "react";
 
 const dailyReportSchema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -22,11 +27,15 @@ const dailyReportSchema = z.object({
   details: z.string().min(1, "Details are required"),
 });
 
-export default function DailyReportForm() {
+export default function DailyReportForm({
+  reportDate,
+}: {
+  reportDate?: string;
+}) {
   const form = useForm<z.infer<typeof dailyReportSchema>>({
     resolver: zodResolver(dailyReportSchema),
     defaultValues: {
-      date: "",
+      date: reportDate || "",
       startingNav: 0,
       endingNav: 0,
       growthRate: 0,
@@ -34,9 +43,47 @@ export default function DailyReportForm() {
     },
   });
 
+  const { data: reportData } = useReportByDate(reportDate || "");
+  const { mutate: createReport, isPending: isCreating } = useCreateReport();
+  const { mutate: updateReport, isPending: isUpdating } = useUpdateReport();
+
+  useEffect(() => {
+    if (reportData?.data) {
+      const { data } = reportData;
+      form.reset({
+        date: data.date,
+        startingNav: parseFloat(data.starting),
+        endingNav: parseFloat(data.ending),
+        growthRate: parseFloat(data.growthRate),
+        details: data.note,
+      });
+    }
+  }, [reportData, form]);
+
   async function onSubmit(values: z.infer<typeof dailyReportSchema>) {
-    console.log("Daily Report Form Submitted", values);
-    toast.success("Daily report submitted successfully!");
+    const payload = {
+      note: values.details,
+      starting: values.startingNav.toString(),
+      ending: values.endingNav.toString(),
+      growthRate: `${values.growthRate}%`,
+    };
+
+    if (reportDate && reportData?.data?.id) {
+      updateReport(
+        { id: reportData.data.id, data: payload },
+        {
+          onSuccess: () => {
+            form.reset();
+          },
+        }
+      );
+    } else {
+      createReport(payload, {
+        onSuccess: () => {
+          form.reset();
+        },
+      });
+    }
   }
 
   return (
@@ -73,7 +120,9 @@ export default function DailyReportForm() {
                   <Input
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -90,7 +139,9 @@ export default function DailyReportForm() {
                   <Input
                     type="number"
                     {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -108,7 +159,9 @@ export default function DailyReportForm() {
                     type="number"
                     step="0.01"
                     {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -129,7 +182,13 @@ export default function DailyReportForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Update Daily Report</Button>
+        <Button type="submit" disabled={isCreating || isUpdating}>
+          {isCreating || isUpdating
+            ? "Submitting..."
+            : reportDate
+            ? "Update Daily Report"
+            : "Create Daily Report"}
+        </Button>
       </form>
     </FormProvider>
   );
