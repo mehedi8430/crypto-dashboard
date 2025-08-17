@@ -136,6 +136,15 @@ export const useReports = () => {
   });
 };
 
+// Fetches a single report by date
+export const useReportByDate = (date: string) => {
+  return useQuery({
+    queryKey: [...cryptoQueryKeys.dailyReport, date],
+    queryFn: () => cryptoApi.getReportByDate(date),
+    enabled: !!date,
+  });
+};
+
 // create a new report
 export const useCreateReport = () => {
   const queryClient = useQueryClient();
@@ -148,6 +157,22 @@ export const useCreateReport = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Report Creation failed");
+    },
+  });
+};
+
+// updates a report
+export const useUpdateReport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.updateDailyReport,
+    onSuccess: (data) => {
+      toast.success(data.message || "Report updated successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.dailyReport });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Report Update failed");
     },
   });
 };
