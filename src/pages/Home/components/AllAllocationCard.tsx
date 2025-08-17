@@ -42,7 +42,7 @@ export default function AllAllocationCard() {
   }, [data?.data]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 flex-wrap w-full">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {allocationData?.length > 0 ? (
         allocationData.map((item: AllocationData) => (
           <Link
@@ -58,8 +58,8 @@ export default function AllAllocationCard() {
           </Link>
         ))
       ) : (
-        <section className="">
-          <div className="section-container border rounded-md hover:border hover:border-primaryflex items-center justify-center w-full">
+        <section className="w-full">
+          <div className="section-container border rounded-md hover:border hover:border-primaryflex items-center justify-center">
             No Allocation Available
           </div>
         </section>
