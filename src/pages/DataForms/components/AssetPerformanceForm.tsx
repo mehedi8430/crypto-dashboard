@@ -22,7 +22,7 @@ const dailyReportSchema = z.object({
   details: z.string().min(1, "Details are required"),
 });
 
-export default function DailyReportForm() {
+export default function AssetPerformanceForm() {
   const form = useForm<z.infer<typeof dailyReportSchema>>({
     resolver: zodResolver(dailyReportSchema),
     defaultValues: {

@@ -39,7 +39,7 @@ export default function AllocationAreaChart({
   }, [chartData]);
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="w-full h-[200px]">
       <AreaChart
         accessibilityLayer
         data={chartData}
