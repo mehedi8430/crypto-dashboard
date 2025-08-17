@@ -90,7 +90,7 @@ export default function TotalNavPanel() {
                 "text-red-500": !isUp,
               })}
             >
-              {isUp ? "+" : "-"}
+              {isUp ? "+" : ""}
               {growthPercent || 0}%
             </p>
             <p className="text-foreground/70 text-[10px]">Total growth</p>

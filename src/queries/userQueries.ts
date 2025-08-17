@@ -12,6 +12,11 @@ export const queryKeys = {
     profile: () => [...queryKeys.user.all, "profile"] as const,
     list: (params?: any) => [...queryKeys.user.all, "list", params] as const,
   },
+  user_allocations: {
+    all: ["user_allocations"] as const,
+    list: (params?: any) =>
+      [...queryKeys.user_allocations.all, "list", params] as const,
+  },
 } as const;
 
 export const useSingleUser = (id: string) => {
@@ -84,5 +89,51 @@ export const useUsers = (params?: {
   return useQuery({
     queryKey: queryKeys.user.list(params),
     queryFn: () => userApi.getUsers(params),
+  });
+};
+
+// assign user to allocation
+export const useAssignAllocation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.assignUserToAllocation,
+    onSuccess: (data) => {
+      toast.success(data.message || "Allocation assigned successfully!");
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.user_allocations.list(),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Allocation assign failed");
+    },
+  });
+};
+
+// unassign user to allocation
+export const useUnassignAllocation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.unassignUserFromAllocation,
+    onSuccess: (data) => {
+      toast.success(data.message || "Allocation unassigned successfully!");
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.user_allocations.list(),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Allocation unassign failed"
+      );
+    },
+  });
+};
+
+// Fetches user allocations by user
+export const useUserAllocations = (userId: string) => {
+  return useQuery({
+    queryKey: queryKeys.user_allocations.list(),
+    queryFn: () => userApi.getUserAllocations(userId),
   });
 };

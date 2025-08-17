@@ -38,9 +38,7 @@ export default function HomePage() {
         </div>
 
         {/* All Allocations Card */}
-        <div className="flex flex-col md:flex-row gap-4 flex-wrap w-full">
-          <AllAllocationCard />
-        </div>
+        <AllAllocationCard />
 
         <div className="grid grid-cols-4 gap-4">
           {/* Asset Performance Panel */}
