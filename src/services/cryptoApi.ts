@@ -1,6 +1,9 @@
 import { apiClient } from "@/api";
 import type { TAllocationPayload } from "@/types";
-import type { TCryptoDataUpdatePayload } from "@/types/crypto.type";
+import type {
+  TCryptoDataUpdatePayload,
+  TDailyReportPayload,
+} from "@/types/crypto.type";
 
 export const cryptoApi = {
   //  Gets the chart data for the given period.
@@ -76,6 +79,12 @@ export const cryptoApi = {
   // Get all daily report data
   getDailyReports: async () => {
     const response = await apiClient.get("/daily-report");
+    return response.data;
+  },
+
+  // Create a new daily report
+  createDailyReport: async (data: TDailyReportPayload) => {
+    const response = await apiClient.post("/daily-report", data);
     return response.data;
   },
 };

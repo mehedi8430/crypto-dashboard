@@ -135,3 +135,19 @@ export const useReports = () => {
     queryFn: () => cryptoApi.getDailyReports(),
   });
 };
+
+// create a new report
+export const useCreateReport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cryptoApi.createDailyReport,
+    onSuccess: (data) => {
+      toast.success(data.message || "Report created successfully!");
+      queryClient.invalidateQueries({ queryKey: cryptoQueryKeys.dailyReport });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Report Creation failed");
+    },
+  });
+};

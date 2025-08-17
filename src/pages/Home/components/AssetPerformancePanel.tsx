@@ -13,6 +13,7 @@ import T from "@/assets/icons/coins/Group (2).png";
 import D from "@/assets/icons/coins/Group (3).png";
 import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png";
 import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png";
+import { useAssetPerformanceData } from "@/queries/assetPerformanceQueries";
 
 const coinImages: { [key: string]: string } = {
   ETH,
@@ -26,6 +27,9 @@ const coinImages: { [key: string]: string } = {
 export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
+
+  const { data: assetPerformanceData } = useAssetPerformanceData(120);
+  console.log({ assetPerformanceData });
 
   const { data: portfolioLatestData, isPending } = usePortfolioLatestData();
 
