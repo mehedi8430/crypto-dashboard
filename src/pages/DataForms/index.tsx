@@ -11,12 +11,15 @@ import TotalNavForm from "./components/TotalNavForm";
 // import AllocationBreakdownForm from "./components/AllocationBreakdownForm";
 import DailyReportForm from "./components/DailyReportForm";
 import SystemStatusForm from "./components/SystemStatusForm";
+import DailyReport from "../Home/components/DailyReport";
 
 export default function DataForms() {
   const [isEditingTotalNav, setIsEditingTotalNav] = useState(false);
   // const [isEditingAllocationBreakdown, setIsEditingAllocationBreakdown] =
   //   useState(false);
   const [isEditingDailyReport, setIsEditingDailyReport] = useState(false);
+  const [isEditingAssetPerformance, setIsEditingAssetPerformance] =
+    useState(false);
   const [isEditingSystemStatus, setIsEditingSystemStatus] = useState(false);
 
   return (
@@ -91,11 +94,41 @@ export default function DataForms() {
             </div>
           </div> */}
 
-          {/* Asset Performance and System Status */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-4">
+          <div className="flex flex-col md:flex-row gap-4 w-full">
+            {/* Asset Performance Panel Management */}
+            <div className="w-full md:w-[75%]">
               <div className="mb-2 flex justify-between items-center">
                 <h3>Asset Performance Management</h3>
+                <Button
+                  variant={"outline"}
+                  onClick={() =>
+                    setIsEditingAssetPerformance(!isEditingAssetPerformance)
+                  }
+                >
+                  {isEditingAssetPerformance ? (
+                    <>
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </>
+                  ) : (
+                    <>
+                      <Pen className="h-4 w-4 mr-1" />
+                      Edit
+                    </>
+                  )}
+                </Button>
+              </div>
+              {isEditingAssetPerformance ? (
+                <DailyReportForm />
+              ) : (
+                <AssetPerformancePanel />
+              )}
+            </div>
+
+            {/* Daily Report Management */}
+            <div className="w-full md:w-[25%]">
+              <div className="mb-2 flex justify-between items-center">
+                <h3>Daily Report Management</h3>
                 <Button
                   variant={"outline"}
                   onClick={() => setIsEditingDailyReport(!isEditingDailyReport)}
@@ -113,45 +146,40 @@ export default function DataForms() {
                   )}
                 </Button>
               </div>
-              {isEditingDailyReport ? (
-                <DailyReportForm />
-              ) : (
-                <AssetPerformancePanel />
-              )}
+              {isEditingDailyReport ? <DailyReportForm /> : <DailyReport />}
             </div>
+          </div>
 
-            <div className="col-span-4">
-              <div className="mb-2 flex justify-between items-center">
-                <h3>System Status Management</h3>
-                <Button
-                  variant={"outline"}
-                  onClick={() =>
-                    setIsEditingSystemStatus(!isEditingSystemStatus)
-                  }
-                >
-                  {isEditingSystemStatus ? (
-                    <>
-                      <X className="h-4 w-4 mr-1" />
-                      Cancel
-                    </>
-                  ) : (
-                    <>
-                      <Pen className="h-4 w-4 mr-1" />
-                      Edit
-                    </>
-                  )}
-                </Button>
-              </div>
-              {isEditingSystemStatus ? (
-                <SystemStatusForm />
-              ) : (
-                <Card className="h-full">
-                  <CardContent>
-                    <SystemStatus />
-                  </CardContent>
-                </Card>
-              )}
+          {/* System Status Management */}
+          <div className="pt-8">
+            <div className="mb-2 flex justify-between items-center ">
+              <h3>System Status Management</h3>
+              <Button
+                variant={"outline"}
+                onClick={() => setIsEditingSystemStatus(!isEditingSystemStatus)}
+              >
+                {isEditingSystemStatus ? (
+                  <>
+                    <X className="h-4 w-4 mr-1" />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <Pen className="h-4 w-4 mr-1" />
+                    Edit
+                  </>
+                )}
+              </Button>
             </div>
+            {isEditingSystemStatus ? (
+              <SystemStatusForm />
+            ) : (
+              <Card className="h-full">
+                <CardContent>
+                  <SystemStatus />
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

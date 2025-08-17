@@ -116,7 +116,7 @@ export default function AssetPerformancePanel(): React.ReactNode {
   ];
 
   return (
-    <section className="section-container">
+    <section className="section-container h-full">
       <h3 className="font-bold">Asset Performance Panel</h3>
       <div>
         <DataTable<any>
