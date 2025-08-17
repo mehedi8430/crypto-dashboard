@@ -15,7 +15,6 @@ import {
   useUserAllocations,
 } from "@/queries/userQueries";
 import type { TAllocation, TUserData } from "@/types";
-import { toast } from "sonner";
 
 export default function AssignUnassignToAllocation({
   userData,
@@ -33,9 +32,9 @@ export default function AssignUnassignToAllocation({
     useAllocations();
   const { data: userAllocations, isLoading: userAllocationsLoading } =
     useUserAllocations(userData.id);
-
-  const { mutate: assignUser, isPending: isAssigning } = useAssignAllocation();
-  const { mutate: unassignUser, isPending: isUnassigning } =
+  const { mutateAsync: assignUserAsync, isPending: isAssigning } =
+    useAssignAllocation();
+  const { mutateAsync: unassignUserAsync, isPending: isUnassigning } =
     useUnassignAllocation();
 
   // Initialize selected allocations when user allocations are loaded
@@ -66,7 +65,7 @@ export default function AssignUnassignToAllocation({
       (id) => !currentUserAllocations.includes(id)
     );
     const toRemove = currentUserAllocations.filter(
-      (id) => !newSelectedAllocations.includes(id)
+      (id: string) => !newSelectedAllocations.includes(id)
     );
 
     setPendingChanges({ toAdd, toRemove });
@@ -76,38 +75,22 @@ export default function AssignUnassignToAllocation({
   const handleApplyChanges = async () => {
     try {
       // Process additions
-      for (const allocationId of pendingChanges.toAdd) {
-        await new Promise((resolve, reject) => {
-          assignUser(
-            { userId: userData.id, allocationId },
-            {
-              onSuccess: resolve,
-              onError: reject,
-            }
-          );
-        });
-      }
+      await Promise.all(
+        pendingChanges.toAdd.map((allocationId) =>
+          assignUserAsync({ userId: userData.id, allocationId })
+        )
+      );
 
       // Process removals
-      for (const allocationId of pendingChanges.toRemove) {
-        await new Promise((resolve, reject) => {
-          unassignUser(
-            { userId: userData.id, allocationId },
-            {
-              onSuccess: resolve,
-              onError: reject,
-            }
-          );
-        });
-      }
+      await Promise.all(
+        pendingChanges.toRemove.map((allocationId) =>
+          unassignUserAsync({ userId: userData.id, allocationId })
+        )
+      );
 
-      // Reset pending changes
       setPendingChanges({ toAdd: [], toRemove: [] });
       setIsOpen(false);
-
-      toast.success("Allocations updated successfully!");
     } catch (error) {
-      toast.error("Failed to update allocations. Please try again.");
       console.error("Error updating allocations:", error);
     }
   };
@@ -173,7 +156,7 @@ export default function AssignUnassignToAllocation({
               <div className="mb-3">
                 <p className="text-xs font-medium mb-2">Current Allocations:</p>
                 <div className="flex flex-wrap gap-1">
-                  {currentUserAllocations.map((allocationId) => (
+                  {currentUserAllocations.map((allocationId: string) => (
                     <Badge
                       key={allocationId}
                       variant="secondary"
@@ -190,9 +173,6 @@ export default function AssignUnassignToAllocation({
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {allAllocations?.data?.map((allocation: TAllocation) => {
                 const isSelected = selectedAllocations.includes(allocation.id);
-                const wasOriginallySelected = currentUserAllocations.includes(
-                  allocation.id
-                );
                 const willBeAdded = pendingChanges.toAdd.includes(
                   allocation.id
                 );

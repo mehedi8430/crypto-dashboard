@@ -21,9 +21,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import type { TUser } from "@/types";
 import { useRegister } from "@/queries/authQueries";
-import { useUpdateUser } from "@/queries/userQueries";
+import { useSingleUser, useUpdateUser } from "@/queries/userQueries";
 
 const userImages = [
   "https://i.ibb.co/jPWwK4hG/5864188-1.png",
@@ -53,11 +52,9 @@ const formSchema = z.object({
 export default function AddUserForm({
   onClose,
   userId,
-  user,
 }: {
   onClose: () => void;
   userId?: string;
-  user?: { data: TUser };
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -73,16 +70,9 @@ export default function AddUserForm({
     },
   });
 
-  const {
-    mutate: createUser,
-    isPending: isRegisterPending,
-    data: registerData,
-  } = useRegister();
-  const {
-    mutate: updateUser,
-    isPending: isUpdatePending,
-    data: updateData,
-  } = useUpdateUser();
+  const { mutate: createUser, isPending: isRegisterPending } = useRegister();
+  const { mutate: updateUser, isPending: isUpdatePending } = useUpdateUser();
+  const { data: user } = useSingleUser(userId ?? "");
 
   // Update form values when user data is loaded
   useEffect(() => {
@@ -109,18 +99,20 @@ export default function AddUserForm({
     };
 
     if (userId) {
-      updateUser({ data: editPayload, id: userId });
-      console.log({ updateData });
-
-      if (!isUpdatePending) {
-        onClose();
-      }
+      updateUser(
+        { data: editPayload, id: userId },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
     } else {
-      createUser(values);
-
-      if (!isRegisterPending) {
-        onClose();
-      }
+      createUser(values, {
+        onSuccess: () => {
+          onClose();
+        },
+      });
     }
   }
 

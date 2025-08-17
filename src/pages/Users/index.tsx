@@ -36,7 +36,7 @@ export default function Users() {
   const { mutate: deleteUser, isPending: isDeleteUserPending } =
     useDeleteUser();
   const userId = userToEditId ? userToEditId : undefined;
-  const { data: user, isPending: isUserPending } = useSingleUser(userId ?? "");
+  const { isPending: isUserPending } = useSingleUser(userId ?? "");
 
   useEffect(() => {
     setTitle("User Management");
@@ -231,7 +231,6 @@ export default function Users() {
         <AddUserForm
           onClose={() => setIsAddUserModalOpen(false)}
           userId={userToEditId ? userToEditId : undefined}
-          user={user}
         />
       </DialogWrapper>
 
