@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { useAllocations } from "@/queries/cryptoQueries";
 import type { TAllocation } from "@/types";
-
-const allocationColors: { [key: string]: string } = {
-  A: "#0867ED",
-  B: "#12BE73",
-  C: "#F2C916",
-  D: "#FF69B4",
-};
+import { allocationColors } from "@/pages/Allocations/allocationsColor";
 
 type AllocationData = {
   label: string;
@@ -31,7 +25,10 @@ export default function AllAllocationCard() {
         chartConfig: {
           desktop: {
             label: "value",
-            color: allocationColors[item.key as keyof typeof allocationColors],
+            color:
+              allocationColors[
+                item.key.toLocaleLowerCase() as keyof typeof allocationColors
+              ],
           },
         },
         name: item?.name,
@@ -42,7 +39,7 @@ export default function AllAllocationCard() {
   }, [data?.data]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 flex-wrap w-full">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {allocationData?.length > 0 ? (
         allocationData.map((item: AllocationData) => (
           <Link
@@ -58,8 +55,8 @@ export default function AllAllocationCard() {
           </Link>
         ))
       ) : (
-        <section className="">
-          <div className="section-container border rounded-md hover:border hover:border-primaryflex items-center justify-center w-full">
+        <section className="w-full">
+          <div className="section-container border rounded-md hover:border hover:border-primaryflex items-center justify-center">
             No Allocation Available
           </div>
         </section>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { mockData } from "@/data/mockData";
 
 interface AllocationMetricsPanelProps {
-  allocation: "a" | "b" | "c" | "d";
+  allocation: string;
 }
 
 // Data for the panels, derived from the images and demo code

@@ -27,3 +27,12 @@ export type TAllocationHistory = {
 export type TCryptoDataUpdatePayload = {
   [key: string]: unknown;
 };
+
+export type TDailyReportPayload = {
+  note: string;
+  starting: string;
+  ending: string;
+  growthRate: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
