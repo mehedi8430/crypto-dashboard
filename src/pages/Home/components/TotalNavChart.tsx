@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
 import { useCryptoChartData } from "@/pages/hooks";
 import type { TNavChartData } from "@/types";
+import { useNavChartData } from "@/queries/cryptoQueries";
 
 const chartConfig = {
   total_nav: {
@@ -49,12 +50,14 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
   const {
     data: navChartData,
     loading: isPending,
-    error,
     emit,
     isConnected,
   } = useCryptoChartData();
 
-  // console.log({ navChartData, activeMonth });
+  const { data: navChartData2 } = useNavChartData();
+  console.log({ navChartData2 });
+
+  console.log({ navChartData, activeMonth });
 
   // Request data when month changes or component mounts
   useEffect(() => {
@@ -242,27 +245,6 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
     return (
       <div className="h-[230px] flex items-center justify-center">
         <Loader />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-500 text-center p-4 h-[230px] flex items-center justify-center">
-        <div>
-          <p>Error loading chart data: {error}</p>
-          <button
-            onClick={() =>
-              emit("request_chart_data", {
-                month: activeMonth,
-                year: new Date().getFullYear(),
-              })
-            }
-            className="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
-          >
-            Retry
-          </button>
-        </div>
       </div>
     );
   }
