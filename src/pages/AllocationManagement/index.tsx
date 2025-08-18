@@ -9,7 +9,13 @@ import AddAllocationForm from "./AddAllocationForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DialogWrapper } from "@/components/DialogWrapper";
 import { AlertDialogModal } from "@/components/AlertDialogModal";
-import { useAllocations, useDeleteAllocation } from "@/queries/cryptoQueries";
+import {
+  useAllocations,
+  useCreateAllocation,
+  useDeleteAllocation,
+  useUpdateAllocation,
+} from "@/queries/cryptoQueries";
+import PageLoader from "@/components/Loader";
 
 type TAllocationData = {
   id: string;
@@ -36,7 +42,12 @@ export default function AllocationsManagementPage() {
   const [allocationToDeleteKey, setAllocationToDeleteKey] =
     useState<string>("");
 
-  const { mutate: deleteAllocation } = useDeleteAllocation();
+  const { mutate: deleteAllocation, isPending: isDeleteAllocationPending } =
+    useDeleteAllocation();
+  const { isPending: isCreateAllocationPending, mutate: createAllocation } =
+    useCreateAllocation();
+  const { isPending: isUpdateAllocationPending, mutate: updateAllocation } =
+    useUpdateAllocation();
 
   useEffect(() => {
     setTitle("Allocation Management");
@@ -126,6 +137,14 @@ export default function AllocationsManagementPage() {
     },
   ];
 
+  if (
+    isDeleteAllocationPending ||
+    isCreateAllocationPending ||
+    isUpdateAllocationPending
+  ) {
+    return <PageLoader />;
+  }
+
   return (
     <section className="section-container">
       <div className="flex items-center justify-between px-2">
@@ -191,6 +210,9 @@ export default function AllocationsManagementPage() {
         <AddAllocationForm
           allocationKey={allocationToEditKey ? allocationToEditKey : undefined}
           onClose={() => setIsAddAllocationModalOpen(false)}
+          createAllocation={createAllocation}
+          updateAllocation={updateAllocation}
+          isPending={isCreateAllocationPending || isUpdateAllocationPending}
         />
       </DialogWrapper>
 

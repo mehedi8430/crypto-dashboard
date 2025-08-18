@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataTable } from "@/components/DataTable/dataTable";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
-import { usePortfolioLatestData } from "@/queries/cryptoQueries";
+import { useAssetPerformanceData } from "@/queries/assetPerformanceQueries";
 
 // coins images
 import ETH from "@/assets/icons/coins/Ethereum ETH.png";
@@ -13,6 +12,7 @@ import T from "@/assets/icons/coins/Group (2).png";
 import D from "@/assets/icons/coins/Group (3).png";
 import Synthetix from "@/assets/icons/coins/Synthetix Network SNX.png";
 import TrueUSD from "@/assets/icons/coins/TrueUSD TUSD.png";
+import type { TAssetPerformanceResponse, TCoinData } from "@/types";
 
 const coinImages: { [key: string]: string } = {
   ETH,
@@ -27,29 +27,36 @@ export default function AssetPerformancePanel(): React.ReactNode {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(15);
 
-  const { data: portfolioLatestData, isPending } = usePortfolioLatestData();
+  const { data: assetPerformanceData, isPending } =
+    useAssetPerformanceData(120);
 
-  const assetsPerformanceData =
-    portfolioLatestData?.data?.asset_performance || {};
+  const latestAssets: { [key: string]: TAssetPerformanceResponse } = {};
 
-  const formattedAssetPerformance = Object.keys(assetsPerformanceData).map(
-    (key) => {
-      const coin = assetsPerformanceData[key];
-      return {
-        image: coinImages[key],
-        name: key,
-        symbol: coin.symbol,
-        open: coin.open,
-        close: coin.close,
-        change: coin.change_percent,
-        volume: coin.volume_usd,
-        volumeTrend:
-          coin.change_percent >= 0 ? ("up" as const) : ("down" as const),
-      };
+  assetPerformanceData?.data?.forEach((perf: TAssetPerformanceResponse) => {
+    if (
+      !latestAssets[perf.symbol] ||
+      new Date(perf.datetime) > new Date(latestAssets[perf.symbol].datetime)
+    ) {
+      latestAssets[perf.symbol] = perf;
     }
-  );
+  });
 
-  const columns: ColumnDef<any>[] = [
+  const formattedAssetPerformance = Object.keys(latestAssets).map((key) => {
+    const coin = latestAssets[key];
+    return {
+      image: coinImages[key],
+      name: key,
+      symbol: coin.symbol,
+      open: coin.open,
+      close: coin.close,
+      change: coin.change_percent,
+      volume: coin.volume_usd,
+      volumeTrend:
+        coin.change_percent >= 0 ? ("up" as const) : ("down" as const),
+    };
+  });
+
+  const columns: ColumnDef<TCoinData>[] = [
     {
       accessorKey: "name",
       header: "Name",
@@ -119,13 +126,13 @@ export default function AssetPerformancePanel(): React.ReactNode {
     <section className="section-container h-full">
       <h3 className="font-bold">Asset Performance Panel</h3>
       <div>
-        <DataTable<any>
+        <DataTable<TCoinData>
           data={formattedAssetPerformance}
           columns={columns}
           isLoading={isPending}
           page={page}
           limit={limit}
-          total={Object.keys(assetsPerformanceData).length}
+          total={Object.keys(latestAssets).length}
           onPageChange={setPage}
           onLimitChange={setLimit}
           isPagination={false}

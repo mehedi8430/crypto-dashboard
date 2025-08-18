@@ -17,13 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  useAllocationByKey,
-  useCreateAllocation,
-  useUpdateAllocation,
-} from "@/queries/cryptoQueries";
+import { useAllocationByKey } from "@/queries/cryptoQueries";
 import { useEffect } from "react";
 import { allocationOptions } from "./allocationOptions";
+import type { TAllocationPayload } from "@/types/allocation.type";
 
 const allocationSchema = z.object({
   key: z.string().min(1, "Allocation is required"),
@@ -31,12 +28,23 @@ const allocationSchema = z.object({
   initialBalance: z.coerce.number().min(0, "Value must be a positive number"),
 });
 
+type UpdateAllocationParams = {
+  key: string;
+  data: TAllocationPayload;
+};
+
 export default function AddAllocationForm({
   allocationKey,
   onClose,
+  createAllocation,
+  updateAllocation,
+  isPending,
 }: {
   allocationKey: string | undefined;
   onClose?: () => void;
+  createAllocation: (data: TAllocationPayload) => void;
+  updateAllocation: (params: UpdateAllocationParams) => void;
+  isPending?: boolean;
 }) {
   const form = useForm<z.infer<typeof allocationSchema>>({
     resolver: zodResolver(allocationSchema),
@@ -46,9 +54,6 @@ export default function AddAllocationForm({
       initialBalance: 0,
     },
   });
-
-  const createAllocation = useCreateAllocation();
-  const updateAllocation = useUpdateAllocation();
 
   const { data: allocationData } = useAllocationByKey(allocationKey || "");
 
@@ -77,11 +82,11 @@ export default function AddAllocationForm({
       initialBalance: values.initialBalance,
     };
 
-    if (allocationKey) {
-      updateAllocation.mutate({ key: allocationKey, data: payload });
+    if (allocationKey && updateAllocation) {
+      updateAllocation({ key: allocationKey, data: payload });
       onClose?.();
-    } else {
-      createAllocation.mutate(payload);
+    } else if (!allocationKey && createAllocation) {
+      createAllocation(payload);
       onClose?.();
     }
   }
@@ -148,7 +153,7 @@ export default function AddAllocationForm({
           )}
         />
 
-        <Button type="submit" disabled={createAllocation.isPending}>
+        <Button type="submit" disabled={isPending}>
           {allocationKey ? "Update Allocation" : "Create Allocation"}
         </Button>
       </form>
