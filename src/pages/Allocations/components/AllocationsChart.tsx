@@ -11,13 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useAllocationByKey } from "@/queries/cryptoQueries";
 import type { TAllocationKeyData } from "@/types";
-
-const allocationColors = {
-  a: "#0867ED", // Blue
-  b: "#00CA72", // Green
-  c: "#F2C916", // Yellow
-  d: "#FF69B4", // Hotpink
-};
+import { allocationColors } from "../allocationsColor";
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -59,7 +53,7 @@ const CustomTooltip = ({
 export default function AllocationsChart({
   allocation,
 }: {
-  allocation: "a" | "b" | "c" | "d" | null;
+  allocation: string | null;
 }) {
   const [chartData, setChartData] = useState<
     { date: string; performance: number }[]
