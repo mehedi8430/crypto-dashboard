@@ -53,14 +53,14 @@ export function useSocket<T = any>(
   const socketUrl =
     import.meta.env.VITE_APP_SOCKET_URL || "http://172.16.100.26:8080";
 
-  const socketOptions = useRef({
-    autoConnect: true,
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-    transports: ["websocket", "polling"],
-    ...config.options,
-  });
+  // const socketOptions = useRef({
+  //   autoConnect: true,
+  //   reconnection: true,
+  //   reconnectionAttempts: 5,
+  //   reconnectionDelay: 1000,
+  //   transports: ["websocket", "polling"],
+  //   ...config.options,
+  // });
 
   // Memoized connection event handlers
   const handleConnect = useCallback(() => {

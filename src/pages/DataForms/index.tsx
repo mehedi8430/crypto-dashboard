@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Pen, X } from "lucide-react";
-import TotalNavPanel from "@/pages/Home/components/TotalNavPanel";
+import TotalNavPanel from "@/pages/Home/TotalNavPanel/components/TotalNavPanel";
 // import AllocationBreakdown from "@/pages/Home/components/AllocationBreakdown";
 // import AllAllocationCard from "@/pages/Home/components/AllAllocationCard";
 import AssetPerformancePanel from "@/pages/Home/components/AssetPerformancePanel";
