@@ -19,10 +19,7 @@ apiClient.interceptors.request.use(
     const token = storageData ? JSON.parse(storageData).state.token.data : null;
     console.log({ token });
 
-    const isPublicEndpoint =
-      config.url === "/auth/login" && config.method === "post";
-
-    if (token && !isPublicEndpoint) {
+    if (token) {
       config.headers.Authorization = token;
     }
 

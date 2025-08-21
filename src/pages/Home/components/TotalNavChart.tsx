@@ -54,8 +54,8 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
     isConnected,
   } = useCryptoChartData();
 
-  const { data: navChartData2 } = useNavChartData();
-  console.log({ navChartData2 });
+  // const { data: navChartData2 } = useNavChartData();
+  // console.log({ navChartData2 });
 
   console.log({ navChartData, activeMonth });
 

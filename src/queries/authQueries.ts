@@ -24,7 +24,6 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (token: string) => {
-      console.log({ token });
       login(token);
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       toast.success("Login successful");
@@ -64,6 +63,7 @@ export const useLogout = () => {
     onSuccess: () => {
       logout();
       queryClient.clear();
+      authStore.persist.clearStorage();
       toast.success("Logged out successfully");
       navigate("/login", { replace: true });
     },
