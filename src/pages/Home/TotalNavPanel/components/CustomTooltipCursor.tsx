@@ -25,7 +25,7 @@ const CustomTooltipCursor = (props: any) => {
         />
         <circle
           cx={x}
-          cy={yPosition}
+          cy={yPosition + 8}
           r={8}
           fill="var(--color-chart-1)"
           stroke="var(--color-chart-1)"
@@ -33,7 +33,7 @@ const CustomTooltipCursor = (props: any) => {
           opacity={1}
           filter="drop-shadow(0 0 6px var(--color-chart-1))"
         />
-        <circle cx={x} cy={yPosition} r={4} fill="white" opacity={1} />
+        {/* <circle cx={x} cy={yPosition + 8} r={4} fill="white" opacity={1} /> */}
       </g>
     );
   }

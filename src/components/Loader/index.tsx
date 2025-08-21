@@ -7,7 +7,7 @@ export default function PageLoader() {
       <div className="flex flex-col items-center space-y-4">
         <div className="relative">
           <Skeleton className="h-16 w-16 rounded-full" />
-          <Skeleton className="absolute top-0 left-0 h-16 w-16 rounded-full animate-ping opacity-75" />
+          <Skeleton className="absolute top-0 left-0 h-16 w-16 rounded-full opacity-75" />
         </div>
         <div className="space-y-2">
           <Skeleton className="h-4 w-32" />
