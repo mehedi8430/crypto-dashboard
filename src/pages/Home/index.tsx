@@ -1,7 +1,7 @@
 import SearchInput from "@/components/SearchInput";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
-import TotalNavPanel from "./components/TotalNavPanel";
+import TotalNavPanel from "./TotalNavPanel/components/TotalNavPanel";
 import AllocationBreakdown from "./components/AllocationBreakdown";
 import AssetPerformancePanel from "./components/AssetPerformancePanel";
 import FromTheNews from "./components/FromTheNews";

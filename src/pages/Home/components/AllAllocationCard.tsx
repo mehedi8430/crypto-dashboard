@@ -27,7 +27,7 @@ export default function AllAllocationCard() {
             label: "value",
             color:
               allocationColors[
-                item.key.toLocaleLowerCase() as keyof typeof allocationColors
+                item.key.toLowerCase() as keyof typeof allocationColors
               ],
           },
         },
@@ -39,27 +39,29 @@ export default function AllAllocationCard() {
   }, [data?.data]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
       {allocationData?.length > 0 ? (
-        allocationData.map((item: AllocationData) => (
-          <Link
-            to={`/dashboard/allocations/${item?.label.toLowerCase()}`}
-            className="w-full"
-            key={item?.allocationKey}
-          >
-            <Allocation
-              label={item?.label}
-              chartConfig={item?.chartConfig}
-              allocationKey={item?.allocationKey}
-            />
-          </Link>
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {allocationData.map((item: AllocationData) => (
+            <Link
+              to={`/dashboard/allocations/${item?.label.toLowerCase()}`}
+              className="w-full"
+              key={item?.allocationKey}
+            >
+              <Allocation
+                label={item?.label}
+                chartConfig={item?.chartConfig}
+                allocationKey={item?.allocationKey}
+              />
+            </Link>
+          ))}
+        </div>
       ) : (
-        <section className="w-full">
+        <div className="w-full">
           <div className="section-container border rounded-md hover:border hover:border-primaryflex items-center justify-center">
             No Allocation Available
           </div>
-        </section>
+        </div>
       )}
     </div>
   );

@@ -3,16 +3,16 @@ export type TNavChartData = {
   nav: number;
 };
 
-// export type TNavChartData = {
-//   id: string;
-//   date: string;
-//   endingNav: number;
-//   startingNav: number;
-//   growthPercent: number;
-//   lastUpdated: string;
-//   datetime: string;
-//   minuteKey: string;
-// };
+export type TNavChartDataFromApi = {
+  id: string;
+  date: string;
+  endingNav: number;
+  startingNav: number;
+  growthPercent: number;
+  lastUpdated: string;
+  datetime: string;
+  minuteKey: string;
+};
 
 export type TAllocationHistory = {
   minuteKey: string;
