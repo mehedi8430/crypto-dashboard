@@ -11,11 +11,13 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Loader from "@/components/Loader";
-import { useCryptoChartData } from "@/pages/hooks";
 import type { TNavChartData } from "@/types";
-import { useNavChartData } from "@/queries/cryptoQueries";
+import CustomTooltipContent from "./CustomTooltipContent";
+import CustomTooltipCursor from "./CustomTooltipCursor";
+import { useChartData } from "../useChartData";
+import { Button } from "@/components/ui/button";
 
 const chartConfig = {
   total_nav: {
@@ -36,7 +38,20 @@ type TFormattedNavChartData = {
   day: number;
 };
 
-export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
+// Suspense fallback component
+function ChartSuspenseFallback() {
+  return (
+    <div className="h-[230px] flex items-center justify-center">
+      <div className="text-center">
+        <Loader />
+        <p className="text-sm text-gray-500 mt-2">Loading chart data...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main chart component
+function ChartContent({ activeMonth }: { activeMonth: string }) {
   const [chartData, setChartData] = useState<TFormattedNavChartData[]>([]);
   const [minValue, setMinValue] = useState(0);
   const [maxValue, setMaxValue] = useState(1000);
@@ -45,41 +60,19 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
   const currentMonth = new Date()
     .toLocaleString("default", { month: "long" })
     .toLowerCase();
-  const activeMonth = selectedMonth || currentMonth;
 
   const {
-    data: navChartData,
-    loading: isPending,
+    data: dataToUse,
+    isLoading,
+    isSocketActive,
     emit,
-    isConnected,
-  } = useCryptoChartData();
-
-  const { data: navChartData2 } = useNavChartData();
-  console.log({ navChartData2 });
-
-  console.log({ navChartData, activeMonth });
-
-  // Request data when month changes or component mounts
-  useEffect(() => {
-    if (isConnected) {
-      const requestData = {
-        month: activeMonth,
-        year: new Date().getFullYear(),
-      };
-
-      console.log("Requesting chart data for:", requestData);
-      emit("request_chart_data", requestData);
-    }
-  }, [activeMonth, isConnected, emit]);
+    refetchApiData,
+  } = useChartData(activeMonth, currentMonth);
 
   // Process chart data
   useEffect(() => {
-    if (
-      navChartData &&
-      Array.isArray(navChartData) &&
-      navChartData.length > 0
-    ) {
-      const formattedData = navChartData
+    if (Array.isArray(dataToUse) && dataToUse.length > 0) {
+      const formattedData = dataToUse
         .map((d: TNavChartData) => {
           const dateField = d.datetime;
           const navField = d.nav;
@@ -100,7 +93,7 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
             day: new Date(dateField).getDate(),
           };
         })
-        .filter((item) => item !== null); // Remove null items
+        .filter((item) => item !== null) as TFormattedNavChartData[];
 
       if (formattedData.length === 0) {
         console.warn("No valid data after formatting");
@@ -119,12 +112,11 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
 
       // Add padding to the range
       const range = dataMax - dataMin;
-      const padding = range > 0 ? range * 0.1 : dataMin * 0.1; // Handle case where all values are the same
+      const padding = range > 0 ? range * 0.1 : dataMin * 0.1;
 
       const newMinValue = Math.floor(dataMin - padding);
       const newMaxValue = Math.ceil(dataMax + padding);
 
-      // Ensure we have a valid range
       const finalMinValue = newMinValue;
       const finalMaxValue =
         newMaxValue > newMinValue ? newMaxValue : newMinValue + 100;
@@ -135,139 +127,30 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
       // Generate dynamic ticks
       const tickCount = 5;
       const tickStep = (finalMaxValue - finalMinValue) / (tickCount - 1);
-
       const newDynamicTicks = Array.from({ length: tickCount }, (_, i) =>
         Math.round(finalMinValue + tickStep * i)
       );
 
       setDynamicTicks(newDynamicTicks);
     } else {
-      console.warn("Invalid navChartData:", navChartData);
+      console.log("No valid chart data available");
+      setChartData([]);
     }
-  }, [navChartData, activeMonth]);
+  }, [dataToUse]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltipCursor = (props: any) => {
-    const { points, height, payload } = props;
-
-    if (points && points.length > 0) {
-      const { x } = points[0];
-      const value = payload[0]?.value;
-
-      if (value === undefined || maxValue === minValue) return null;
-
-      const normalizedValue = (value - minValue) / (maxValue - minValue);
-      const yPosition = height - normalizedValue * height;
-
-      return (
-        <g>
-          <line
-            x1={x}
-            y1={yPosition}
-            x2={x}
-            y2={height}
-            stroke="var(--color-chart-1)"
-            strokeWidth={3}
-            strokeDasharray="5 3"
-            opacity={0.7}
-          />
-          <circle
-            cx={x}
-            cy={yPosition}
-            r={8}
-            fill="var(--color-chart-1)"
-            stroke="var(--color-chart-1)"
-            strokeWidth={3}
-            opacity={1}
-            filter="drop-shadow(0 0 6px var(--color-chart-1))"
-          />
-          <circle cx={x} cy={yPosition} r={4} fill="white" opacity={1} />
-        </g>
-      );
-    }
-    return null;
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltipContent = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const value = payload[0]?.value;
-      if (value === undefined || value === null) return null;
-
-      return (
-        <div className="bg-border px-4 py-2 rounded-lg shadow-lg">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary" />
-            <span className="text-sm font-bold text-foreground">
-              $
-              {value.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="w-2 h-2 rounded-full bg-foreground" />
-            <span className="text-[10px] text-foreground/70">
-              {new Date(label).toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}{" "}
-              {payload[0]?.payload?.time ||
-                new Date(label).toLocaleTimeString()}
-              , {new Date(label).getFullYear()}
-            </span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Custom X-axis tick formatter for better month view
   const formatXAxisTick = (value: string) => {
     const date = new Date(value);
-
-    // For monthly view, show day of month
     if (chartData.length <= 31) {
       return date.getDate().toString();
     }
-
-    // For larger datasets, show month/day
     return date.toLocaleDateString("en-US", {
       month: "2-digit",
       day: "2-digit",
     });
   };
 
-  if (isPending) {
-    return (
-      <div className="h-[230px] flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
-
-  if (!navChartData || navChartData.length === 0) {
-    return (
-      <div className="text-center p-4 h-[230px] flex items-center justify-center">
-        <div>
-          <p>No chart data available</p>
-          <button
-            onClick={() =>
-              emit("request_chart_data", {
-                month: activeMonth,
-                year: new Date().getFullYear(),
-              })
-            }
-            className="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
-          >
-            Load Data
-          </button>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <ChartSuspenseFallback />;
   }
 
   if (chartData.length === 0) {
@@ -281,6 +164,27 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
           <p className="text-sm text-gray-500 mt-1">
             Try selecting a different month
           </p>
+          {isSocketActive ? (
+            <button
+              onClick={() =>
+                emit("request_chart_data", {
+                  month: activeMonth,
+                  year: new Date().getFullYear(),
+                })
+              }
+              className="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+            >
+              Retry Again
+            </button>
+          ) : (
+            <Button
+              variant={"outline"}
+              onClick={() => refetchApiData()}
+              className="mt-2"
+            >
+              Reload
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -348,7 +252,9 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
 
             <ChartTooltip
               content={<CustomTooltipContent />}
-              cursor={<CustomTooltipCursor />}
+              cursor={
+                <CustomTooltipCursor minValue={minValue} maxValue={maxValue} />
+              }
             />
 
             <Area
@@ -363,5 +269,19 @@ export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
         </ResponsiveContainer>
       </ChartContainer>
     </div>
+  );
+}
+
+// Main exported component with Suspense wrapper
+export default function TotalNavChart({ selectedMonth }: TotalNavChartProps) {
+  const currentMonth = new Date()
+    .toLocaleString("default", { month: "long" })
+    .toLowerCase();
+  const activeMonth = selectedMonth || currentMonth;
+
+  return (
+    <Suspense fallback={<ChartSuspenseFallback />}>
+      <ChartContent activeMonth={activeMonth} />
+    </Suspense>
   );
 }

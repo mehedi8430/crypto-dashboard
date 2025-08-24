@@ -50,15 +50,17 @@ export function useSocket<T = any>(
   const socketRef = useRef<Socket | null>(null);
 
   // Memoize the socket URL and config to prevent unnecessary re-renders
-  const socketUrl = import.meta.env.VITE_APP_SOCKET_URL;
+  const socketUrl =
+    import.meta.env.VITE_APP_SOCKET_URL || "http://172.16.100.26:8080";
 
-  const socketOptions = useRef({
-    autoConnect: true,
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-    ...config.options,
-  });
+  // const socketOptions = useRef({
+  //   autoConnect: true,
+  //   reconnection: true,
+  //   reconnectionAttempts: 5,
+  //   reconnectionDelay: 1000,
+  //   transports: ["websocket", "polling"],
+  //   ...config.options,
+  // });
 
   // Memoized connection event handlers
   const handleConnect = useCallback(() => {
@@ -130,7 +132,15 @@ export function useSocket<T = any>(
     setConnectionStatus("connecting");
 
     // Create socket instance INSIDE useEffect
-    const socketInstance = io(socketUrl, socketOptions.current);
+    const socketInstance = io(socketUrl, {
+      transports: ["websocket", "polling"],
+      path: "/socket.io/",
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000,
+    });
+    // const socketInstance = io(socketUrl, socketOptions.current);
 
     socketRef.current = socketInstance;
     setSocket(socketInstance);
